@@ -1,115 +1,780 @@
-<!doctype html>
-<html>
-
+<!DOCTYPE html>
+<html lang="zxx">
 <head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <title>Realm Royale Hub</title>
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A place for everything realm royale!">
+    <meta name="author" content="Dan Fisher">
+    <meta name="keywords" content="sports club news HTML template">
 
-    <title>
-        Realm Hub
-    </title>
+    <!-- Favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="assets/images/esports/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/images/esports/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/images/esports/favicons/favicon-152.png">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/railscasts.min.css">
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
 
-    <link rel="stylesheet" href="/views/css/scribbler-global.css">
-    <link rel="stylesheet" href="/views/css/scribbler-landing.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <!-- Google Web Fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&amp;family&#x3D;Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&amp;display&#x3D;swap" rel="stylesheet">
+
+    <!-- CSS
+    ================================================== -->
+    <!-- Vendor CSS -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="/assets/fonts/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="/assets/vendor/slick/slick.css" rel="stylesheet">
+
+
+    <!-- Template CSS-->
+    <link href="assets/css/style-esports.css" rel="stylesheet">
+
+    <!-- Custom CSS-->
+    <link href="assets/css/custom.css" rel="stylesheet">
 
 </head>
+<body data-template="template-esports">
 
-<body>
+<div class="site-wrapper clearfix">
+    <div class="site-overlay"></div>
 
+    <!-- Header
+    ================================================== -->
 
-<!-- Hero -->
-<div class="hero">
-    <h1 class="hero__title">
-        Realm Royale
-    </h1>
-
-    <p class="hero__description">
-        Community Hub
-    </p>
-</div>
-
-<!-- Hero Terminal -->
-<div class="hero__terminal">
-    <pre>
-        <!-- Place your demo code here -->
-        <code class="shell-session">
-          <h1 class = "code-heading">Features :</h1><h2 class = "demo"></h2>
-        </code>
-      </pre>
-</div>
-
-<div class="wrapper">
-    <!-- Features -->
-    <div class="feature">
-
-        <!-- Feature -->
-        <div class="feature__item">
-
-
-            <h3>
-                <a href="mmr" class="button--primary">
-                    MMR
-                </a>
-            </h3>
+    <!-- Header Mobile -->
+    <div class="header-mobile clearfix" id="header-mobile">
+        <div class="header-mobile__logo">
+            <a href="_esports_index.html"><img src="assets/images/esports/logoTemp1.png" srcset="assets/images/esports/logoTemp1.png 1.0x" alt="Alchemists" class="header-mobile__logo-img"></a>
         </div>
-
-        <!-- Feature -->
-        <div class="feature__item">
-
-            <h3>
-                <a href="customs" class="button--primary">
-                    Custom Games
-                </a>
-            </h3>
+        <div class="header-mobile__inner">
+            <a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a>
         </div>
+    </div>
+    <!-- Header Mobile / End -->
 
-        <!-- Feature -->
-        <div class="feature__item">
-            <h3>
-                <a href="orgtourney" class="button--primary">
-                    Organize Tourney
-                </a>
-            </h3>
+    <!-- Header Desktop -->
+    <header class="header header--layout-3">
+
+        <!-- Header Top Bar -->
+        <div class="header__top-bar clearfix">
         </div>
+        <!-- Header Top Bar / End -->
 
-        <!-- Feature -->
-        <div class="feature__item">
-            <h3>
-                <a href="stats" class="button--primary">
-                    Player Stats
-                </a>
-            </h3>
+        <!-- Header Primary -->
+        <!-- Header Primary -->
+        <div class="header__primary">
+            <div class="container">
+                <div class="header__primary-inner">
+
+                    <!-- Header Logo -->
+                    <div class="header-logo">
+                        <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                                         srcset="/assets/images/esports/logoTemp1.png 4x" alt="Realm Refroged Logo"
+                                         class="header-logo__img"></a>
+                    </div>
+                    <!-- Header Logo / End -->
+
+                    <!-- Main Navigation -->
+                    <nav class="main-nav">
+                        <ul class="main-nav__list">
+                            <li class="active"><a href="/">Home</a>
+                            </li>
+                            <li class=""><a href="/mmr">MMR</a>
+                                <!-- Mega Menu -->
+                                <!-- Mega Menu / End -->
+                            </li>
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Lookup</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/stats">Player Stats</a></li>
+                                    <li class=""><a href="/match">Match Details</a></li>
+                                </ul>
+                            </li>
+                            <!-- Mega Menu / End -->
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Organize Events</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/orgLeagueTemp">Organize League</a></li>
+                                    <li class=""><a href="/orgTourneyTemp">Organize Tourney</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- Main Navigation / End -->
+
+                    <div class="header__primary-spacer"></div>
+
+                    <!-- Header Search Form -->
+
+                    <!-- Header Search Form / End -->
+
+                    <!-- Header Info Block -->
+
+                    <!-- Header Info Block / End -->
+
+                </div>
+            </div>
         </div>
+        <!-- Header Primary / End -->
+        <!-- Header Primary / End -->
 
-        <!-- Realm Giveaway -->
-<!--        <div class="feature__item">-->
-<!--            <h3>-->
-<!--                <a href="realmgiveaway" class="button&#45;&#45;primary">-->
-<!--                    Realm Royale Giveaway-->
-<!--                </a>-->
-<!--            </h3>-->
-<!--        </div>-->
+    </header>
+    <!-- Header / End -->
 
+    <!-- Header Posts
+    ================================================== -->
+    <div class="container">
+        <div class="posts posts--tile posts--tile-alt post-grid grid-layout posts--tile-alt-nopaddings posts--tile-hero-post-grid posts--tile-meta-position">
+
+            <div class="post-grid__item posts__item posts__item--tile posts__item--category-2 ">
+                <figure class="posts__thumb h-100">
+                    <img src="assets/images/esports/thumbnailReforged.png" alt="" class="h-100">
+                    <a href="https://www.realmroyale.com/news/realm-royale-reforged-update-notes/" class="posts__item-link-overlay"></a>
+                    <div class="posts__inner posts__inner--noactive">
+                        <div class="posts__cat">
+                            <span class="label posts__cat-label posts__cat-label--category-2">HiRez</span>
+                        </div>
+                        <h6 class="posts__title posts__title--lg"><a href="#">Realm Royale Reforged Update</a></h6>
+                        <time datetime="2018-08-23" class="posts__date">August 24th 2022</time>
+                        <div class="posts__excerpt">
+                            "This marks the beginning of the journey, and we’re just getting started."
+                        </div>
+                    </div>
+                </figure>
+            </div>
+            <div class="post-grid__item posts__item posts__item--tile posts__item--category-1 posts__item--category-4 ">
+                <figure class="posts__thumb h-100">
+                    <img src="assets/images/esports/stream_team.png" alt="" class="h-100">
+                    <a href="https://www.twitch.tv/realmroyale" class="posts__item-link-overlay"></a>
+                    <div class="posts__inner posts__inner--noactive">
+                        <div class="posts__cat">
+                            <span class="label posts__cat-label posts__cat-label--category-1">The Team</span>
+                        </div>
+                        <h6 class="posts__title posts__title--lg "><a href="#">Twitch Stream Team</a></h6>
+                        <div class="posts__excerpt">
+                            Catch Realm Community members / devs on the Realm Channel!
+                        </div>
+                    </div>
+                </figure>
+            </div>
+        </div>
     </div>
 
+
+    <!-- Content
+    ================================================== -->
+    <div class="site-content">
+        <div class="container">
+
+            <!-- Breaking News -->
+            <div class="marquee-wrapper marquee-wrapper--boxed">
+                <div class="container">
+
+                    <div class="marquee-label">
+                        <i class="fas fa-star"></i> Realm News
+                    </div>
+                    <div class="marquee" data-startvisible="true" data-duration="18000" data-gap="15" data-duplicated="true">
+                        <ul class="posts posts--inline">
+                            <li class="posts__item posts__item--category-2 ">
+                                <div class="posts__cat">
+                                    <span class="label posts__cat-label posts__cat-label--category-4">Realm became Reforged</span>
+                                </div>
+                                <h6 class="posts__title posts__title--color-hover"><a href="https://www.realmroyale.com/news/realm-royale-reforged-update-notes/">Update after 2 years of silence!</a></h6>
+                                <div class="posts__excerpt">After a long wait from the community the HiRez team is giving realm another chance.</div>
+                            </li>
+                            <li class="posts__item posts__item--category-1 ">
+                                <div class="posts__cat">
+                                    <span class="label posts__cat-label posts__cat-label--category-3">MMR System</span>
+                                </div>
+                                <h6 class="posts__title posts__title--color-hover"><a href="mmr">Unoffical MMR system comes to the realm!</a></h6>
+                                <div class="posts__excerpt">Driven by community member slickynicky00, check your rank today.</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Breaking News / End -->
+
+            <div class="row">
+                <!-- Content -->
+                <div class="content col-lg-8">
+
+                    <!-- Posts Area #1 -->
+                    <!-- Posts Grid -->
+                    <div class="posts posts--tile posts--tile-alt post-grid row">
+
+                        <div class="post-grid__item col-sm-6">
+                            <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card">
+                                <figure class="posts__thumb">
+                                    <img src="assets/images/esports/game_rant_logo.png" alt="">
+                                    <a href="https://gamerant.com/realm-royale-reforged-new-updates-big-changes-armor-classes/" class="posts__item-link-overlay"></a>
+                                    <div class="posts__inner posts__inner--noactive">
+                                        <div class="posts__cat">
+                                            <span class="label posts__cat-label posts__cat-label--category-1">Review</span>
+                                        </div>
+                                        <h6 class="posts__title">
+                                            Realm Royale Reforged: Biggest Changes in the New Update
+                                        </h6>
+                                        <time datetime="2022-08-31" class="posts__date">August 31st, 2022</time>
+                                        <div class="posts__excerpt">
+                                            Hi Rez Studios' Realm Royale has come back with a vengeance, being rebranded as Realm Royale Reforged and having a plethora of new content added.
+                                        </div>
+                                    </div>
+                                </figure>
+                                <a href="_esports_blog-post-1.html" class="posts__cta"></a>
+                            </div>
+                        </div>
+                        <div class="post-grid__item col-sm-6">
+                            <div class="posts__item posts__item--tile posts__item--category-2  card">
+                                <figure class="posts__thumb">
+                                    <img src="assets/images/esports/nme_logo.jpg" alt="">
+                                    <a href="https://www.nme.com/news/gaming-news/realm-royale-reforged-relaunches-the-battle-royale-with-massive-overhaul-3297742" class="posts__item-link-overlay"></a>
+                                    <div class="posts__inner posts__inner--noactive">
+                                        <div class="posts__cat">
+                                            <span class="label posts__cat-label posts__cat-label--category-2">Review</span>
+                                        </div>
+                                        <h6 class="posts__title">
+                                            ‘Realm Royale Reforged’ relaunches the battle royale with massive overhaul
+                                        </h6>
+                                        <time datetime="202-08-25" class="posts__date">25th August 2022</time>
+                                        <div class="posts__excerpt">
+                                            The game first released in 2018 but went quiet for a few years
+                                        </div>
+                                    </div>
+                                </figure>
+                                <a href="_esports_blog-post-1.html" class="posts__cta"></a>
+<!--                                <footer class="posts__footer card__footer">-->
+<!--                                    <div class="post-author">-->
+<!--                                        <figure class="post-author__avatar">-->
+<!--                                            <img src="assets/images/esports/samples/avatar-6-xs.jpg" alt="Post Author Avatar">-->
+<!--                                        </figure>-->
+<!--                                        <div class="post-author__info">-->
+<!--                                            <h4 class="post-author__name">Lagertha Dax</h4>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <ul class="post__meta meta">-->
+<!--                                        <li class="meta__item meta__item&#45;&#45;views">2369</li>-->
+<!--                                        <li class="meta__item meta__item&#45;&#45;likes"><a href="#"><i class="meta-like icon-heart"></i> 530</a></li>-->
+<!--                                        <li class="meta__item meta__item&#45;&#45;comments"><a href="#">18</a></li>-->
+<!--                                    </ul>-->
+<!--                                </footer>-->
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Post Grid / End -->
+<!--                    <aside class="widget card card&#45;&#45;no-paddings widget&#45;&#45;sidebar widget-event-calendar">-->
+<!--                        <div class="widget__title card__header">-->
+<!--                            <h4>Events Calendar</h4>-->
+<!--                        </div>-->
+<!--                        <div class="widget__content card__content">-->
+
+<!--                            &lt;!&ndash; Events Calendar &ndash;&gt;-->
+<!--                            <div class="alc-event-calendar">-->
+<!--                                <table class="table">-->
+<!--                                    <caption>-->
+<!--											<span class="alc-event-calendar__caption-inner">-->
+<!--												<span class="alc-event-calendar__caption-nav alc-event-calendar__caption-nav&#45;&#45;prev">-->
+<!--													<a href="#" class="alc-event-calendar__caption-nav-link"></a>-->
+<!--												</span>-->
+<!--												<span class="alc-event-calendar__caption-title">September 2022</span>-->
+<!--												<span class="alc-event-calendar__caption-nav alc-event-calendar__caption-nav&#45;&#45;next">-->
+<!--													<a href="#" class="alc-event-calendar__caption-nav-link"></a>-->
+<!--												</span>-->
+<!--											</span>-->
+<!--                                    </caption>-->
+<!--                                    <thead>-->
+<!--                                    <tr>-->
+<!--                                        <th data-weekday-abbr="Mon"><span class="weekday">Mo</span></th>-->
+<!--                                        <th data-weekday-abbr="Tue"><span class="weekday">Tu</span></th>-->
+<!--                                        <th data-weekday-abbr="Wed"><span class="weekday">We</span></th>-->
+<!--                                        <th data-weekday-abbr="Thu"><span class="weekday">Th</span></th>-->
+<!--                                        <th data-weekday-abbr="Fri"><span class="weekday">Fr</span></th>-->
+<!--                                        <th data-weekday-abbr="Sat"><span class="weekday">Sa</span></th>-->
+<!--                                        <th data-weekday-abbr="Sun"><span class="weekday">Su</span></th>-->
+<!--                                    </tr>-->
+<!--                                    </thead>-->
+<!--                                    <tbody>-->
+<!--                                    <tr>-->
+<!--                                        <td><span class="day day&#45;&#45;muted">28</span></td>-->
+<!--                                        <td><span class="day day&#45;&#45;muted">29</span></td>-->
+<!--                                        <td><span class="day day&#45;&#45;muted">30</span></td>-->
+<!--                                        <td><span class="day day&#45;&#45;muted">31</span></td>-->
+<!--                                        <td><span class="day">1</span></td>-->
+<!--                                        <td><span class="day">2</span></td>-->
+<!--                                        <td><span class="day">3</span></td>-->
+<!--                                    </tr>-->
+<!--                                    <tr>-->
+<!--                                        <td><span class="day">4</span></td>-->
+<!--                                        <td><span class="day">5</span></td>-->
+<!--                                        <td><span class="day">6</span></td>-->
+<!--                                        <td><span class="day">7</span></td>-->
+<!--                                        <td><span class="day">8</span></td>-->
+<!--                                        <td>-->
+<!--                                            <span class="day day&#45;&#45;active day&#45;&#45;type-1">9</span>-->
+<!--                                        </td>-->
+<!--                                        <td><span class="day">10</span></td>-->
+<!--                                    </tr>-->
+<!--                                    <tr>-->
+<!--                                        <td><span class="day">11</span></td>-->
+<!--                                        <td><span class="day">12</span></td>-->
+<!--                                        <td><span class="day">13</span></td>-->
+<!--                                        <td><span class="day">14</span></td>-->
+<!--                                        <td><span class="day">15</span></td>-->
+<!--                                        <td><span class="day">16</span></td>-->
+<!--                                        <td><span class="day">17</span></td>-->
+<!--                                    </tr>-->
+<!--                                    <tr>-->
+<!--                                        <td><span class="day">18</span></td>-->
+<!--                                        <td><span class="day">19</span></td>-->
+<!--                                        <td>-->
+<!--                                            <span class="day day&#45;&#45;active day&#45;&#45;type-4">20</span>-->
+<!--                                        </td>-->
+<!--                                        <td><span class="day">21</span></td>-->
+<!--                                        <td><span class="day">22</span></td>-->
+<!--                                        <td><span class="day">23</span></td>-->
+<!--                                        <td><span class="day">24</span></td>-->
+<!--                                    </tr>-->
+<!--                                    <tr>-->
+<!--                                        <td><span class="day">25</span></td>-->
+<!--                                        <td><span class="day">26</span></td>-->
+<!--                                        <td><span class="day">27</span></td>-->
+<!--                                        <td><span class="day">28</span></td>-->
+<!--                                        <td><span class="day">29</span></td>-->
+<!--                                        <td><span class="day">30</span></td>-->
+<!--                                        <td><span class="day day&#45;&#45;muted">1</span></td>-->
+<!--                                    </tr>-->
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; Events Calendar / End &ndash;&gt;-->
+
+<!--                            &lt;!&ndash; Events List &ndash;&gt;-->
+<!--                            <ul class="alc-event-list list-unstyled">-->
+<!--                                <li class="alc-event-list__item alc-event-list-item alc-event-list-item&#45;&#45;type-1">-->
+<!--                                    <div class="alc-event-list-item__header">-->
+<!--                                        <time class="alc-event-list-item__date">Friday, September 9th</time>-->
+<!--                                    </div>-->
+<!--                                    <div class="alc-event-list-item__body">-->
+<!--                                        <div class="alc-event-list-item__time">09:00 PM</div>-->
+<!--                                        <div class="alc-event-list-item__info">-->
+<!--                                            <h6 class="alc-event-list-item__title"><a href="_esports_event-overview-1a.html">Game Huntress "Inktoon 2" Stream</a></h6>-->
+<!--                                            <p class="alc-event-list-item__desc">Join me to play the multiplayer</p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </li>-->
+<!--                                <li class="alc-event-list__item alc-event-list-item alc-event-list-item&#45;&#45;type-4">-->
+<!--                                    <div class="alc-event-list-item__header">-->
+<!--                                        <time class="alc-event-list-item__date">Tuesday, September 20th</time>-->
+<!--                                    </div>-->
+<!--                                    <div class="alc-event-list-item__body">-->
+<!--                                        <div class="alc-event-list-item__time">11:00 PM</div>-->
+<!--                                        <div class="alc-event-list-item__info">-->
+<!--                                            <h6 class="alc-event-list-item__title"><a href="_esports_event-overview-1b.html">Xenowatch Patch 5.6 Update Release</a></h6>-->
+<!--                                            <p class="alc-event-list-item__desc">Bug fixes and a new character!</p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                            &lt;!&ndash; Events List / End &ndash;&gt;-->
+<!--                        </div>-->
+<!--                    </aside>-->
+
+                </div>
+                <!-- Content / End -->
+
+                <!-- Sidebar -->
+                <div id="sidebar" class="sidebar col-lg-4">
+
+                    <!-- Widget: Social Buttons -->
+<!--                    <aside class="widget widget&#45;&#45;sidebar widget-social widget-social&#45;&#45;buttons">-->
+<!--                        <a href="#" class="btn-social-counter btn-social-counter&#45;&#45;facebook" target="_blank">-->
+<!--                            <div class="btn-social-counter__icon">-->
+<!--                                <i class="fab fa-facebook"></i>-->
+<!--                            </div>-->
+<!--                            <h6 class="btn-social-counter__title">Like Our Facebook Page</h6>-->
+<!--                            <span class="btn-social-counter__count"><span class="btn-social-counter__count-num"></span> Likes</span>-->
+<!--                            <span class="btn-social-counter__add-icon"></span>-->
+<!--                        </a>-->
+<!--                        <a href="#" class="btn-social-counter btn-social-counter&#45;&#45;twitter" target="_blank">-->
+<!--                            <div class="btn-social-counter__icon">-->
+<!--                                <i class="fab fa-twitter"></i>-->
+<!--                            </div>-->
+<!--                            <h6 class="btn-social-counter__title">Follow Us on Twitter</h6>-->
+<!--                            <span class="btn-social-counter__count"><span class="btn-social-counter__count-num"></span> Followers</span>-->
+<!--                            <span class="btn-social-counter__add-icon"></span>-->
+<!--                        </a>-->
+<!--                        <a href="#" class="btn-social-counter btn-social-counter&#45;&#45;twitch" target="_blank">-->
+<!--                            <div class="btn-social-counter__icon">-->
+<!--                                <i class="fab fa-twitch"></i>-->
+<!--                            </div>-->
+<!--                            <h6 class="btn-social-counter__title">Follow Us on Twitch</h6>-->
+<!--                            <span class="btn-social-counter__count"><span class="btn-social-counter__count-num"></span> Subs</span>-->
+<!--                            <span class="btn-social-counter__add-icon"></span>-->
+<!--                        </a>-->
+<!--                        <a href="#" class="btn-social-counter btn-social-counter&#45;&#45;youtube" target="_blank">-->
+<!--                            <div class="btn-social-counter__icon">-->
+<!--                                <i class="fab fa-youtube"></i>-->
+<!--                            </div>-->
+<!--                            <h6 class="btn-social-counter__title">Follow Us on YouTube</h6>-->
+<!--                            <span class="btn-social-counter__count"><span class="btn-social-counter__count-num"></span> Subs</span>-->
+<!--                            <span class="btn-social-counter__add-icon"></span>-->
+<!--                        </a>-->
+<!--                        <a href="#" class="btn-social-counter btn-social-counter&#45;&#45;rss" target="_blank">-->
+<!--                            <div class="btn-social-counter__icon">-->
+<!--                                <i class="fas fa-rss"></i>-->
+<!--                            </div>-->
+<!--                            <h6 class="btn-social-counter__title">Subscribe to Our RSS</h6>-->
+<!--                            <span class="btn-social-counter__count"><span class="btn-social-counter__count-num">840</span> Subs</span>-->
+<!--                            <span class="btn-social-counter__add-icon"></span>-->
+<!--                        </a>-->
+<!--                        <a href="#" class="btn-social-counter btn-social-counter&#45;&#45;instagram" target="_blank">-->
+<!--                            <div class="btn-social-counter__icon">-->
+<!--                                <i class="fab fa-instagram"></i>-->
+<!--                            </div>-->
+<!--                            <h6 class="btn-social-counter__title">Follow Us on Instagram</h6>-->
+<!--                            <span class="btn-social-counter__count"><span class="btn-social-counter__count-num"></span> Followers</span>-->
+<!--                            <span class="btn-social-counter__add-icon"></span>-->
+<!--                        </a>-->
+<!--                    </aside>-->
+                    <!-- Widget: Social Buttons / End -->
+
+                    <!-- Widget: Latest Results -->
+                    <aside class="widget card widget--sidebar widget-results">
+                        <div class="widget__title card__header card__header--has-btn">
+                            <h4>Latest Results</h4>
+                            <a href="https://docs.google.com/spreadsheets/d/1G1kARg7kT4lLAFW1Ih1y0J589yC7R3291xEnKBola2E/edit#gid=0" class="btn btn-default btn-xs card-header__button">See Full Results</a>
+                        </div>
+                        <div class="widget__content card__content">
+                            <dl class="widget-results__dl">
+
+                                <dt class="widget-results__dt widget-results__dt--category-4">
+                                    $2.5 Trio Invitational
+                                </dt>
+                                <dd class="widget-results__dd">
+                                    <ul class="widget-results__list">
+                                        <!-- Game #0 -->
+                                        <!-- Game #0 / End -->
+                                        <!-- Game #1 -->
+                                        <li class="widget-results__item">
+                                            <div class="widget-results__header justify-content-between">
+<!--                                                <div class="widget-results__league">L.O. Heroes Cup Qualifiers</div>-->
+                                                <div class="widget-results__title">September 11th, 2022</div>
+                                            </div>
+                                            <div class="widget-results__content">
+                                                <div class="widget-results__team widget-results__team--first">
+<!--                                                    <figure class="widget-results__team-logo">-->
+<!--                                                        <img src="assets/images/esports/logos/alchemists-22x25.png" alt="">-->
+<!--                                                    </figure>-->
+                                                    <div class="widget-results__team-details">
+                                                        <div>
+                                                        <h5 class="widget-results__team-name" style="text-align: center">sF</h5>
+                                                            <p>Laysket<br>Edding<br>Stef<br></p>
+                                                        </div>
+<!--                                                        <span class="widget-results__team-info">United States</span>-->
+                                                    </div>
+                                                </div>
+                                                <div class="widget-results__result">
+                                                    <div class="widget-results__score">
+                                                       <span class="widget-results__score-winner">98</span> <!-- - <span class="widget-results__score-loser">4</span>-->
+                                                    </div>
+                                                </div>
+<!--                                                <div class="widget-results__team widget-results__team&#45;&#45;second">-->
+<!--                                                    <figure class="widget-results__team-logo">-->
+<!--                                                        <img src="assets/images/samples/logos/icarus_wings_shield.png" alt="">-->
+<!--                                                    </figure>-->
+<!--                                                    <div class="widget-results__team-details">-->
+<!--                                                        <h5 class="widget-results__team-name">Icarus Wings</h5>-->
+<!--                                                        <span class="widget-results__team-info">Portugal</span>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+                                            </div>
+                                        </li>
+                                        <!-- Game #1 / End -->
+                                    </ul>
+                                </dd>
+
+
+                            </dl>
+                        </div>
+                    </aside>
+                    <!-- Widget: Latest Results / End -->
+
+                    <!-- Widget: Twitch Streams -->
+                    <aside class="widget widget--sidebar widget-twitch">
+                        <div class="twitch-streams">
+
+                            <!-- Stream #0 -->
+                            <div class="twitch-stream-wrapper">
+                                <a href="#" class="twitch-stream twitch-stream--featured twitch-stream--has-video card">
+                                    <div class="twitch-stream__overlay twitch-stream__overlay--bg0 effect-duotone effect-duotone--base"></div>
+<!--                                    <figure class="twitch-stream__img twitch-stream__img&#45;&#45;extra-top">-->
+<!--                                        <img src="assets/images/esports/samples/twitch-streamer-1.png" alt="">-->
+<!--                                    </figure>-->
+                                    <div class="twitch-stream__body">
+                                        <h6 class="twitch-stream__featured">Featured Stream</h6>
+                                        <h5 class="twitch-stream__title">Realm Royale</h5>
+                                        <div class="twitch-stream__info"></div>
+
+<!--                                        <div class="twitch-stream__status twitch-stream__status&#45;&#45;online">Live</div>-->
+
+                                    </div>
+                                </a>
+
+                                <div class="twitch-stream-video card">
+                                    <div class="card__content">
+                                        <iframe
+                                                src="https://player.twitch.tv/?channel=realmroyale&parent=realm.slickynicky.com"
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </aside>
+                    <!-- Widget: Twitch Streams / End -->
+
+                    <!-- Widget: Event Result -->
+<!--                    working on this to implement live latest games -->
+<!--                    <aside class="widget card widget&#45;&#45;sidebar widget-game-result">-->
+<!--                        <div class="widget__title card__header card__header&#45;&#45;has-btn">-->
+<!--                            <h4>Latest Game Result</h4>-->
+<!--                        </div>-->
+<!--                        <div class="widget__content card__content">-->
+<!--                            &lt;!&ndash; Game Score &ndash;&gt;-->
+<!--                            <div class="widget-game-result__section">-->
+<!--                                <div class="widget-game-result__section-inner">-->
+
+<!--                                    <header class="widget-game-result__header widget-game-result__header&#45;&#45;alt widget-game-result__header&#45;&#45;alt-compact mb-4">-->
+<!--                                        <h3 class="widget-game-result__title">zzzzz</h3>-->
+<!--                                        <time class="widget-game-result__date" datetime="2018-04-26">zzzzzzzz</time>-->
+<!--                                    </header>-->
+
+<!--                                    <header class="widget-game-result__header">-->
+<!--                                        <h3 class="widget-game-result__title">xxxxxxxxx</h3>-->
+<!--                                        <div class="widget-game-result__subtitle">Region: xxxxxxx</div>-->
+<!--                                    </header>-->
+
+<!--&lt;!&ndash;                                    <div class="widget-game-result__main">&ndash;&gt;-->
+<!--&lt;!&ndash;                                        &lt;!&ndash; 1st Team &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <div class="widget-game-result__team widget-game-result__team&#45;&#45;first">&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <figure class="widget-game-result__team-logo">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <a href="#"><img src="assets/images/esports/logos/alchemists-86x98.png" alt=""></a>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </figure>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <div class="widget-game-result__team-info">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <h5 class="widget-game-result__team-name">Alchemists</h5>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <div class="widget-game-result__team-desc">United States</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        &lt;!&ndash; 1st Team / End &ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;                                        <div class="widget-game-result__score-wrap">&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <div class="widget-game-result__score">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <span class="widget-game-result__score-result widget-game-result__score-result&#45;&#45;winner">2</span> <span class="widget-game-result__score-dash">-</span> <span class="widget-game-result__score-result widget-game-result__score-result&#45;&#45;loser">1</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <a href="https://www.youtube.com/watch?v=XE0fU9PCrWE" class="widget-game-result__score-video-icon mp_iframe" data-toggle="tooltip" data-placement="bottom" title="Watch Replay"><i class="fas fa-play"></i></a>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;                                        &lt;!&ndash; 2nd Team &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <div class="widget-game-result__team widget-game-result__team&#45;&#45;second">&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <figure class="widget-game-result__team-logo">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <a href="#"><img src="assets/images/esports/logos/pirates-114x98.png" alt=""></a>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </figure>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <div class="widget-game-result__team-info">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <h5 class="widget-game-result__team-name">L.A. Pirates</h5>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                <div class="widget-game-result__team-desc">United States</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        &lt;!&ndash; 2nd Team / End &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                                    </div>&ndash;&gt;-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; Game Score / End &ndash;&gt;-->
+
+<!--                            &lt;!&ndash; Game Statistics &ndash;&gt;-->
+<!--                            <div class="widget-game-result__section">-->
+<!--                                <header class="widget-game-result__subheader card__subheader card__subheader&#45;&#45;sm card__subheader&#45;&#45;nomargins">-->
+<!--                                    <h5 class="widget-game-result__subtitle">Match Statistics</h5>-->
+<!--                                </header>-->
+<!--                                <div class="widget-game-result__section-inner">-->
+
+<!--                                    &lt;!&ndash; Progress Stats Table &ndash;&gt;-->
+<!--                                    <table class="progress-table progress-table&#45;&#45;sm-space">-->
+<!--                                        <tbody>-->
+
+<!--                                        <tr>-->
+<!--                                            <td class="progress-table__progress-label progress-table__progress-label&#45;&#45;highlight">56</td>-->
+<!--                                            <td class="progress-table__progress-bar progress-table__progress-bar&#45;&#45;first">-->
+<!--                                                <div class="progress progress&#45;&#45;lines">-->
+<!--                                                    <div class="progress__bar" style="width: 60%;" role="progressbar" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--                                                </div>-->
+<!--                                            </td>-->
+<!--                                            <td class="progress-table__title">Total Kills</td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td class="progress-table__progress-label ">100</td>-->
+<!--                                            <td class="progress-table__progress-bar progress-table__progress-bar&#45;&#45;first">-->
+<!--                                                <div class="progress progress&#45;&#45;lines">-->
+<!--                                                    <div class="progress__bar" style="width: 50%;" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--                                                </div>-->
+<!--                                            </td>-->
+<!--                                            <td class="progress-table__title">Total Deaths</td>-->
+
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td class="progress-table__progress-label progress-table__progress-label&#45;&#45;highlight">14</td>-->
+<!--                                            <td class="progress-table__progress-bar progress-table__progress-bar&#45;&#45;first">-->
+<!--                                                <div class="progress progress&#45;&#45;lines">-->
+<!--                                                    <div class="progress__bar" style="width: 70%;" role="progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--                                                </div>-->
+<!--                                            </td>-->
+<!--                                            <td class="progress-table__title">Damage Dealt</td>-->
+
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td class="progress-table__progress-label progress-table__progress-label&#45;&#45;highlight">19</td>-->
+<!--                                            <td class="progress-table__progress-bar progress-table__progress-bar&#45;&#45;first">-->
+<!--                                                <div class="progress progress&#45;&#45;lines">-->
+<!--                                                    <div class="progress__bar" style="width: 60%;" role="progressbar" aria-valuenow="19" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--                                                </div>-->
+<!--                                            </td>-->
+<!--                                            <td class="progress-table__title">Damage Taken</td>-->
+
+<!--                                        </tr>-->
+
+<!--                                        </tbody>-->
+<!--                                    </table>-->
+<!--                                    &lt;!&ndash; Progress Stats Table / End &ndash;&gt;-->
+
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; Game Statistics / End &ndash;&gt;-->
+
+<!--                        </div>-->
+<!--                    </aside>-->
+                    <!-- Widget: Event Result / End -->
+
+                    <!-- Widget: Trending News -->
+                    <!-- Widget: Trending News / End -->
+
+                    <!-- Widget: Events Calendar -->
+                    <!-- Widget: Events Calendar / End -->
+
+                    <!-- Widget: Match Announcement -->
+                    <!-- Widget: Match Announcement / End -->
+
+                </div>
+                <!-- Sidebar / End -->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Content / End -->
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer id="footer" class="footer">
+
+        <!-- Widget: Instagram Section -->
+        <!-- Widget: Instagram Section / End -->
+
+        <!-- Sponsors / End -->
+
+
+        <!-- Footer Widgets -->
+        <div class="footer-widgets effect-duotone effect-duotone--base">
+            <div class="footer-widgets__inner">
+                <div class="container">
+
+                </div>
+            </div>
+
+        </div>
+        <!-- Footer Widgets / End -->
+
+        <!-- Footer Social Links -->
+        <div class="footer-social">
+            <div class="container">
+                <ul class="footer-social__list list-unstyled">
+
+                    <li class="footer-social__item">
+                        <a href="https://twitter.com/SlickyNicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitter"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitter</span>
+                                <span class="footer-social__user">@SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.twitch.tv/slickynicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitch"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitch</span>
+                                <span class="footer-social__user">SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.youtube.com/c/slickynicky" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-youtube"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">YouTube</span>
+                                <span class="footer-social__user">SlickyNicky</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- Footer Social Links / End -->
+    </footer>
+    <!-- Footer / End -->
+
 </div>
 
+<!-- Javascript Files
+================================================== -->
+<!-- Core JS -->
+<script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/jquery/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/core.js"></script>
 
-<!-- Footer -->
-<footer class="footer">
-
-    <p style="color:white">Created by Realm Royale Community Member <a href="https://twitch.tv/slickynicky00"><u style="color:white">SlickyNicky</u></a></p>
-</footer>
+<!-- Vendor JS -->
+<script src="/assets/vendor/twitter/jquery.twitter.js"></script>
+<script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
 
 
+<!-- Template JS -->
+<script src="/assets/js/init.js"></script>
+<script src="/assets/js/custom.js"></script>
 
 </body>
-<script src="../scripts/scribbler.js"></script>
-
 </html>

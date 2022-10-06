@@ -177,85 +177,7 @@ app.use(express.json());
 app.use(subdomain('realm', routerNonProd));
 // app.use(subdomain('*', router));
 
-router.post('/stats', async function (req, res) {
-    res.redirect(303, `/stats/${req.body.search}`)
-});
 
-router.get('/stats*', async (req, res) => {
-    let playerUrl = (req.originalUrl).split('/stats/')[1]
-    if (playerUrl !== undefined && playerUrl !== '') {
-        let playerStats;
-        let playerOverview;
-        let playerId;
-        let playerLastFifty;
-        // playerId = (await database.callApi("SearchPlayers", true, playerUrl))[0]['id']
-        playerId = (await database.callApi("SearchPlayers", true, 'SearchPlayers', playerUrl))[0]
-
-        //    name
-
-        try {
-            // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
-            if (playerId['name'] !== `${playerUrl}`) {
-                playerId = playerUrl
-            } else {
-                playerId = playerId['id']
-            }
-        } catch (e) {
-            playerId = playerUrl
-        }
-
-        playerStats = await database.callApi("GetPlayerStats", true, 'GetPlayerStats', playerId)
-        playerOverview = (await database.callApi("GetPlayer", true, 'GetPlayer', playerId, "HIREZ"))
-        playerLastFifty = (await database.callApi("GetPlayerMatchHistory", true, 'GetPlayerMatchHistory', playerId))
-        req.session.findPlayerLastFifty = playerLastFifty
-
-        req.session.findPlayerOverview = playerOverview
-
-        let agStats = playerStats["aggregate_stats"]
-
-        let queueStats = playerStats["queue_class_stats"]
-        req.session.findPlayerStatsOverall = agStats
-
-        let output = {}
-        for (const queue in queueStats) {
-            let match_queue_id = queueStats[queue]['match_queue_id'];
-
-            for (const stats in queueStats[queue]['stats']) {
-                if (stats === 'placement_list' || stats === 'placements') {
-                    // I'd rather die than go through this aswell
-                    continue
-                }
-
-                if (output[match_queue_id] === undefined) {
-                    output[match_queue_id] = {}
-                }
-                let before = output[match_queue_id][stats];
-                if (before === undefined) {
-                    before = 0
-                }
-
-                output[match_queue_id][stats] = before + queueStats[queue]['stats'][stats]
-            }
-        }
-        req.session.findPlayerStats = output
-        res.render('stats', {
-            query: req.session.findPlayerStats,
-            aggQuery: req.session.findPlayerStatsOverall,
-            playerOverview: req.session.findPlayerOverview,
-            playerLastFifty: req.session.findPlayerLastFifty
-        });
-    } else {
-        res.render('stats', {
-            query: req.session.findPlayerStats,
-            aggQuery: req.session.findPlayerStatsOverall,
-            playerOverview: req.session.findPlayerOverview,
-            playerLastFifty: req.session.findPlayerLastFifty
-        });
-    }
-
-    req.session.destroy(); //might need this in the future for steam things esp?
-
-});
 
 router.get('/auth/steam',
     passport.authenticate('steam', {failureRedirect: '/'}),
@@ -277,8 +199,9 @@ router.get('/logout', function (req, res) {
     });
 });
 
+
 routerNonProd.get('/', cache(30000), (req, res) => {
-    res.render('indexTemp', {user: req.user, database: database});
+    res.render('index', {user: req.user, database: database});
 });
 
 routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
@@ -420,7 +343,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
 
                 tourneyOverview['sortByLowestPoints'] = (tourneyOverview['sortByLowestPoints'] === 1)
 
-                res.render('orgTourneyTemp', {
+                res.render('orgTourney', {
                     tourneySetupOption: false,
                     editor: true,
                     viewer: true,
@@ -559,7 +482,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
 
 
             // tourney viewer / spectator
-            res.render('orgTourneyTemp', {
+            res.render('orgTourney', {
                 viewer: true,
                 editor: false,
                 tourneySetupOption: false,
@@ -579,7 +502,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
         }
     } else {
         // this means you looking at homepage with no tourney in sight
-        res.render('orgTourneyTemp', {
+        res.render('orgTourney', {
             tourneySetupOption: true,
             editor: true,
             viewer: false,
@@ -1007,7 +930,7 @@ routerNonProd.get('/mmr*', cache(15000), async (req, res) => {
 
             req.session.bestPlayers = sortTopPlayers(await database.mmrGetTopPlayersTemp())
 
-            res.render('mmrTemp', {
+            res.render('mmr', {
                 displayStats: true,
                 queueStats: req.session.findPlayerStatsOverall,
                 bestPlayers: req.session.bestPlayers,
@@ -1017,7 +940,7 @@ routerNonProd.get('/mmr*', cache(15000), async (req, res) => {
             let topPlayerMMRStats = await database.mmrGetTopPlayersTemp()
             req.session.bestPlayers = sortTopPlayers(topPlayerMMRStats)
 
-            res.render('mmrTemp', {
+            res.render('mmr', {
                 displayStats: false,
                 queueStats: '',
                 bestPlayers: req.session.bestPlayers,
@@ -1032,7 +955,7 @@ routerNonProd.get('/mmr*', cache(15000), async (req, res) => {
         req.session.bestPlayers = sortTopPlayers(topPlayerMMRStats)
 
 
-        res.render('mmrTemp', {
+        res.render('mmr', {
             displayStats: false,
             queueStats: '',
             bestPlayers: req.session.bestPlayers,
