@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <title>Realm Royale Hub</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A place for everything realm royale!">
+    <meta name="author" content="Dan Fisher">
+    <meta name="keywords" content="sports club news HTML template">
+
+    <!-- Favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="/assets/images/esports/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/esports/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/esports/favicons/favicon-152.png">
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+
+    <!-- Google Web Fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&amp;family&#x3D;Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&amp;display&#x3D;swap"
+          rel="stylesheet">
+
+    <!-- CSS
+    ================================================== -->
+    <!-- Vendor CSS -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="/assets/fonts/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="/assets/vendor/slick/slick.css" rel="stylesheet">
+
+
+    <!-- Template CSS-->
+    <link href="/assets/css/style-esports.css" rel="stylesheet">
+
+    <!-- Custom CSS-->
+    <link href="/assets/css/custom.css" rel="stylesheet">
+
+
+    <script>
+        var form = document.getElementById("search");
+
+        function handleForm(event) {
+            event.preventDefault();
+        }
+
+        form.addEventListener('submit', handleForm);
+    </script>
+
+</head>
+<body data-template="template-esports">
+<% function split(string, delimiter, n) {
+    const parts = string.split(delimiter);
+    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
+}
+%>
+
+<div class="site-wrapper clearfix">
+    <div class="site-overlay"></div>
+
+    <!-- Header
+    ================================================== -->
+
+    <!-- Header Mobile -->
+    <div class="header-mobile clearfix" id="header-mobile">
+        <div class="header-mobile__logo">
+            <a href="/"><img src="assets/images/esports/logoTemp1.png" srcset="assets/images/esports/logoTemp1.png 1.0x"
+                             alt="Realm Royale Logo"
+                             class="header-mobile__logo-img"></a>
+        </div>
+        <div class="header-mobile__inner">
+            <a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a>
+        </div>
+    </div>
+    <!-- Header Mobile / End -->
+
+    <!-- Header Desktop -->
+    <header class="header header--layout-3">
+
+        <!-- Header Top Bar -->
+        <div class="header__top-bar clearfix">
+        </div>
+        <!-- Header Top Bar / End -->
+
+        <!-- Header Primary -->
+        <!-- Header Primary -->
+        <div class="header__primary">
+            <div class="container">
+                <div class="header__primary-inner">
+
+                    <!-- Header Logo -->
+                    <div class="header-logo">
+                        <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                                         srcset="/assets/images/esports/logoTemp1.png 4x" alt="Realm Refroged Logo"
+                                         class="header-logo__img"></a>
+                    </div>
+                    <!-- Header Logo / End -->
+
+                    <!-- Main Navigation -->
+                    <nav class="main-nav">
+                        <ul class="main-nav__list">
+                            <li class=""><a href="/">Home</a>
+                            </li>
+                            <li class=""><a href="/mmr">MMR</a>
+                                <!-- Mega Menu -->
+                                <!-- Mega Menu / End -->
+                            </li>
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Lookup</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/stats">Player Stats</a></li>
+                                    <li class=""><a href="/match">Match Details</a></li>
+                                </ul>
+                            </li>
+                            <!-- Mega Menu / End -->
+
+                            <li class="active">
+                                <a href="#" style="pointer-events: none;">Organize Events</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/orgLeagueTemp">Organize League</a></li>
+                                    <li class="active"><a href="/orgTourneyTemp">Organize Tourney</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- Main Navigation / End -->
+
+                    <div class="header__primary-spacer"></div>
+
+                    <!-- Header Search Form -->
+
+                    <!-- Header Search Form / End -->
+
+                    <!-- Header Info Block -->
+
+                    <!-- Header Info Block / End -->
+
+                </div>
+            </div>
+        </div>
+        <!-- Header Primary / End -->
+        <!-- Header Primary / End -->
+
+    </header>
+    <!-- Header / End -->
+
+
+    <!-- Content
+    ================================================== -->
+    <div class="site-content">
+        <div class="container" style="max-width: 1000px">
+
+            <!-- Breaking News -->
+            <!-- Breaking News / End -->
+            <% if(tourneySetupOption) { %>
+                <div class="card">
+                    <div class="card__header">
+                        <h4 style="font-size: 1.5rem">Create Tournament</h4>
+                    </div>
+                    <div class="card__content">
+
+                        <!-- Login Form -->
+                        <form action='/orgtourney' id="search" method='post'>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="search" style="font-size: 1.1rem">Name Of Tourney</label>
+                                        <input type="text" name="search" id="search" class="form-control"
+                                               placeholder="Enter the name of the tournament">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="queueType" style="font-size: 1.1rem">Queue Type</label>
+                                        <select name="queueType" id="queueType" class="form-control">
+                                            <option value="Solos">Solo's</option>
+                                            <option value="Duos">Duo's</option>
+                                            <option value="Trios">Trio's</option>
+                                            <option value="Squads">Squad's</option>
+                                            <option value="Custom Solos">Custom Solo's</option>
+                                            <option value="Custom Duos">Custom Duo's</option>
+                                            <option value="Custom Trios">Custom Trio's</option>
+                                            <option value="Custom Squads">Custom Squad's</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="gameAmount" style="font-size: 1.1rem">Total Games In
+                                            Tournament
+                                        </label>
+                                        <input type="text" name="gameAmount" id="gameAmount"
+                                               class="form-control" placeholder="Enter amount of games in tournament">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="bestOfAmount" style="font-size: 1.1rem">Best Of Games</label>
+                                        <input type="text" name="bestOfAmount" id="bestOfAmount"
+                                               class="form-control"
+                                               placeholder="If you want to only score the top games enter the amount">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="pointsPerKill" style="font-size: 1.1rem">Points Per Kill - or
+                                            +</label>
+                                        <input type="text" name="pointsPerKill" id="pointsPerKill"
+                                               class="form-control"
+                                               placeholder="Amount of points per kill per person">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="placementPoints">
+                                        <label for="placementPoints" style="font-size: 1.1rem">
+                                            Points for placement
+                                        </label>
+                                        <input type="text" name="placementPoints" id="placementPoints"
+                                               class="form-control"
+                                               placeholder="Points seperated by comma 1st-2nd->etc... (eg. 12,9,7,5,3,3,2,1)">
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group form-group--sm"
+                                 style="max-width: 300px;margin-left: auto;margin-right: auto;">
+                                <div class="place-order">
+                                    <input type="submit" class="btn btn-primary-inverse btn-block"
+                                           value="Create Tournament!" style="font-size: 1.1rem">
+                                </div>
+                            </div>
+
+                        </form>
+                        <!-- Login Form / End -->
+
+                    </div>
+                </div>
+            <% } %>
+
+            <% if(viewer){ %>
+                <div class="card">
+                    <div class="card__header">
+                        <h4 style="font-size: 1.75rem">Tournament Information</h4>
+                    </div>
+                    <div class="card__content"
+                         style="margin-top: -50px;margin-bottom: -50px;margin-right: -75px;margin-left: -75px">
+                        <div class="widget__content card__content">
+
+                            <!-- Game Statistics -->
+                            <div class="widget-game-result__section">
+
+                                <div class="widget-game-result__section-inner">
+
+                                    <div class=" card__header--has-btn" style="">
+                                        <ul style="
+                                                      display: grid;
+                                                      grid-template-columns: repeat(auto-fit, 15rem);
+                                                      grid-gap: 2rem;
+                                                      justify-content: space-between;
+                                                      align-content: flex-start;
+                                                      list-style: none;
+                                                      margin-right: 0rem;
+                                                      overflow: auto;
+                                        ">
+
+                                            <%
+                                                let count = 0;
+                                                    for(const [key, value] of Object.entries(tourneyOverviewInfo)) {
+                                            %>
+
+                                                <% if (count === 0) {
+                                                    count += 1
+                                                    continue
+                                                } %>
+                                                <li style="word-break: normal;">
+
+                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                        <%= key %>:
+                                                    </h3>
+                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                        <%= decodeURI(value) %>
+                                                    </h3>
+                                                </li>
+                                            <% } %>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Progress Stats Table / End -->
+
+                                </div>
+                            </div>
+                            <!-- Game Statistics / End -->
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card">
+                    <div class="card__header">
+                        <h4 style="font-size: 1.75rem">Tournament Rankings</h4>
+                    </div>
+                    <div class="card__content"
+                         style="margin-top: -50px;margin-bottom: -50px;margin-right: -75px;margin-left: -75px">
+                        <div class="widget__content card__content">
+
+                            <!-- Game Statistics -->
+                            <div class="widget-game-result__section">
+
+                                <div class="widget-game-result__section-inner">
+
+                                    <div class=" card__header--has-btn" style="">
+                                        <ul style="
+                                                      display: grid;
+                                                      grid-template-columns: repeat(auto-fit, 15rem);
+                                                      grid-gap: 2rem;
+                                                      justify-content: space-between;
+                                                      align-content: flex-start;
+                                                      list-style: none;
+                                                      overflow: auto;
+                                        ">
+
+                                            <%
+                                                let placementCounter = 0;
+                                                    for (const [key, value] of Object.entries(placementTeamAndPoints)) {
+                                                placementCounter += 1;
+                                            %>
+                                            <li style="word-break: normal;">
+
+
+
+                                                <div class="dropdown">
+                                                    <button class="dropbtn" style="pointer-events: none;">Best Games</button>
+                                                    <div class="dropdown-content">
+                                                        <%for(const matchDetails in highestGamesForTeam[key] ){%>
+                                                            <a href="/match/<%=highestGamesForTeam[key][matchDetails]['queueID']%>">
+                                                                Points: <%=highestGamesForTeam[key][matchDetails]['points']%>
+                                                                &nbsp;&nbsp;&nbsp;
+                                                                Match: <%=highestGamesForTeam[key][matchDetails]['queueID']%>
+                                                            </a>
+                                                        <%}%>
+<!--                                                        <a href="#">Link 2</a>-->
+<!--                                                        <a href="#">Link 3</a>-->
+                                                    </div>
+                                                </div>
+
+
+
+
+                                                <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                    Placement: <%= placementCounter %> |
+                                                    Points: <%= decodeURI(value) %>
+                                                </h3>
+
+                                                <%
+                                                    let names = split(split(key, ' ', 2)[1], '|  ', 8)
+                                                        for(const name in names) {
+                                                    let removeFirst = names[name].substring(1)
+                                                if(parseInt(name) === parseInt(names.length - 2)) { %>
+                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                        <%= removeFirst.slice(0, -2); %>
+                                                    </h3>
+                                                <%
+                                                } else { %>
+                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                        <%= removeFirst %>
+                                                        <br>
+                                                    </h3>
+                                                <% } %>
+
+                                                <% } %>
+
+                                            </li>
+
+                                            <% } %>
+                                        </ul>
+                                    </div>
+                                    <!-- Progress Stats Table / End -->
+
+                                </div>
+                            </div>
+                            <!-- Game Statistics / End -->
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="card">
+                    <div class="card__header">
+                        <h4 style="font-size: 1.75rem">Overview Of Games</h4>
+                    </div>
+                    <div class="card__content"
+                         style="margin-top: -50px;margin-bottom: -50px;margin-right: -75px;margin-left: -75px">
+                        <div class="widget__content card__content">
+
+                            <!-- Game Statistics -->
+                            <div class="widget-game-result__section">
+
+                                <div class="widget-game-result__section-inner">
+
+                                    <div class=" card__header--has-btn" style="">
+                                        <ul style="
+                                                      display: grid;
+                                                      grid-template-columns: repeat(auto-fit, 15rem);
+                                                      grid-gap: 2rem;
+                                                      justify-content: space-between;
+                                                      align-content: flex-start;
+                                                      list-style: none;
+                                                      overflow: auto;
+                                        ">
+
+                                            <%
+                                            for(let i = tourneyOverviewInfo['amountOfGames'];i > 0;i--) {
+                                            %>
+                                                <div class="stats_overview" id="stats_overview"
+                                                     style="margin-left: -12.5px">
+
+                                                    <h1 class="stats_overview_heading"
+                                                        style="margin-bottom: -5px;font-size: 2rem">Game <%= i %></h1>
+
+                                                    <% if (editor) { %>
+
+
+                                                        <form action='/orgtourneyAddQueue' id="search" method='post'>
+
+
+                                                            <input type="hidden" id="matchNum" name="matchNum"
+                                                                   style="display: none;"
+                                                                   value=<%= i %>>
+                                                            <input type="hidden" id="urlpath" name="urlpath"
+                                                                   style="display: none;"
+                                                                   value=<%= privateLink %>>
+
+                                                            <% if (totalGamesOutputInfo.get(i) !== undefined) { %>
+                                                            <label for="queueId">Add/Modify
+                                                                QueueID: <%= decodeURIComponent(totalGamesOutputInfo.get(i)['queueId']) %></label>
+                                                            <% } else { %>
+                                                                <label for="queueId">Add/Modify QueueID: </label>
+
+                                                            <% } %>
+
+                                                            <br>
+                                                            <input class='form-control' type="text" id="queueId"
+                                                                   name="queueId"
+                                                                   style="max-width: 130px;display: inline-block">
+                                                            <input class='form-control' type="submit"
+                                                                   style="max-width: 100px;display: inline-block"
+                                                                   value="Submit">
+
+
+                                                        </form>
+
+                                                    <% } %>
+
+                                                    </p>
+                                                </div>
+
+                                            <% } %>
+
+                                        </ul>
+                                    </div>
+
+                                    <!-- Progress Stats Table / End -->
+
+                                </div>
+                            </div>
+                            <!-- Game Statistics / End -->
+
+
+                        </div>
+                    </div>
+                </div>
+
+            <% } %>
+
+        </div>
+    </div>
+
+    <!-- Content / End -->
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer id="footer" class="footer">
+
+        <!-- Widget: Instagram Section -->
+        <!-- Widget: Instagram Section / End -->
+
+        <!-- Sponsors / End -->
+
+
+        <!-- Footer Widgets -->
+
+        <!-- Footer Widgets / End -->
+
+        <!-- Footer Social Links -->
+        <div class="footer-social" style="position:fixed;bottom:0;width: 100%">
+            <div class="container">
+                <ul class="footer-social__list list-unstyled">
+                    <li class="footer-social__item">
+                        <a href="https://twitter.com/SlickyNicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitter"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitter</span>
+                                <span class="footer-social__user">@SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.twitch.tv/slickynicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitch"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitch</span>
+                                <span class="footer-social__user">SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.youtube.com/c/slickynicky" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-youtube"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">YouTube</span>
+                                <span class="footer-social__user">SlickyNicky</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer Social Links / End -->
+    </footer>
+    <!-- Footer / End -->
+
+</div>
+
+<!-- Javascript Files
+================================================== -->
+<!-- Core JS -->
+<script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/jquery/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/core.js"></script>
+
+<!-- Vendor JS -->
+<script src="/assets/vendor/twitter/jquery.twitter.js"></script>
+<script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
+
+
+<!-- Template JS -->
+<script src="/assets/js/init.js"></script>
+<script src="/assets/js/custom.js"></script>
+
+</body>
+</html>

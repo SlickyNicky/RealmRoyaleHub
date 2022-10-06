@@ -1,0 +1,62 @@
+/*
+File Name: 		custom.css
+Description:  You can add your custom CSS here and it will overwrite template styles
+*/
+
+/*# sourceMappingURL=maps/custom.css.map */
+
+.header__primary {
+    background-color: white !important;
+    color: white !important;
+}
+
+
+
+/* Dropdown Button */
+.dropbtn {
+    background-color: #9072bb;
+    color: white;
+    padding: 14px;
+    font-size: 14px;
+    border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.75rem;
+    padding-top: -0.75rem;
+
+    /*display: none;*/
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 280px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    max-height: 250px;
+
+    overflow: auto;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #685287;}

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <title>Realm Royale Hub</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A place for everything realm royale!">
+    <meta name="author" content="Dan Fisher">
+    <meta name="keywords" content="sports club news HTML template">
+
+    <!-- Favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="/assets/images/esports/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/esports/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/esports/favicons/favicon-152.png">
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+
+    <!-- Google Web Fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&amp;family&#x3D;Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&amp;display&#x3D;swap"
+          rel="stylesheet">
+
+    <!-- CSS
+    ================================================== -->
+    <!-- Vendor CSS -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="/assets/fonts/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="/assets/vendor/slick/slick.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+
+
+    <!-- Template CSS-->
+    <link href="/assets/css/style-esports.css" rel="stylesheet">
+
+    <!-- Custom CSS-->
+    <link href="/assets/css/custom.css" rel="stylesheet">
+
+
+    <script>
+        var form = document.getElementById("search");
+
+        function handleForm(event) {
+            event.preventDefault();
+        }
+
+        form.addEventListener('submit', handleForm);
+    </script>
+
+</head>
+<body data-template="template-esports">
+<% function split(string, delimiter, n) {
+    const parts = string.split(delimiter);
+    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
+}
+%>
+
+<div class="site-wrapper clearfix">
+    <div class="site-overlay"></div>
+
+    <!-- Header
+    ================================================== -->
+
+    <!-- Header Mobile -->
+    <div class="header-mobile clearfix" id="header-mobile">
+        <div class="header-mobile__logo">
+            <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                             srcset="/assets/images/esports/logoTemp1.png 1.0x" alt="Alchemists"
+                             class="header-mobile__logo-img"></a>
+        </div>
+        <div class="header-mobile__inner">
+            <a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a>
+            <button type="submit" class="header-mobile__search-submit" style="width: 3rem;height: 5rem"><i
+                        class="fas fa-search"></i></button>
+        </div>
+    </div>
+    <!-- Header Mobile / End -->
+
+    <!-- Header Desktop -->
+    <header class="header header--layout-3">
+
+        <!-- Header Top Bar -->
+        <div class="header__top-bar clearfix">
+        </div>
+        <!-- Header Top Bar / End -->
+
+        <!-- Header Primary -->
+        <!-- Header Primary -->
+        <div class="header__primary">
+            <div class="container">
+                <div class="header__primary-inner">
+
+                    <!-- Header Logo -->
+                    <div class="header-logo">
+                        <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                                         srcset="/assets/images/esports/logoTemp1.png 4x" alt="Realm Refroged Logo"
+                                         class="header-logo__img"></a>
+                    </div>
+                    <!-- Header Logo / End -->
+
+                    <!-- Main Navigation -->
+                    <nav class="main-nav">
+                        <ul class="main-nav__list">
+                            <li class=""><a href="/">Home</a>
+                            </li>
+                            <li class=""><a href="/mmr">MMR</a>
+                                <!-- Mega Menu -->
+                                <!-- Mega Menu / End -->
+                            </li>
+
+                            <li class="active">
+                                <a href="#" style="pointer-events: none;">Lookup</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/stats">Player Stats</a></li>
+                                    <li class="active"><a href="/match">Match Details</a></li>
+                                </ul>
+                            </li>
+                            <!-- Mega Menu / End -->
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Organize Events</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/orgLeagueTemp">Organize League</a></li>
+                                    <li class=""><a href="/orgTourneyTemp">Organize Tourney</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- Main Navigation / End -->
+
+                    <div class="header__primary-spacer"></div>
+
+                    <!-- Header Search Form -->
+
+                    <!-- Header Search Form / End -->
+
+                    <!-- Header Info Block -->
+
+                    <!-- Header Info Block / End -->
+
+                </div>
+            </div>
+        </div>
+        <!-- Header Primary / End -->
+        <!-- Header Primary / End -->
+
+    </header>
+    <!-- Header / End -->
+
+
+    <div class="container" style="align-items: center;text-align: center;padding-top: 50px">
+        <div class="header-search-form" style="width: 30rem">
+            <form action="/match" id="search" class="search-form" method='post'>
+                <input type="text" id="search" name="search" class="form-control" value=""
+                       placeholder="Enter Match Number " style="width: 30rem;height: 5rem;font-size: 1.25rem">
+                <button type="submit" class="header-mobile__search-submit" style="width: 3rem;height: 5rem"><i
+                            class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Content
+    ================================================== -->
+    <%if(renderDetails){%>
+    <div class="site-content">
+        <div class="container" style="max-width: 1000px">
+
+            <div class="card card--has-table">
+                <div class="card__header">
+                    <h4>Match Stats</h4>
+                    <div class="widget-results__title">Region: <%= matchDetails['region'] %></div>
+                    <div class="widget-results__title">Match ID: <%= matchDetails['match_id'] %></div>
+
+                    <div class="widget-results__title">
+                        <div class="widget-results__title">
+
+                            Date: <%= matchDetails['match_datetime'].split('T')[0] %>
+                        </div>
+                        <div class="widget-results__title">
+
+                            <%
+                            theDate = new Date(Date.parse(matchDetails['match_datetime'] + 'Z'));
+                            %>
+
+                            Time: <%= theDate.toLocaleTimeString() %> UTC
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card__content">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="example"
+                               style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center">
+                            <thead>
+                            <tr>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Placement
+                                </th>
+                                <th class="team-result__timealive" style="text-align: center;font-size: 18px" >Seconds Alive</th>
+                                <th class="team-result__vs" style="max-width: 20px;word-break: break-all;font-size: 18px">Players</th>
+                                <th class="team-result__kills" style="text-align: center;font-size: 18px">Kills</th>
+                                <th class="team-result__deaths" style="text-align: center;font-size: 18px">Deaths</th>
+                                <th class="team-result__assists" style="text-align: center;font-size: 18px">Damage</th>
+                                <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Damage Taken</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <% for(const team in matchDetails['teams']){ %>
+                                <tr>
+                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                            <%= matchDetails['teams'][team]['placement'] %>
+                                    </td>
+                                    <td class="team-result__date" style="font-size: 16px">
+                                        <%= matchDetails['teams'][team]['players'][0]['duration_secs'] %>
+                                    </td>
+
+                                    <td class="team-result__outcome" style="max-width: 150px;word-break: break-all;" >
+                                        <div class="team-result__teams-wrapper">
+                                            <!-- Team #1 -->
+                                            <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px">
+                                                        <% for(const player in matchDetails['teams'][team]['players']){ %>
+                                                                <%= matchDetails['teams'][team]['players'][player]['name'] %>
+                                                    <br>
+                                                        <% } %>
+                                            </div>
+                                            <!-- Team #1 / End -->
+
+
+                                        </div>
+                                    </td>
+                                    <%
+                                        // I hate doing this twice, but
+                                        // we need the total points to help table sorting if needed
+                                    let totalKills = 0;
+
+                                    for(const player in matchDetails['teams'][team]['players']) {
+                                        totalKills+= matchDetails['teams'][team]['players'][player]['kills_player']
+                                    }
+
+                                    %>
+                                    <td data-order="<%=totalKills%>" class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
+                                         <% for(const player in matchDetails['teams'][team]['players']){ %>
+                                                        <%= matchDetails['teams'][team]['players'][player]['kills_player'] %>
+                                            <br>
+
+                                        <% } %>
+                                    </td>
+                                    <%
+                                        // I hate doing this twice, but
+                                        // we need the total points to help table sorting if needed
+                                        let totalDeaths = 0;
+
+                                        for(const player in matchDetails['teams'][team]['players']) {
+                                            totalDeaths+= matchDetails['teams'][team]['players'][player]['deaths']
+                                        }
+
+                                    %>
+                                    <td data-order="<%=totalDeaths%>" class="team-result__deaths team-meta__name team-color--2" style="font-size: 16px">
+                                            <% for(const player in matchDetails['teams'][team]['players']){ %>
+                                                    <%= matchDetails['teams'][team]['players'][player]['deaths'] %>
+                                            <br>
+
+                                        <% } %>
+                                    </td>
+
+
+                                    <%
+                                        // I hate doing this twice, but
+                                        // we need the total points to help table sorting if needed
+                                        let totalDamage = 0;
+
+                                        for(const player in matchDetails['teams'][team]['players']) {
+                                            totalDamage+= matchDetails['teams'][team]['players'][player]['damage_player']
+                                        }
+
+                                    %>
+                                    <td data-order="<%=totalDamage%>" class="team-result__assists team-meta__name team-color--2" style="font-size: 16px">
+                                            <% for(const player in matchDetails['teams'][team]['players']){ %>
+                                                    <%= matchDetails['teams'][team]['players'][player]['damage_player'] %>
+                                            <br>
+
+                                        <% } %>
+                                    </td>
+
+                                    <%
+                                        // I hate doing this twice, but
+                                        // we need the total points to help table sorting if needed
+                                        let totalDamageTaken = 0;
+
+                                        for(const player in matchDetails['teams'][team]['players']) {
+                                            totalDamageTaken+= matchDetails['teams'][team]['players'][player]['damage_taken']
+                                        }
+
+                                    %>
+                                    <td data-order="<%=totalDamageTaken%>" class="team-result__absorbed team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
+                                            <% for(const player in matchDetails['teams'][team]['players']){ %>
+                                                    <%= matchDetails['teams'][team]['players'][player]['damage_taken'] %>
+                                            <br>
+
+                                        <% } %>
+                                    </td>
+                                    <!--                                <td class="team-result__replay">-->
+                                    <!--                                    <a href="#" class="btn btn-xs btn-default-alt btn-single-icon btn-circle" data-toggle="tooltip" data-placement="top" title="Watch Replay"><i class="fas fa-play"></i></a>-->
+                                    <!--                                </td>-->
+                                </tr>
+                            <% } %>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Last Matches Stats / End -->
+
+
+        </div>
+    </div>
+    <%}%>>
+
+    <!-- Content / End -->
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer id="footer" class="footer">
+
+        <!-- Widget: Instagram Section -->
+        <!-- Widget: Instagram Section / End -->
+
+        <!-- Sponsors / End -->
+
+
+        <!-- Footer Widgets -->
+
+        <!-- Footer Widgets / End -->
+
+        <!-- Footer Social Links -->
+        <%if(renderDetails === false){%>
+        <div class="footer-social" style="position:fixed;bottom:0;width: 100%">
+            <div class="container">
+                <ul class="footer-social__list list-unstyled">
+
+                    <li class="footer-social__item">
+                        <a href="https://twitter.com/SlickyNicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitter"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitter</span>
+                                <span class="footer-social__user">@SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.twitch.tv/slickynicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitch"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitch</span>
+                                <span class="footer-social__user">SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.youtube.com/c/slickynicky" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-youtube"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">YouTube</span>
+                                <span class="footer-social__user">SlickyNicky</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <%}else{%>
+            <div class="footer-social">
+                <div class="container">
+                    <ul class="footer-social__list list-unstyled">
+
+                        <li class="footer-social__item">
+                            <a href="https://twitter.com/SlickyNicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitter"></i>
+								</span>
+                                <div class="footer-social__txt">
+                                    <span class="footer-social__name">Twitter</span>
+                                    <span class="footer-social__user">@SlickyNicky00</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="footer-social__item">
+                            <a href="https://www.twitch.tv/slickynicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitch"></i>
+								</span>
+                                <div class="footer-social__txt">
+                                    <span class="footer-social__name">Twitch</span>
+                                    <span class="footer-social__user">SlickyNicky00</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="footer-social__item">
+                            <a href="https://www.youtube.com/c/slickynicky" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-youtube"></i>
+								</span>
+                                <div class="footer-social__txt">
+                                    <span class="footer-social__name">YouTube</span>
+                                    <span class="footer-social__user">SlickyNicky</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        <%}%>
+
+        <!-- Footer Social Links / End -->
+    </footer>
+    <!-- Footer / End -->
+
+</div>
+
+<!-- Javascript Files
+================================================== -->
+<!-- Core JS -->
+<script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/jquery/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/core.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+
+<!-- Vendor JS -->
+<script src="/assets/vendor/twitter/jquery.twitter.js"></script>
+<script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
+
+
+<!-- Template JS -->
+<script src="/assets/js/init.js"></script>
+<script src="/assets/js/custom.js"></script>
+
+</body>
+</html>

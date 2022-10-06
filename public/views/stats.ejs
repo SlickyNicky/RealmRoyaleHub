@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <title>Realm Royale Hub</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A place for everything realm royale!">
+    <meta name="author" content="Dan Fisher">
+    <meta name="keywords" content="sports club news HTML template">
+
+    <!-- Favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="/assets/images/esports/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/esports/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/esports/favicons/favicon-152.png">
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+
+    <!-- Google Web Fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&amp;family&#x3D;Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&amp;display&#x3D;swap"
+          rel="stylesheet">
+
+    <!-- CSS
+    ================================================== -->
+    <!-- Vendor CSS -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="/assets/fonts/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="/assets/vendor/slick/slick.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+
+
+    <!-- Template CSS-->
+    <link href="/assets/css/style-esports.css" rel="stylesheet">
+
+    <!-- Custom CSS-->
+    <link href="/assets/css/custom.css" rel="stylesheet">
+
+
+    <script>
+        var form = document.getElementById("search");
+
+        function handleForm(event) {
+            event.preventDefault();
+        }
+
+        form.addEventListener('submit', handleForm);
+    </script>
+
+</head>
+<%
+function ordinal_suffix_of(i) {
+    var j = i % 10,
+            k = i % 100;
+    if (j === 1 && k !== 11) {
+        return i + "st";
+    }
+    if (j === 2 && k !== 12) {
+        return i + "nd";
+    }
+    if (j === 3 && k !== 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
+
+ %>
+<%
+let queueValues = {
+    474: 'Solo\'s',
+    475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
+    476: 'Squad\'s',
+    477: 'War\'s',
+    480: 'Solo\'s Low LvL',
+    481: 'Squad\'s Mid LvL',
+    483: 'Duo\'s Mid LvL',
+    10188: 'Solo Custom\'s',
+    10189: 'Duo Custom\'s',
+    10205: 'Trio Custom\'s',
+    10190: 'Squad Custom\'s'
+}
+    let queueValuesAlignmentDisplay = {
+        'Combined' : 0,
+        'Solo\'s' : 1,
+        'Trio\'s' :2,
+        'Squad\'s' :3,
+        'Solo\'s Low LvL':12,
+        'Squad\'s Mid LvL':14,
+        'Duo\'s Mid LvL':13,
+        'War\'s':15,
+        'Solo Custom\'s':7,
+        'Duo Custom\'s':8,
+        'Trio Custom\'s':9,
+        'Squad Custom\'s':10
+}
+ %>
+<body data-template="template-esports">
+
+<div class="site-wrapper clearfix">
+    <div class="site-overlay"></div>
+
+    <!-- Header
+    ================================================== -->
+
+    <!-- Header Mobile -->
+    <div class="header-mobile clearfix" id="header-mobile">
+        <div class="header-mobile__logo">
+            <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                             srcset="/assets/images/esports/logoTemp1.png 1.0x" alt="Alchemists"
+                             class="header-mobile__logo-img"></a>
+        </div>
+        <div class="header-mobile__inner">
+            <a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a>
+            <span class="header-mobile__search-icon" id="header-mobile__search-icon"></span>
+        </div>
+    </div>
+    <!-- Header Mobile / End -->
+
+    <!-- Header Desktop -->
+    <header class="header header--layout-3">
+
+        <!-- Header Top Bar -->
+        <div class="header__top-bar clearfix">
+        </div>
+        <!-- Header Top Bar / End -->
+
+        <!-- Header Primary -->
+        <!-- Header Primary -->
+        <div class="header__primary">
+            <div class="container">
+                <div class="header__primary-inner">
+
+                    <!-- Header Logo -->
+                    <div class="header-logo">
+                        <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                                         srcset="/assets/images/esports/logoTemp1.png 4x" alt="Realm Refroged Logo"
+                                         class="header-logo__img"></a>
+                    </div>
+                    <!-- Header Logo / End -->
+
+                    <!-- Main Navigation -->
+                    <nav class="main-nav">
+                        <ul class="main-nav__list">
+                            <li class=""><a href="/">Home</a>
+                            </li>
+                            <li class=""><a href="/mmr">MMR</a>
+                                <!-- Mega Menu -->
+                                <!-- Mega Menu / End -->
+                            </li>
+
+                            <li class="active">
+                                <a href="#" style="pointer-events: none;">Lookup</a>
+                                <ul class="main-nav__sub">
+                                    <li class="active"><a href="/stats">Player Stats</a></li>
+                                    <li class=""><a href="/match">Match Details</a></li>
+                                </ul>
+                            </li>
+                            <!-- Mega Menu / End -->
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Organize Events</a>
+                                <ul class="main-nav__sub">
+                                    <li class="active"><a href="/orgLeagueTemp">Organize League</a></li>
+                                    <li class=""><a href="/orgTourneyTemp">Organize Tourney</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- Main Navigation / End -->
+
+                    <div class="header__primary-spacer"></div>
+
+                    <!-- Header Search Form -->
+
+                    <!-- Header Search Form / End -->
+
+                    <!-- Header Info Block -->
+
+                    <!-- Header Info Block / End -->
+
+                </div>
+            </div>
+        </div>
+        <!-- Header Primary / End -->
+        <!-- Header Primary / End -->
+
+    </header>
+    <!-- Header / End -->
+
+
+    <!-- Header Posts
+    ================================================== -->
+    <div class="container" style="align-items: center;text-align: center;padding-top: 50px">
+        <div class="header-search-form" style="width: 30rem">
+            <form action="/stats" id="search" class="search-form" method='post'>
+                <input type="text" id="search" name="search" class="form-control" value=""
+                       placeholder="Realm Royale name or id" style="width: 30rem;height: 5rem;font-size: 1.25rem">
+                <button type="submit" class="header-mobile__search-submit" style="width: 3rem;height: 5rem"><i
+                            class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Content
+    ================================================== -->
+    <div class="site-content">
+        <div class="container" style="max-width: 1500px">
+
+            <!-- Breaking News -->
+            <!-- Breaking News / End -->
+            <%if(displayStats)   {%>
+
+            <div class="row" style="margin-left:auto; margin-right:auto;padding-bottom: 2rem;margin-top: -3rem">
+                <!-- Content -->
+                <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
+                     style="padding:0;margin-left:auto; margin-right:auto;width: 40rem">
+                    <div class="widget__title card__header card__header--has-btn">
+                        <h3 style="font-size:2rem">Player Information</h3>
+                    </div>
+                    <div class="widget__content card__content">
+                        <!-- Game Score -->
+                        <div class="widget-game-result__section" >
+                            <div class="widget-game-result__section-inner">
+
+                                <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4">
+                                    <h3 class="widget-game-result__title" style="font-size: 0.9rem">Platform: <%=playerInfo['platform']%></h3>
+                                    <time class="widget-game-result__date" style="font-size: 0.9rem">Player ID: <%=playerInfo['id']%>
+                                    </time>
+                                </header>
+
+                                <header class="widget-game-result__header">
+                                    <h3 class="widget-game-result__title" style="font-size: 1.5rem;letter-spacing: 1px"><%=playerInfo['name']%></h3>
+                                    <div class="widget-game-result__subtitle" style="font-size: 0.8rem">Account Created<br><%=playerInfo['created_datetime']%></div>
+                                </header>
+
+                            </div>
+                        </div>
+                        <!-- Game Score / End -->
+
+                        <!-- Game Statistics -->
+                        <!-- Game Statistics / End -->
+
+
+                    </div>
+                </div>
+
+                <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
+                     style="margin: 1rem auto auto;width: 75rem">
+                    <div class="widget__title card__header card__header--has-btn">
+                        <h3 style="font-size:2rem">Overall Stats</h3>
+                    </div>
+                    <div class="table-responsive">
+
+                        <table class="table table-hover" id="overallStats"
+                               style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center">
+                            <thead>
+                            <tr>
+                                <th class="team-result__placement" style="text-align: center;max-width: 300px;font-size: 18px">
+                                    Queue Mode
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Damage
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Damage Taken
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Deaths
+                                </th>
+                                <th class="team-result__timealive" style="text-align: center;max-width: 90px;;font-size: 18px" >Time Played</th>
+                                <th class="team-result__kills" style="text-align: center;max-width: 90px;font-size: 18px">Games Played</th>
+                                <th class="team-result__deaths" style="text-align: center;max-width: 100px;font-size: 18px">Support Healing</th>
+                                <th class="team-result__assists" style="text-align: center;max-width: 100px;font-size: 18px">Self Healing</th>
+                                <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Kills</th>
+                                <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Losses</th>
+                                <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Wins</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td data-order="<%=queueValuesAlignmentDisplay['Combined']%>" class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    Combined
+                                </td>
+                                <% for(const stats in playerOverallStats){ %>
+                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerOverallStats[stats].toFixed() %>
+                                    </td>
+                            <% } %>
+                            </tr>
+
+                            <%for(const stats in playerAggStats){
+                            %>
+                            <tr>
+                                <td data-order="<%=queueValuesAlignmentDisplay[queueValues[stats]]%>"  class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%=queueValues[stats]%>
+                                </td>
+                                <%
+                                for(const stat in playerAggStats[stats]){%>
+
+
+                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerAggStats[stats][stat].toFixed() %>
+                                </td>
+
+                                    <%
+                                    }%>
+
+                            </tr>
+                            <% } %>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row" style="margin-left:auto; margin-right:auto;">
+
+            </div>
+
+            <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
+                     style="margin-left:auto; margin-right:auto;width: 85rem">
+                <div class="widget__title card__header card__header--has-btn">
+                    <h3 style="font-size:2rem">Last Fifty Matches</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="lastFifty"
+                           style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center">
+                        <thead>
+                        <tr>
+                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Match Number
+                            </th>
+                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Class
+                            </th>
+                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Placement
+                            </th>
+                            <th class="team-result__timealive" style="text-align: center;max-width: 90px;;font-size: 18px" >Seconds Alive</th>
+                            <th class="team-result__kills" style="text-align: center;max-width: 90px;font-size: 18px">Kills</th>
+                            <th class="team-result__deaths" style="text-align: center;max-width: 90px;font-size: 18px">Deaths</th>
+                            <th class="team-result__assists" style="text-align: center;font-size: 18px">Damage</th>
+                            <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Damage Taken</th>
+                            <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Match Details</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <%
+                        let index = 0
+                        for(const team in playerLastFifty['matches']){
+                            index+=1%>
+                            <tr>
+                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= index %>
+                                </td>
+                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerLastFifty['matches'][team]['class_name'] %>
+                                </td>
+                                <td data-order="<%=playerLastFifty['matches'][team]['placement']%>" class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%=ordinal_suffix_of(playerLastFifty['matches'][team]['placement'])%>
+                                </td>
+                                <td class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
+                                    <%= playerLastFifty['matches'][team]['time_in_match_secs'] %>
+                                </td>
+
+                                <td data-order="<%=playerLastFifty['matches'][team]['kills']%>" class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
+                                    <%= playerLastFifty['matches'][team]['kills'] %>
+                                </td>
+
+                                <td data-order="<%=playerLastFifty['matches'][team]['deaths']%>" class="team-result__deaths team-meta__name team-color--2" style="font-size: 16px">
+                                    <%= playerLastFifty['matches'][team]['deaths'] %>
+                                </td>
+
+                                <td data-order="<%=playerLastFifty['matches'][team]['damage']%>" class="team-result__assists team-meta__name team-color--2" style="font-size: 16px">
+                                    <%= playerLastFifty['matches'][team]['damage'] %>
+                                </td>
+
+                                <td data-order="<%=playerLastFifty['matches'][team]['damage_taken']%>" class="team-result__absorbed team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
+                                    <%= playerLastFifty['matches'][team]['damage_taken'] %>
+                                </td>
+                                <td class="team-result__replay">
+                                    <a href="/match/<%=playerLastFifty['matches'][team]['match_id']%>" class="btn btn-xs btn-default-alt btn-single-icon btn-circle" data-toggle="tooltip" data-placement="top" title="View Match"><i class="fas fa-play"></i></a>
+                                </td>
+
+                            </tr>
+                        <% } %>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <%}%>
+
+        </div>
+    </div>
+
+
+
+    <!-- Content / End -->
+
+
+    <!-- Footer
+    ================================================== -->
+
+    <footer id="footer" class="footer">
+
+        <!-- Widget: Instagram Section -->
+        <!-- Widget: Instagram Section / End -->
+
+        <!-- Sponsors / End -->
+
+
+        <!-- Footer Widgets -->
+
+        <!-- Footer Widgets / End -->
+
+        <!-- Footer Social Links -->
+
+        <%if(displayStats === false){%>
+        <div class="footer-social" style="position:fixed;bottom:0;width: 100%">
+            <div class="container">
+                <ul class="footer-social__list list-unstyled">
+                    <li class="footer-social__item">
+                        <a href="https://twitter.com/SlickyNicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitter"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitter</span>
+                                <span class="footer-social__user">@SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.twitch.tv/slickynicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitch"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitch</span>
+                                <span class="footer-social__user">SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.youtube.com/c/slickynicky" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-youtube"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">YouTube</span>
+                                <span class="footer-social__user">SlickyNicky</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <%} else {%>
+        <div class="footer-social">
+            <div class="container">
+                <ul class="footer-social__list list-unstyled">
+
+                    <li class="footer-social__item">
+                        <a href="https://twitter.com/SlickyNicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitter"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitter</span>
+                                <span class="footer-social__user">@SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.twitch.tv/slickynicky00" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-twitch"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">Twitch</span>
+                                <span class="footer-social__user">SlickyNicky00</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="footer-social__item">
+                        <a href="https://www.youtube.com/c/slickynicky" class="footer-social__link">
+								<span class="footer-social__icon">
+									<i class="fab fa-youtube"></i>
+								</span>
+                            <div class="footer-social__txt">
+                                <span class="footer-social__name">YouTube</span>
+                                <span class="footer-social__user">SlickyNicky</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <%}%>
+        <!-- Footer Social Links / End -->
+    </footer>
+    <!-- Footer / End -->
+
+
+
+
+</div>
+
+<!-- Javascript Files
+================================================== -->
+<!-- Core JS -->
+<script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/jquery/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/core.js"></script>
+
+<!-- Vendor JS -->
+<script src="/assets/vendor/twitter/jquery.twitter.js"></script>
+<script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+
+<!-- Template JS -->
+<script src="/assets/js/init.js"></script>
+<script src="/assets/js/custom.js"></script>
+
+</body>
+</html>

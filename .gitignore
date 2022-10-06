@@ -1,0 +1,6 @@
+*.env
+node_modules/
+package-lock.json
+combined.json
+public/scripts/combined.json
+public/scripts/*.env

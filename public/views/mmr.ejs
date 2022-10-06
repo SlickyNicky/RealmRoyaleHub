@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        Realm Hub
+    </title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/railscasts.min.css">
+
+    <link rel="stylesheet" href="/views/css/scribbler-global.css">
+    <link rel="stylesheet" href="/views/css/scribbler-landing.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+    <script>
+        var form = document.getElementById("search");
+
+        function handleForm(event) {
+            event.preventDefault();
+        }
+
+        form.addEventListener('submit', handleForm);
+    </script>
+
+    <%
+    const statsToNotDisplay =
+            ['sigma ', 'mu']
+    %>
+
+</head>
+
+<body>
+
+
+<!-- Hero -->
+<div class="hero">
+    <h1 class="hero__title">
+        Realm Royale MMR
+    </h1>
+
+    <p class="hero__description">
+        Non Official
+    </p>
+</div>
+
+
+<form action='/mmr' id="search" class="searchbar" method='post'>
+
+    <input type="text" name="search" id="searchinput" class="searchinput" placeholder="Search: name / id">
+    <input type="submit" class="playersubmit">
+
+    <!--    <h4>-->
+    <!--        <i class="" onclick="return foo();">Search</i>-->
+    <!--    </h4>-->
+</form>
+
+<% if (displayStats === true) { %>
+<div style="text-align:center;width:100%;height: max-content;overflow: hidden;">
+
+    <div style="margin: auto;max-width: 1200px;background-color: #2c363f">
+        <h1 class="stats_overview_heading">
+            MMR Profile Overview
+        </h1>
+        <% for(const queue in queueStats) { %>
+            <div class="stats_overview" id="stats_overview" style="max-width: 500px;">
+                <%
+                for(let queueIndvStats in queueStats[queue]) {
+                if(statsToNotDisplay.filter(s => s.includes(queueIndvStats)).length === 0) {
+                if(queueIndvStats === 'mmrRankingNumber') { %>
+                    <p class="stats_overview_values">
+                        Rank : <%= queueStats[queue][queueIndvStats] %>
+                    </p>
+                <% } else { %>
+                    <p class="stats_overview_values">
+                        <%= queueIndvStats %> : <%= queueStats[queue][queueIndvStats] %>
+                    </p>
+                <% } %>
+                <% }} %>
+            </div>
+        <% } %>
+    </div>
+</div>
+<% } %>
+<br>
+
+
+<div style="margin: auto;max-width: 1700px;text-align:center;background-color: #2c363f">
+    <h1 class="stats_overview_heading">
+        Highest MMR's
+    </h1>
+    <div style="text-align:center;width:100%;height: max-content;overflow: hidden;">
+
+        <%
+        for (const [key, value] of Object.entries(bestPlayers)) {
+        %>
+
+            <div class="stats_overview" style="max-width: 400px">
+                <h1 class="stats_overview_heading">
+                    <%= key %>
+                </h1>
+                <%
+                for(const [key2, value2] of Object.entries(bestPlayers[key])) {
+                        for(const [key3, value3] of Object.entries(bestPlayers[key][key2])) {
+                        for(const [key4, value4] of Object.entries(bestPlayers[key][key2][key3])) { %>
+                <div class="stats_overview_values" style="font-size: 1.5rem">
+                    <% if (key4 === 'profileLink'){
+                    %>
+                        <%= key4 %> : <a href='<%= value4 %>'>Link</a>
+                    <%
+                    } else { %>
+                        <%= key4 %> : <%= value4 %>
+                    <% } %>
+                </div>
+                <% }} %>
+                -----------------------------------------------------
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+
+<div class="wrapper">
+
+
+    <!-- Features -->
+    <div class="feature">
+        <!-- Feature -->
+        <div class="feature__item">
+
+
+            <h3>
+                <a href="/mmr" class="button--primary">
+                    MMR
+                </a>
+            </h3>
+        </div>
+
+        <!-- Feature -->
+        <div class="feature__item">
+
+            <h3>
+                <a href="/customs" class="button--primary">
+                    Custom Games
+                </a>
+            </h3>
+        </div>
+        <div class="feature__item">
+
+            <h3>
+                <a href="/orgtourney" class="button--primary">
+                    Organize Tourney
+                </a>
+            </h3>
+        </div>
+        <!-- Feature -->
+        <div class="feature__item">
+
+
+            <h3>
+                <a href="/stats" class="button--primary">
+                    Player Stats
+                </a>
+            </h3>
+        </div>
+
+
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+
+    <p style="color:white">Created by Realm Royale Community Member <a href="https://twitch.tv/slickynicky00"><u
+                    style="color:white">SlickyNicky</u></a></p>
+</footer>
+
+
+</body>
+<script src="../scripts/scribbler.js"></script>
+<script src="../scripts/findplayer.js"></script>
+
+</html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        Realm Hub
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/railscasts.min.css">
+
+    <link rel="stylesheet" href="/views/css/scribbler-global.css">
+    <link rel="stylesheet" href="/views/css/scribbler-landing.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <% let showTourneyGames = true %>
+
+    <%
+    const statsToNotDisplay =
+            ['hashedTourneyName', 'sameTourneyNumber']
+    %>
+</head>
+
+<body>
+
+
+<!-- Hero -->
+<div class="hero">
+    <h1 class="hero__title">
+        Realm Royale
+    </h1>
+
+    <p class="hero__description">
+        Organize Tourney
+    </p>
+</div>
+
+<br>
+<% if (tourneySetupOption) { %>
+
+    <div class="feature__item__tourney">
+        <h1 class="section__title__tourney">Realm Giveaway:</h1>
+        <form action='/realmgiveaway' id="search" method='post'>
+
+            <field class='text'>
+                <label for='search'>Name of Giveaway</label>
+                <input type="text" name="search" required>
+            </field>
+            <field class='text'>
+                <label for='gameAmount'>Amount of Games</label>
+                <input type='number' name="gameAmount" id='gameAmount' required>
+            </field>
+            <field class='text'>
+                <label for='giveawayEntriesPerGame'>Giveaway Entries Per Game</label>
+                <input type='number' name="giveawayEntriesPerGame" id='giveawayEntriesPerGame' required>
+            </field>
+            <field class='text'>
+                <label for='entriesPerPerson'>Max Entries Per Person</label>
+                <input type='number' name="entriesPerPerson" id='entriesPerPerson'
+                       placeholder="-1 for unlimited entries"
+                       required>
+            </field>
+            <field class='text'>
+                <label for='amountOfGiveaways'>Amount Of Giveaways</label>
+                <input type='number' name="amountOfGiveaways" id='amountOfGiveaways'
+                       placeholder="-1 for unlimited giveaways"
+                       required>
+            </field>
+
+            <field class='text'>
+                <input type="submit">
+            </field>
+
+
+        </form>
+    </div>
+
+<% } %>
+
+<% function split(string, delimiter, n) {
+    const parts = string.split(delimiter);
+    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
+}
+if (viewer) { %>
+    <div style="text-align:center;width:100%;height: max-content;overflow: hidden;">
+        <div class="stats_overview">
+            <h1 class="stats_overview_heading">Tourney Info</h1>
+            <%
+            for(const val in tourneyOverviewInfo) {
+            if(statsToNotDisplay.filter(s => s.includes(val)).length === 0) {
+            %>
+                <p class="stats_overview_values">
+                    <%
+                        // This converts tourneyName(db) -> TourneyName (passed into ejs page from index.js) -> Tourney Name (on page)
+                        let string = val.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([A-Z])([A-Z][a-z])/g, '$1 $2');
+                    %>
+                    <%= string %> : <%= decodeURIComponent(tourneyOverviewInfo[val]) %>
+                </p>
+
+            <% } } %>
+
+            <% if (privateLinkEnabled) { %>
+            <p class="stats_overview_values">
+                Private Admin Link :
+                <a href=<%=privateLink%>>
+                    Copy This Link
+                </a>
+            </p>
+            <% } %>
+            <% if (publicLinkEnabled) { %>
+
+            <p class="stats_overview_values">
+                Public Tourney Link :
+                <a href=<%=publicLink%>>
+                    Copy This Link
+                </a>
+            </p>
+            <% } %>
+
+        </div>
+
+    </div>
+
+    <div style="text-align:center;width:100%;height: max-content;overflow: hidden;">
+
+        <div style="margin: auto;max-width: 1600px;background-color: #2c363f">
+            <h1 class="stats_overview_heading">
+                Tourney Results
+            </h1>
+
+            <%
+                let counter = 1;
+                    for (const [key, value] of Object.entries(placementTeamAndPoints)) {
+            %>
+            <div class="stats_overview" id="stats_overview" style="max-width: 500px;">
+
+                <h4 class="stats_overview_heading_small" style="min-height: 150px"><%=counter%>.<br><%= split(key,' ',2)[1] %></h4>
+                <p class="stats_overview_values" style="text-align: center">
+                    <%= value %> Total points
+                </p>
+
+
+                <%
+                    // future item coming :)
+                if (false) {
+                %>
+                    <form action='/orgtourneyAddPointPenalty' id="search" method='post'>
+                        <input type="hidden" id="urlpath" name="urlpath" style="display: none;"
+                               value=<%= privateLink %>>
+                        <input type="hidden" id="teamNameAndID" name="teamNameAndID" style="display: none;"
+                               value=<%= key %>>
+                        <field class='text'>
+                            <label for="totalPenalty">Add/Sub Points:</label>
+                            <input type="text" id="totalPenalty" name="totalPenalty" style="max-width: 50px">
+                            <input type="submit" style="max-width: 100px" value="Submit">
+                        </field>
+                    </form>
+                <% } %>
+
+            </div>
+
+            <% counter+=1 } %>
+        </div>
+
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <div style="text-align:center;width:100%;height: max-content;overflow: hidden;">
+
+        <div class="stats_overview" style="width: 100%;margin:auto;;background-color:#c78d55">
+            <div style="margin: auto;max-width: 1600px;background-color: #2c363f">
+                <h1 class="stats_overview_heading">
+                    Overview Of Games
+                </h1>
+                <%
+                for(let i = tourneyOverviewInfo['amountOfGames'];i > 0;i--) {
+                %>
+                    <div class="stats_overview" id="stats_overview">
+
+                        <h1 class="stats_overview_heading">Game <%= i %></h1>
+
+                        <% if (editor) { %>
+                            <p class="stats_overview_values">
+
+                            <form action='/orgtourneyAddQueue' id="search" method='post'>
+
+
+                                <input type="hidden" id="matchNum" name="matchNum" style="display: none;"
+                                       value=<%= i %>>
+                                <input type="hidden" id="urlpath" name="urlpath" style="display: none;"
+                                       value=<%= privateLink %>>
+                                <field class='text'>
+
+                                    <label for="queueId">Add/Modify QueueID:</label>
+                                    <input type="text" id="queueId" name="queueId">
+                                    <input type="submit" style="max-width: 100px" value="Submit">
+
+                                </field>
+
+
+                            </form>
+
+                            </p>
+                        <% } %>
+
+                        <% for(const val in totalGamesOutputInfo.get(i)) {
+                        %>
+
+                            <%
+                            if(statsToNotDisplay.filter(s => s.includes(val)).length === 0) {
+                            %>
+
+
+                                <p class="stats_overview_values">
+                                    <%= val %> : <%= decodeURIComponent(totalGamesOutputInfo.get(i)[val]) %>
+
+                                </p>
+
+                        <% }} %>
+                        </p>
+                    </div>
+
+                <% } %>
+
+            </div>
+        </div>
+    </div>
+
+<% } %>
+
+<!-- Footer -->
+<footer class="footer">
+
+    <p style="color:white">Created by Realm Royale Community Member <a href="https://twitch.tv/slickynicky00"><u
+                    style="color:white">SlickyNicky</u></a></p>
+</footer>
+
+
+</body>
+
+</html>
