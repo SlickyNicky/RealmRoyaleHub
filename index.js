@@ -177,8 +177,6 @@ app.use(express.json());
 app.use(subdomain('realm', routerNonProd));
 // app.use(subdomain('*', router));
 
-
-
 router.get('/auth/steam',
     passport.authenticate('steam', {failureRedirect: '/'}),
     function (req, res) {
@@ -199,12 +197,11 @@ router.get('/logout', function (req, res) {
     });
 });
 
-
 routerNonProd.get('/', cache(30000), (req, res) => {
     res.render('index', {user: req.user, database: database});
 });
 
-routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
+routerNonProd.get('/orgTourney*', async (req, res) => {
     let tourneyUrl = (req.originalUrl).split('/orgtourney/')[1];
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
@@ -364,7 +361,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
             }
         } else if (tourneyAndHash.length === 2) {
 
-            let tourneyOverview = (await database.getTourneyInfo(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]))[0]
+            let tourneyOverview = (await database.getTourneyInfo(tourneyAndHash[0], tourneyAndHash[1]))[0]
 
             let totalGamesOutput = (await database.getTourneyGameTotalInfo(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]))
             const totalGamesOutputMap = new Map();
@@ -383,6 +380,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
                 );
             }
             const totalPlacementPoints = new Map();
+
             let split = tourneyOverview['pointsPerPlacement'].split(',')
             for (const val in split) {
                 let index = parseInt(val) + 1
@@ -392,6 +390,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
             // structure of win
             // -> team names : points
             // |
+
             //                  \-> placement + kill point amount from input
             var teamDict = {};
             var highestGames = {}
@@ -482,6 +481,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
 
 
             // tourney viewer / spectator
+
             res.render('orgTourney', {
                 viewer: true,
                 editor: false,
@@ -496,6 +496,7 @@ routerNonProd.get('/orgTourney*', cache(500), async (req, res) => {
                 publicLink: req.url
 
             });
+
         } else {
 
             res.redirect(`/orgtourney`)
@@ -970,7 +971,7 @@ routerNonProd.post('/mmr', async function (req, res) {
     res.redirect(303, `/mmr/${req.body.search}`)
 });
 
-routerNonProd.get('/stats*', async (req, res) => {
+routerNonProd.get('/stats*',cache(15000), async (req, res) => {
 
     let playerUrl = (req.originalUrl).split('/stats/')[1]
     if (playerUrl !== undefined && playerUrl !== '') {
@@ -1083,8 +1084,7 @@ routerNonProd.post('/stats', async function (req, res) {
     res.redirect(303, `/stats/${req.body.search}`)
 });
 
-
-routerNonProd.get('/match*', cache(60000), async (req, res) => {
+routerNonProd.get('/match*', cache(30000), async (req, res) => {
     let tourneyUrl = (req.originalUrl).split('/match/')[1];
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
@@ -1117,14 +1117,11 @@ routerNonProd.post('/match', async function (req, res) {
     res.redirect(303, `/match/${req.body.search}`)
 });
 
-
-
 routerNonProd.get('*', cache(1500000), (req, res) => {
     res.render('404');
 });
 
 app.listen(80);
-
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -1132,7 +1129,6 @@ function ensureAuthenticated(req, res, next) {
     }
     res.redirect('/');
 }
-
 
 // below if for future steam login things potentially
 var req = exports = module.exports = {};

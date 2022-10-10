@@ -33,6 +33,7 @@
     "perf_hooks": "^0.0.1",
     "pino": "^8.6.0",
     "pm2": "^5.2.0",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
   }
 }
