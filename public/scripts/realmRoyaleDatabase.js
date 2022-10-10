@@ -14,9 +14,9 @@ const bluebird = require('bluebird');
 
 
 const path = require("path");
-const dotenv = require('dotenv').config( {
+const dotenv = require('dotenv').config({
     path: path.join(__dirname, '.env')
-} );
+});
 
 
 let config = {
@@ -37,7 +37,7 @@ const authKey = process.env.authKey
 const winston = require('winston');
 
 const logger = winston.createLogger({
-    maxsize: '1000000 ',
+    maxsize: '10000000',
     maxFiles: '1000',
     timestamp: true,
     level: 'info',
@@ -153,13 +153,14 @@ class DatabaseHandler {
         return new Promise(async (resolve, reject) => {
             let query = `INSERT INTO realmTourneys VALUES ('${hashedName}','${tourneyName}','${amountOfGames}','${bestOfGames}','${queueType}','${pointsPerKill}','${pointsPerPlacement}','${tourneyNumber}','${negPointsTemp}')`;
 
-            await pool.query(query).then(async (err,res) => {
+            await pool.query(query).then(async (err, res) => {
 
             });
 
             return resolve("");
         })
     }
+
     async tourneyHashChecker(tourneyName, tourneyGameDupNumber, hashedName) {
         return new Promise(async (resolve, reject) => {
             let query = `
@@ -203,7 +204,6 @@ class DatabaseHandler {
     }
 
 
-
     async updatePenaltyPoints(hashedTourneyName, tourneyName, sameTourneyNumber, teamNameAndID, totalPenalty) {
         return new Promise(async (resolve, reject) => {
 
@@ -227,7 +227,6 @@ class DatabaseHandler {
             return resolve("");
         })
     }
-
 
 
     async getTourneyGameTotalInfo(tourneyName, sameTourneyNumber, hashedTourneyName) {
@@ -497,7 +496,7 @@ class DatabaseHandler {
     async mmrUpdateMMRPlayerChanges(playerID, queueID, queueIDNumber, sigmaChange, muChange, newSigma, newMu) {
         return new Promise(async (resolve, reject) => {
             let query = `
-                            INSERT INTO MMRGamePointTracking VALUES (
+                            INSERT IGNORE INTO MMRGamePointTracking VALUES (
                             '${playerID}',
                             '${queueID}',
                             '${queueIDNumber}',
@@ -511,7 +510,13 @@ class DatabaseHandler {
                             )
                         `;
 
-            await pool.query(query);
+            return resolve(
+                await pool.query(query)
+                    .then(async (err, results) => {
+                        return resolve(err[0]['affectedRows'])
+                    })
+            )
+            console.log('here')
 
             return resolve("");
         })
@@ -717,6 +722,7 @@ class DatabaseHandler {
             return resolve("");
         })
     }
+
     async leagueHashChecker(tourneyName, tourneyGameDupNumber, hashedName) {
         return new Promise(async (resolve, reject) => {
             let query = `
@@ -758,6 +764,7 @@ class DatabaseHandler {
 
         });
     }
+
     async getLeagueTotalGamesEntered(tourneyName, sameTourneyNumber) {
         return new Promise(async (resolve, reject) => {
             let query =
@@ -775,6 +782,7 @@ class DatabaseHandler {
 
         });
     }
+
     async getLeagueGameTotalInfo(tourneyName, sameTourneyNumber, hashedTourneyName) {
         return new Promise(async (resolve, reject) => {
             let query =

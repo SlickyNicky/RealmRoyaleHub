@@ -16,7 +16,7 @@ let {rate, ordinal, rating} = require('openskill')
 const winston = require('winston');
 
 const logger = winston.createLogger({
-    maxsize:'10000000 ',
+    maxsize:'10000000',
     maxFiles:'1000',
     timestamp:true,
     level: 'info',

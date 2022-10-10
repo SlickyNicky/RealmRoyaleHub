@@ -30,35 +30,26 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
 }
 
-test['0'] = []
-for (const point in points) {
-    let queueID = getRandomIntInclusive(2000000,10000000)
+setInterval(async function () {
 
-    if(test['0'].length < maxLength) {
-        test['0'].push({points:points[point],queueID:queueID})
 
-        test['0'].sort(function(first, second) {
-            return second.points - first.points;
-        });
+let insertedRow = await database.mmrUpdateMMRPlayerChanges(
+    'asdffdsa',
+    "-1",
+    "-2",
+    0,
+    0,
+    0,
+    0,
+)
+    if(insertedRow === 1) {
+        console.log('updated mmr')
     } else {
-        if (test['0'][test['0'].length-1].points < points[point]) {
-            test['0'][test['0'].length-1] = (
-                {
-                    points:points[point],
-                    queueID:queueID
-                }
-            )
-
-            test['0'].sort(function(first, second) {
-                return second.points - first.points;
-            });
-        }
+        console.log('no update :(')
     }
-}
-console.log(test[0])
 
-
-
+    }, 2500 // polls every 1/2 seconds )
+);
 
 // logger.error('Hello again distributed logs');
 

@@ -1,0 +1,196 @@
+/**
+ * Override link color to match the Liferay implementation of TruView
+ */
+a, a:visited, a:hover, a:link {
+    color: #009ae5;
+}
+/**
+ * Override body margin and font size to allow the header to span the full width of the screen and match the font size
+ * of the Liferay implementation of TruView
+ */
+body {
+    margin: 0;
+    font-size: 12px;
+}
+/**
+ * Begin name spaced Banner wrapper CSS for the additional header/footer
+ */
+.banner-wrapper-header {
+    width: 100%;
+    height: 102px;
+    background-color: #39114D !important;
+    background: url("its.truman.edu/files/2021/10/header-background.jpg") 0 0 repeat-x;
+    margin: 0;
+    padding: 0 5px 5px 5px;
+    display: inline-block;
+}
+.banner-wrapper-header .back-button {
+    position: absolute;
+    left: 10px;
+    top: 35px;
+}
+.banner-wrapper-header .user-avatar {
+}
+.banner-wrapper-header .dropdown {
+}
+.banner-wrapper-header .user-avatar-link {
+}
+.banner-wrapper-header .dropdown-toggle {
+}
+.banner-wrapper-header .user-avatar-image {
+    
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #5594e0;
+    background-color: white;
+}
+.banner-wrapper-header .fa-caret-down {
+    margin: 3px 0 0 5px;
+    padding: 1px 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+}
+.banner-wrapper-header > a > img {
+    position: relative;
+    left: 77px;
+    margin-top: 15px;
+    height: 72px;
+    width: 216px;
+}
+.banner-wrapper-header > ul {
+    display:inline-block;
+    margin-right:5em;
+    margin-top: 0;
+    padding: 0;
+    float:right;
+}
+.banner-wrapper-header > ul > li {
+    display:inline-block;
+    list-style: none;
+    height: 41px;
+    padding-top: 5px;
+    line-height: 27px;
+}
+.banner-wrapper-header > ul > li:hover {
+    background-color: #59316D;
+}
+.banner-wrapper-header > ul > li > a{
+    padding: 6px 5px;
+    margin: 0 5px 0 0;
+    color: white;
+    text-decoration: none;
+}
+.banner-wrapper-header > ul > li > a > img {
+    display:inline-block;
+    vertical-align: middle;
+}
+.banner-wrapper-header ul.dropdown-menu {
+    right: 0;
+    left: auto;
+    border-radius: 0;
+    background: #4a1567;
+}
+.banner-wrapper-header ul.dockbar > li:first > a > img {
+    background: white;
+}
+.banner-wrapper-header ul.dropdown-menu > li {
+    background: #4a1567;
+    color:white;
+    line-height:20px;
+}
+.banner-wrapper-header ul.dropdown-menu > li > a:hover {
+    background: #6A3587;
+}
+.banner-wrapper-header ul.dropdown-menu > li > a {
+    color:white;
+}
+.banner-wrapper-footer {
+    width:100%;
+    height: 184px;
+    background-color: #C3B48B;
+    text-align:center;
+}
+.banner-wrapper-footer .first-block {
+    border-left: 1px solid white;
+}
+.banner-wrapper-footer .first-block > img {
+    width: 149px;
+    height: 97px;
+    margin-top: 44px;
+    margin-bottom: 43px;
+}
+.banner-wrapper-footer .second-block > ul {
+    list-style: none;
+    margin-top: 55px;
+    text-align: left;
+}
+.banner-wrapper-footer .third-block > div {
+    margin-top: 32px;
+    line-height: 20px;
+}
+.banner-wrapper-footer .third-block > div > p {
+    color: #555;
+}
+.banner-wrapper-footer .fourth-block div:first-child {
+    margin-top:59px;
+}
+.banner-wrapper-footer .block {
+    height: 184px;
+    width:270px;
+    border-right: 1px solid white;
+    display:inline-block;
+    vertical-align: top;
+}
+/**
+ * End namespaced Banner wrapper CSS for the additional header/footer
+ */
+/**
+ * Banner CSS Overrides
+ */
+div.pageheaderdiv1 {
+    margin-top: 0px;
+    display:none;
+}
+div.headerwrapperdiv, div.pagetitlediv, div.pagebodydiv, div.footerbeforediv, div.footerafterdiv, div.globalafterdiv, div.globalfooterdiv, div.pagefooterdiv, div.banner_copyright {
+    padding-left:5em;
+    padding-right:5em;
+}
+/**
+ * End Banner CSS Overrides
+ */
+ 
+ /**
+  * Bootstrap Overrides
+  */
+ .dropdown-menu {
+    font-size: inherit;
+ }
+ 
+ /**
+ * Hide the header and footer when printing the page
+ */
+@media print {
+    
+    .banner-wrapper-header {
+        
+        display: none;
+    }
+    
+    .banner-wrapper-footer {
+        
+        display:none;
+    }
+    
+    a[href]:after {
+        content: none!important;
+    }
+    
+    ul.dockbar {
+    
+        display:none;
+    }
+    
+    a.back-button {
+    
+        display:none;
+    }
+}
