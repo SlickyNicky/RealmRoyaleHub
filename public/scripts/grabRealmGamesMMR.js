@@ -39,7 +39,7 @@ setInterval(async function () {
                 queueIDsToGrab[queueID],
                 dayjs.utc().format('YYYYMMDD'),
                 dayjs.utc().format('HH')
-            ).then(matches => {
+            ).then(async (matches) => {
                 for (const match in matches) {
                     let active_flag = matches[match]['active_flag']
                     let matchid = matches[match]['match']

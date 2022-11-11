@@ -318,7 +318,7 @@ class DatabaseHandler {
             let newQuery =
                 `
                     select * from ApiGrabbingStats
-                    where session_message_count < 495 and
+                    where session_message_count < 497 and
                     timeSinceEpoch > ${this.seconds_since_epoch()-899} and
                     session_id != ""
                     order by timeSinceEpoch asc
@@ -345,24 +345,23 @@ class DatabaseHandler {
                                         reject(message['ret_msg'])
                                     } else {
                                         let sessionId = message['session_id']
-
                                         let query = `INSERT INTO ApiGrabbingStats VALUES ('${sessionId}',0,'${dayjs.utc().format('YYYYMMDDHHmmss')}',${this.seconds_since_epoch()})`;
                                         await pool.query(query);
                                         let endTime = performance.now()
                                         logger.error(`Time taken to execute function: getUsableApiKey:::${endTime - startTime}`)
+                                        await this.updateApiReqCount(sessionId)
                                         resolve(sessionId);
                                     }
-
                                 } else {
                                     logger.error(`getUsableApiKey:::exists::${results[0]['session_id']}`)
                                     let endTime = performance.now()
                                     logger.error(`Time taken to execute function: getUsableApiKey:::${endTime - startTime}`)
-
+                                    await this.updateApiReqCount(results[0]['session_id'])
                                     resolve(results[0]['session_id']);
                                 }
                             })
                     })
-                }).then(result => {
+                }).then(async result => {
                 resolve(result)
             })
         })
@@ -372,7 +371,6 @@ class DatabaseHandler {
     async callApi(endPoint, normalParams = true, apiBeingUsed = '', ...params) {
         return new Promise(async (resolve, reject) => {
             logger.error(`Entering function: callApi function: with -${apiBeingUsed}|`)
-            let startTime = performance.now()
 
             endPoint = endPoint.toLowerCase();
             let endOfUrl = String(params.join("/"))
@@ -381,11 +379,9 @@ class DatabaseHandler {
             }
             this.getUsableApiKey()
                 .then(async (sessionId) => {
-                        await this.updateApiReqCount(sessionId)
-
-                        let methodSignature = md5(`${devId}${endPoint}${authKey}${dayjs.utc().format('YYYYMMDDHHmmss')}`)
+                    let startTime = performance.now()
+                    let methodSignature = md5(`${devId}${endPoint}${authKey}${dayjs.utc().format('YYYYMMDDHHmmss')}`)
                         let normalBaseUrl = `${baseApi}/${endPoint}json/${devId}/${methodSignature}/${sessionId}/${dayjs.utc().format('YYYYMMDDHHmmss')}${endOfUrl}`
-
                         try {
 
                             let finalResult = await (await
@@ -397,7 +393,7 @@ class DatabaseHandler {
 
                         } catch (error) {
 
-                            logger.error(`Something went wrong with query|${sessionId}:::${endPoint}::${params}|`)
+                            logger.error(`Something went wrong with query:::${sessionId}::${endPoint}:${params}|ERROR:${error}`)
                             let endTime = performance.now()
                             logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
                             resolve(`${sessionId}:::${endPoint}::${params}`)
@@ -516,8 +512,6 @@ class DatabaseHandler {
                         return resolve(err[0]['affectedRows'])
                     })
             )
-            console.log('here')
-
             return resolve("");
         })
     }
@@ -604,7 +598,7 @@ class DatabaseHandler {
 
     async realmGetMatchesToProcess() {
         return new Promise(async (resolve, reject) => {
-            let query = `select match_id from matchIdToProcess where active_flag = 'n' limit 100`;
+            let query = `select match_id from matchIdToProcess where active_flag = 'n' limit 200`;
 
             await pool.query(query)
                 .then(async ([results]) => {
@@ -662,11 +656,13 @@ class DatabaseHandler {
         })
     }
 
-    async realmAddProcessedMatch(queueID) {
+    async realmAddProcessedMatch(queueID,processedMessage = '') {
         return new Promise(async (resolve, reject) => {
             let query = `replace into processedMatchId VALUES ('${queueID}','${this.seconds_since_epoch()}')`;
-
             await pool.query(query);
+            if(processedMessage !== '') {
+                logger.error(`realmAddProcessedMatch:::${queueID}::${processedMessage}`)
+            }
 
             // return resolve("");
         })

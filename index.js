@@ -24,7 +24,6 @@ let utc = require('dayjs/plugin/utc')
 dayjs.extend(utc);
 const path = require("path");
 
-
 __dirname = path.resolve();
 
 
@@ -122,6 +121,43 @@ function formatPlayerMMR(player) {
     return player
 }
 
+// this function fixes issues related to people being on different teams if they lag out / crash
+function fixRealmGameOutput(totalGameDetails,anArrayOfGameDetail=false) {
+    if(anArrayOfGameDetail) {
+        for(const [key,value] of totalGameDetails.entries()) {
+            let idStored = []
+            for(const gameVals in value) {
+                if(gameVals === 'teams') {
+                    let index = 0
+                    for(const teams in value[gameVals]) {
+                        if(idStored[value[gameVals][teams]['id']] === undefined) {
+                            idStored[value[gameVals][teams]['id']] = {index: index}
+                        } else {
+                            for(const player in value[gameVals][teams]['players']) {
+                                totalGameDetails.get(key)[gameVals][idStored[value[gameVals][teams]['id']]['index']]['players'].push(
+                                    value[gameVals][teams]['players'][player])
+                            }
+                            delete totalGameDetails.get(key)[gameVals][index]
+                        }
+                        index+=1
+                    }
+                }
+            }
+        }
+
+        // console.log(totalGameDetails)
+        return totalGameDetails
+    } else {
+        //todo: implement
+        return totalGameDetails
+    }
+}
+
+function split(string, delimiter, n) {
+    const parts = string.split(delimiter);
+    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
+}
+
 const winston = require('winston');
 
 const logger = winston.createLogger({
@@ -201,7 +237,7 @@ routerNonProd.get('/', cache(30000), (req, res) => {
     res.render('index', {user: req.user, database: database});
 });
 
-routerNonProd.get('/orgTourney*', async (req, res) => {
+routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
     let tourneyUrl = (req.originalUrl).split('/orgtourney/')[1];
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
@@ -227,6 +263,7 @@ routerNonProd.get('/orgTourney*', async (req, res) => {
                         )
                     );
                 }
+                totalGamesQueueOutputMap = fixRealmGameOutput(totalGamesQueueOutputMap,true)
                 const totalPlacementPoints = new Map();
                 let split = tourneyOverview['pointsPerPlacement'].split(',')
                 for (const val in split) {
@@ -240,7 +277,9 @@ routerNonProd.get('/orgTourney*', async (req, res) => {
                 //                  \-> placement + kill point amount from input
                 var teamDict = {};
                 var highestGames = {}
+                let teamNames = []
                 for (const [key, value] of totalGamesQueueOutputMap) {
+                    console.log(value)
                     for (const overallTeams in value['teams']) {
                         // used to keep track of teams and if someone uses the same name system still works
                         let teamName = []
@@ -340,6 +379,16 @@ routerNonProd.get('/orgTourney*', async (req, res) => {
 
                 tourneyOverview['sortByLowestPoints'] = (tourneyOverview['sortByLowestPoints'] === 1)
 
+                teamNames = []
+                for(const team in teamDict) {
+                    let temp = []
+                    temp = team.split('| ').slice(1).join('| ').split('|  |')
+                    temp[0] = temp[0].slice(1)
+                    temp[temp.length-1] = temp[temp.length-1].slice(0,-1)
+
+                    teamNames.push(temp)
+                }
+
                 res.render('orgTourney', {
                     tourneySetupOption: false,
                     editor: true,
@@ -349,6 +398,7 @@ routerNonProd.get('/orgTourney*', async (req, res) => {
                     totalGamesQueueOutputInfo: totalGamesQueueOutputMap,
                     placementTeamAndPoints: teamDict,
                     highestGamesForTeam: highestGames,
+                    teamNames: teamNames,
                     privateLinkEnabled: true,
                     publicLinkEnabled: true,
                     privateLink: req.url,
@@ -364,8 +414,8 @@ routerNonProd.get('/orgTourney*', async (req, res) => {
             let tourneyOverview = (await database.getTourneyInfo(tourneyAndHash[0], tourneyAndHash[1]))[0]
 
             let totalGamesOutput = (await database.getTourneyGameTotalInfo(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]))
-            const totalGamesOutputMap = new Map();
-            const totalGamesQueueOutputMap = new Map();
+            let totalGamesOutputMap = new Map();
+            let totalGamesQueueOutputMap = new Map();
 
             for (const val in totalGamesOutput) {
                 totalGamesOutputMap.set(totalGamesOutput[val]['gameNumber'], totalGamesOutput[val]);
@@ -386,6 +436,8 @@ routerNonProd.get('/orgTourney*', async (req, res) => {
                 let index = parseInt(val) + 1
                 totalPlacementPoints.set(index, split[val]);
             }
+            totalGamesQueueOutputMap = fixRealmGameOutput(totalGamesQueueOutputMap,true)
+
 
             // structure of win
             // -> team names : points
@@ -553,7 +605,7 @@ routerNonProd.post('/orgtourneyAddQueue', async function (req, res) {
     res.redirect(303, `/orgtourney/${splitUrl[0]}/${splitUrl[1]}/${splitUrl[2]}`)
 });
 
-routerNonProd.get('/orgLeague*', cache(15000), async (req, res) => {
+routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
     let tourneyUrl = (req.originalUrl).split('/orgLeague/')[1];
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
@@ -565,8 +617,8 @@ routerNonProd.get('/orgLeague*', cache(15000), async (req, res) => {
                 let tourneyOverview = (await database.getLeagueInfo(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]))[0]
                 let totalGamesOutput = (await database.getLeagueGameTotalInfo(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]))
                 let totalAmountOfGames = (await database.getLeagueTotalGamesEntered(tourneyAndHash[0], tourneyAndHash[1]))
-                const totalGamesOutputMap = new Map();
-                const totalGamesQueueOutputMap = new Map();
+                let totalGamesOutputMap = new Map();
+                let totalGamesQueueOutputMap = new Map();
 
                 for (const val in totalGamesOutput) {
                     totalGamesOutputMap.set(totalGamesOutput[val]['gameNumber'], totalGamesOutput[val]);
@@ -580,6 +632,11 @@ routerNonProd.get('/orgLeague*', cache(15000), async (req, res) => {
                         )
                     );
                 }
+
+                totalGamesQueueOutputMap = fixRealmGameOutput(totalGamesQueueOutputMap,true)
+
+
+
                 const totalPlacementPoints = new Map();
                 let split = tourneyOverview['pointsPerPlacement'].split(',')
                 for (const val in split) {
@@ -591,8 +648,8 @@ routerNonProd.get('/orgLeague*', cache(15000), async (req, res) => {
                 // -> team names : points
                 // |
                 //                  \-> placement + kill point amount from input
-                var teamDict = {};
-                var highestGames = {};
+                let teamDict = {};
+                let highestGames = {};
                 for (const [key, value] of totalGamesQueueOutputMap) {
                     for (const overallTeams in value['teams']) {
                         // used to keep track of teams and if someone uses the same name system still works
@@ -733,6 +790,10 @@ routerNonProd.get('/orgLeague*', cache(15000), async (req, res) => {
                     )
                 );
             }
+
+            totalGamesQueueOutputMap = fixRealmGameOutput(totalGamesQueueOutputMap,true)
+
+
             const totalPlacementPoints = new Map();
             let split = tourneyOverview['pointsPerPlacement'].split(',')
             for (const val in split) {
@@ -905,7 +966,7 @@ routerNonProd.post('/orgLeagueAddQueue', async function (req, res) {
     res.redirect(303, `/orgLeague/${splitUrl[0]}/${splitUrl[1]}/${splitUrl[2]}`)
 });
 
-routerNonProd.get('/mmr*', cache(15000), async (req, res) => {
+routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
 
     let playerUrl = (req.originalUrl).split('/mmr/')[1]
     if (playerUrl !== undefined && playerUrl !== '') {
@@ -971,20 +1032,24 @@ routerNonProd.post('/mmr', async function (req, res) {
     res.redirect(303, `/mmr/${req.body.search}`)
 });
 
-routerNonProd.get('/stats*',cache(15000), async (req, res) => {
+routerNonProd.get('/stats*',cache(5000), async (req, res) => {
 
     let playerUrl = (req.originalUrl).split('/stats/')[1]
     if (playerUrl !== undefined && playerUrl !== '') {
 
         if (playerUrl !== undefined && playerUrl !== '') {
+
+            // handles cases with %20 spaces in them :) and other special characters
+            playerUrl = decodeURI(playerUrl)
             let playerId;
 
             playerId = (await database.callApi("SearchPlayers", true, 'SearchPlayers', playerUrl))[0]
+
             try {
                 // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
 
 
-                if (playerId['name'] !== `${playerUrl}`) {
+                if (playerId['name'] !== `${playerUrl}` && playerId['name'] !== `${playerUrl.toLowerCase()}`) {
                     playerId = playerUrl
                 } else {
                     playerId = playerId['id']
@@ -992,6 +1057,7 @@ routerNonProd.get('/stats*',cache(15000), async (req, res) => {
             } catch (e) {
                 playerId = playerUrl
             }
+
 
             req.session.getPlayerProfileStats = await database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez')
             let playerStats = await database.callApi("GetPlayerStats", true, 'GetPlayerStats', playerId)
@@ -1084,7 +1150,7 @@ routerNonProd.post('/stats', async function (req, res) {
     res.redirect(303, `/stats/${req.body.search}`)
 });
 
-routerNonProd.get('/match*', cache(30000), async (req, res) => {
+routerNonProd.get('/match*', cache(5000), async (req, res) => {
     let tourneyUrl = (req.originalUrl).split('/match/')[1];
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
@@ -1117,7 +1183,7 @@ routerNonProd.post('/match', async function (req, res) {
     res.redirect(303, `/match/${req.body.search}`)
 });
 
-routerNonProd.get('*', cache(1500000), (req, res) => {
+routerNonProd.get('*', cache(5000), (req, res) => {
     res.render('404');
 });
 

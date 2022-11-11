@@ -55,7 +55,14 @@
 
         form.addEventListener('submit', handleForm);
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDYKQEDNX3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
+        gtag('config', 'G-PDYKQEDNX3');
+    </script>
 </head>
 <%
 function ordinal_suffix_of(i) {
@@ -532,7 +539,6 @@ let queueValues = {
 <script src="/assets/js/core.js"></script>
 
 <!-- Vendor JS -->
-<script src="/assets/vendor/twitter/jquery.twitter.js"></script>
 <script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 

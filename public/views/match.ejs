@@ -55,7 +55,14 @@
 
         form.addEventListener('submit', handleForm);
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDYKQEDNX3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
+        gtag('config', 'G-PDYKQEDNX3');
+    </script>
 </head>
 <body data-template="template-esports">
 <% function split(string, delimiter, n) {
@@ -63,6 +70,17 @@
     return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
 }
 %>
+<%
+let queueValues = {
+    474: 'Solo\'s',
+    475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
+    476: 'Squad\'s',
+    10188: 'Solo Custom\'s',
+    10189: 'Duo Custom\'s',
+    10205: 'Trio Custom\'s',
+    10190: 'Squad Custom\'s'
+}
+ %>
 
 <div class="site-wrapper clearfix">
     <div class="site-overlay"></div>
@@ -179,8 +197,28 @@
             <div class="card card--has-table">
                 <div class="card__header">
                     <h4>Match Stats</h4>
-                    <div class="widget-results__title">Region: <%= matchDetails['region'] %></div>
-                    <div class="widget-results__title">Match ID: <%= matchDetails['match_id'] %></div>
+                    <div class="widget-results__title">
+                        <div class="widget-results__title">
+                        Region: <%= matchDetails['region'] %>
+                        </div>
+                        <div class="widget-results__title">
+                        Mode: <%= queueValues[matchDetails['match_queue_id']] %>
+                        </div>
+                    </div>
+                    <div class="widget-results__title">
+                        <div class="widget-results__title">
+                            Match ID: <%= matchDetails['match_id'] %>
+                        </div>
+                        <div class="widget-results__title">
+                            <%
+                            let totalLength = 0 ;
+                            for(const team in matchDetails['teams']) {
+                                totalLength += matchDetails['teams'][team]['players'].length
+                            }
+                            %>
+                            Players: <%= totalLength%>
+                        </div>
+                    </div>
 
                     <div class="widget-results__title">
                         <div class="widget-results__title">
@@ -448,7 +486,6 @@
 
 
 <!-- Vendor JS -->
-<script src="/assets/vendor/twitter/jquery.twitter.js"></script>
 <script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
 
 

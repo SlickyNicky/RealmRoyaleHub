@@ -19,149 +19,92 @@ Date.prototype.timeNow = function () {
     return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
 }
 
-let points = [15,8,12,3,14,5,1,2,3,11]
-
-let test = {}
-let maxLength = 3
 
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
 }
+const queueIDsToGrab = ['474', '475', '476', '10188', '10189', '10205', '10190']
+
+playerId = {}
+
+function fixRealmGameOutput(totalGameDetails,anArrayOfGameDetail=false) {
+    if(anArrayOfGameDetail) {
+        for(const [key,value] of totalGameDetails.entries()) {
+            let idStored = []
+            for(const gameVals in value) {
+                if(gameVals === 'teams') {
+                    let index = 0
+                    for(const teams in value[gameVals]) {
+                        if(idStored[value[gameVals][teams]['id']] === undefined) {
+                            idStored[value[gameVals][teams]['id']] = {index: index}
+                        } else {
+                            for(const player in value[gameVals][teams]['players']) {
+                                totalGameDetails.get(key)[gameVals][idStored[value[gameVals][teams]['id']]['index']]['players'].push(
+                                    value[gameVals][teams]['players'][player])
+                            }
+                            delete totalGameDetails.get(key)[gameVals][index]
+                        }
+                        index+=1
+                    }
+                }
+            }
+        }
+        return totalGameDetails
+    } else {
+        let idStored = []
+        for(const gameVals in totalGameDetails) {
+            if(gameVals === 'teams') {
+                let index = 0
+                for(const teams in totalGameDetails[gameVals]) {
+                    if(idStored[totalGameDetails[gameVals][teams]['id']] === undefined) {
+                        idStored[totalGameDetails[gameVals][teams]['id']] = {index: index}
+                    } else {
+                        for(const player in totalGameDetails[gameVals][teams]['players']) {
+                            totalGameDetails[gameVals][idStored[totalGameDetails[gameVals][teams]['id']]['index']]['players'].push(
+                                totalGameDetails[gameVals][teams]['players'][player])
+                        }
+                        delete totalGameDetails[gameVals][index]
+                    }
+                    index+=1
+                }
+            }
+        }
+        return totalGameDetails
+    }
+}
+
 
 setInterval(async function () {
 
+        database.callApi(
+            'GetMatchIDsByQueue', 
+            true,
+            'GetMatchIDsByQueue',
+            474,
+            dayjs.utc().format('YYYYMMDD'),
+            dayjs.utc().format('HH')
+        ).then(async matches => {
+            let count = 0;
 
-let insertedRow = await database.mmrUpdateMMRPlayerChanges(
-    'asdffdsa',
-    "-1",
-    "-2",
-    0,
-    0,
-    0,
-    0,
-)
-    if(insertedRow === 1) {
-        console.log('updated mmr')
-    } else {
-        console.log('no update :(')
-    }
+            for (const match in matches) {
+                let matchID = matches[match]['match'];
 
-    }, 2500 // polls every 1/2 seconds )
+                let result = await fixRealmGameOutput(
+                    database.callApi(
+                        'GetMatchDetails',
+                        true,
+                        'GetMatchDetails',
+                        matchID
+                    ), false)
+                for (const team in result['teams']) {
+                    count += result['teams'][team]['players'].length
+
+                }
+            }
+            console.log(count)
+        })
+    }, 10000 // polls every 1/2 seconds )
 );
-
-// logger.error('Hello again distributed logs');
-
-
-// setInterval(async function () {
-//
-//         // database.realmGetMatchesToProcess().then(async (matches) => {
-//         //     for (const match in matches) {
-//         //         database.realmGetProcessedMatch(matches[match]['match_id']).then(results => {
-//         //             if (results.length === 0) {
-//         //                 console.log(matches[match]['match_id'])
-//         //                 database.callApi(
-//         //                     'GetMatchDetails',
-//         //                     true,
-//         //                     matches[match]['match_id']
-//         //                 ).then(matchDetails => {
-//         //                     let duration_secs = matchDetails['duration_secs']
-//         //                     let match_datetime = matchDetails['match_datetime']
-//         //                     let match_id = matchDetails['match_id'] // actual id of game 12432234,124311432,etc...
-//         //                     let match_queue_id = matchDetails['match_queue_id'] // 474->solos,475->duos,476->squads,etc...
-//         //                     let match_queue_name = matchDetails['match_queue_name']
-//         //                     let region = matchDetails['region']
-//         //                     let ret_msg = matchDetails['ret_msg']
-//         //                     let teams = JSON.stringify(matchDetails['teams'])
-//         //                     database.realmAddMatchDetails(
-//         //                         duration_secs,
-//         //                         match_datetime,
-//         //                         match_id,
-//         //                         match_queue_id,
-//         //                         match_queue_name,
-//         //                         region,
-//         //                         ret_msg,
-//         //                         teams
-//         //                     ).then(async (resuls) => {
-//         //                         database.realmAddProcessedMatch(matches[match]['match_id'])
-//         //                         database.realmDeleteMatchToProcess(matches[match]['match_id'])
-//         //
-//         //
-//         //                         let placementOrder = []
-//         //                         let teamAndPlayers = []
-//         //                         let teamIndex = 0;
-//         //                         let mmrValues = []
-//         //
-//         //                         for (const team in matchDetails['teams']) {
-//         //                             teamAndPlayers[teamIndex] = []
-//         //                             mmrValues[teamIndex] = []
-//         //                             placementOrder.push(matchDetails['teams'][team]['placement'])
-//         //                             let playerIndex = 0
-//         //                             for (const player in matchDetails['teams'][team]['players']) {
-//         //                                 teamAndPlayers[teamIndex][playerIndex] = []
-//         //                                 mmrValues[teamIndex][playerIndex] = ''
-//         //                                 teamAndPlayers[teamIndex][playerIndex][0] = matchDetails['teams'][team]['players'][player]['id']
-//         //
-//         //
-//         //                                 let playerStats = await database.mmrPlayerLookup(matchDetails['teams'][team]['players'][player]['id'], match_queue_id);
-//         //                                 if (playerStats.length === 0) {
-//         //
-//         //                                     await database.mmrUpdateMMRPlayer(matchDetails['teams'][team]['players'][player]['id'], match_queue_id, 300, 100, false);
-//         //                                     playerStats = await database.mmrPlayerLookup(matchDetails['teams'][team]['players'][player]['id'], match_queue_id);
-//         //                                 }
-//         //
-//         //                                 mmrValues[teamIndex][playerIndex] = rating({
-//         //                                     mu: parseFloat(playerStats['mu']),
-//         //                                     sigma: parseFloat(playerStats['sigma'])
-//         //                                 })
-//         //                                 playerIndex += 1
-//         //                             }
-//         //
-//         //                             teamIndex += 1
-//         //                         }
-//         //                         try {
-//         //                             let newRanksTemp = rate(
-//         //                                 mmrValues,
-//         //                                 {rank: placementOrder}
-//         //                             )
-//         //
-//         //                             for (const team in teamAndPlayers) {
-//         //                                 for (const player in teamAndPlayers[team]) {
-//         //                                     database.mmrUpdateMMRPlayerChanges(
-//         //                                         teamAndPlayers[team][player][0],
-//         //                                         match_queue_id,
-//         //                                         matches[match]['match'],
-//         //                                         newRanksTemp[team][player]['sigma'] - mmrValues[team][player]['sigma'],
-//         //                                         newRanksTemp[team][player]['mu'] - mmrValues[team][player]['mu'],
-//         //                                         newRanksTemp[team][player]['sigma'],
-//         //                                         newRanksTemp[team][player]['mu'],
-//         //                                     )
-//         //                                     database.mmrUpdateMMRPlayer(
-//         //                                         teamAndPlayers[team][player][0],
-//         //                                         match_queue_id,
-//         //                                         newRanksTemp[team][player]['mu'],
-//         //                                         newRanksTemp[team][player]['sigma']
-//         //                                     );
-//         //                                 }
-//         //                             }
-//         //                         } catch (error) {
-//         //                             console.error(matches[match]['match'])
-//         //                             // expected output: TypeError: some q id's don't work from realm api :(
-//         //                         }
-//         //
-//         //                     })
-//         //
-//         //                 })
-//         //             } else {
-//         //                 database.realmDeleteMatchToProcess(matches[match]['match_id'])
-//         //             }
-//         //         })
-//         //
-//         //     }
-//         // })
-//
-//     }, 30 // polls every 1/2 seconds )
-// );
-
 

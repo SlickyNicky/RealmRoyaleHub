@@ -16,6 +16,7 @@
     "dayjs": "^1.11.3",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
+    "express-google-analytics": "^1.0.2",
     "express-session": "^1.17.3",
     "express-subdomain": "^1.0.5",
     "jquery": "^3.6.1",

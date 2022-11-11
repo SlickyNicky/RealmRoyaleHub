@@ -1,0 +1,10 @@
+use realm_royale;
+SELECT session_id FROM realm_royale.ApiGrabbingStats ORDER BY session_id;                                            
+SELECT queueIDNumber,queueID,playerID FROM realm_royale.MMRGamePointTracking ORDER BY queueIDNumber,queueID,playerID;
+SELECT playerID,queueTypeID FROM realm_royale.MMRPlayerStorage ORDER BY playerID,queueTypeID;                        
+SELECT realmId FROM realm_royale.competitiveRanks ORDER BY realmId;                                                  
+SELECT match_id FROM realm_royale.matchIdToProcess ORDER BY match_id;                                                
+SELECT queueID FROM realm_royale.processedMatchId ORDER BY queueID;                                                  
+SELECT realmId FROM realmranking.competitiveRanks ORDER BY realmId;                                                  
+SELECT variable FROM sys.sys_config ORDER BY variable;                                                               
+SELECT PersonID FROM twitchbot.chataccounts ORDER BY PersonID;                                                       
