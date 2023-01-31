@@ -11,6 +11,9 @@ let passport = require('passport');
 let passportSteam = require('passport-steam');
 let SteamStrategy = passportSteam.Strategy;
 
+const requestIp = require('request-ip');
+
+
 let databaseConfig = require('./public/scripts/realmRoyaleDatabase.js');
 
 let database = new databaseConfig()
@@ -178,11 +181,11 @@ const cache = (durationMs) => {
         let key = '__express__' + req.originalUrl || req.url
         let cachedBody = mcache.get(key)
         if (cachedBody) {
-            logger.error(`cache:::found_cache_hit::${req.originalUrl || req.url}`)
+            logger.error(`${dayjs.utc().format('YYYYMMDDHH')}::::cache:::found_cache_hit::${req.originalUrl || req.url}`)
             res.send(cachedBody)
             return
         } else {
-            logger.error(`cache:::miss_cache_hit::${req.originalUrl || req.url}`)
+            logger.error(`${dayjs.utc().format('YYYYMMDDHH')}::::cache:::miss_cache_hit::${req.originalUrl || req.url}`)
             res.sendResponse = res.send
             res.send = (body) => {
                 mcache.put(key, body, durationMs);
@@ -212,6 +215,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json());
 app.use(subdomain('realm', routerNonProd));
 // app.use(subdomain('*', router));
+app.use(requestIp.mw())
 
 router.get('/auth/steam',
     passport.authenticate('steam', {failureRedirect: '/'}),
@@ -986,14 +990,25 @@ routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
                 playerId = playerUrl
             }
 
-            req.session.getPlayerProfileStats = await database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez')
+            let [temp1, temp2,temp3,temp4] = await Promise.all([
+                database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez'),
+                database.getMMRChanges(playerId),
+                database.mmrPlayerGetStats(playerId),
+                database.mmrGetTopPlayersTemp()
+            ]);
 
-            req.session.findPlayerStatsOverall = formatPlayerMMR(await database.mmrPlayerGetStats(playerId))
+            req.session.getPlayerProfileStats = temp1
 
-            req.session.bestPlayers = sortTopPlayers(await database.mmrGetTopPlayersTemp())
+            req.session.mmrChanges = temp2
+
+            req.session.findPlayerStatsOverall = formatPlayerMMR(temp3)
+
+            req.session.bestPlayers = sortTopPlayers(temp4)
+
 
             res.render('mmr', {
                 displayStats: true,
+                mmrChanges:  req.session.mmrChanges,
                 queueStats: req.session.findPlayerStatsOverall,
                 bestPlayers: req.session.bestPlayers,
                 playerStats: req.session.getPlayerProfileStats
@@ -1178,6 +1193,56 @@ routerNonProd.get('/match*', cache(5000), async (req, res) => {
         });
     }
 });
+
+routerNonProd.get('/admin*', cache(10000), async (req, res) => {
+    let [
+        delay,
+        lastWeekStats,
+        lastWeekStatsSolo,
+        lastWeekStatsTrio,
+        lastWeekStatsSquad,
+        lastDayStats,
+        lastDayStatsSolo,
+        lastDayStatsTrio,
+        lastDayStatsSquad,
+        lastHourStats,
+        lastHourStatsSolo,
+        lastHourStatsTrio,
+        lastHourStatsSquad
+    ] = await Promise.all([
+        database.getTotalDelay(),
+        database.getRealmStats(604800),
+        database.getRealmStats(604800,'474'),
+        database.getRealmStats(604800,'475'),
+        database.getRealmStats(604800,'476'),
+        database.getRealmStats(86400),
+        database.getRealmStats(86400,'474'),
+        database.getRealmStats(86400,'475'),
+        database.getRealmStats(86400,'476'),
+        database.getRealmStats(3600),
+        database.getRealmStats(3600,'474'),
+        database.getRealmStats(3600,'475'),
+        database.getRealmStats(3600,'476')
+    ]);
+
+    res.render('admin', {
+        totalDelay:             delay,
+        lastWeekStats:          lastWeekStats,
+        lastWeekStatsSolo:      lastWeekStatsSolo,
+        lastWeekStatsTrio:      lastWeekStatsTrio,
+        lastWeekStatsSquad:     lastWeekStatsSquad,
+        lastDayStats:           lastDayStats,
+        lastDayStatsSolo:       lastDayStatsSolo,
+        lastDayStatsTrio:       lastDayStatsTrio,
+        lastDayStatsSquad:      lastDayStatsSquad,
+        lastHourStats:          lastHourStats,
+        lastHourStatsSolo:      lastHourStatsSolo,
+        lastHourStatsTrio:      lastHourStatsTrio,
+        lastHourStatsSquad:     lastHourStatsSquad
+    });
+
+});
+
 
 routerNonProd.post('/match', async function (req, res) {
     res.redirect(303, `/match/${req.body.search}`)

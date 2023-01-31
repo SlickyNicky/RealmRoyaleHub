@@ -6,7 +6,7 @@ dayjs.extend(utc);
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 var AsyncLock = require('async-lock');
-var lock = new AsyncLock({maxPending: Number.MAX_SAFE_INTEGER}, {maxOccupationTime: 1000});
+var lock = new AsyncLock({maxPending: Number.MAX_SAFE_INTEGER}, {maxExecutionTime: 3000});
 
 const {ordinal} = require('openskill')
 
@@ -25,8 +25,7 @@ let config = {
     password: process.env.mysqlPassword,
     database: 'realm_royale',
     charset: 'UTF8MB4_0900_AI_CI',
-    Promise: bluebird,
-    connectionLimit: 50,
+    connectionLimit: 60,
 }
 var pool = mysql.createPool(config);
 
@@ -379,8 +378,8 @@ class DatabaseHandler {
             }
             this.getUsableApiKey()
                 .then(async (sessionId) => {
-                    let startTime = performance.now()
-                    let methodSignature = md5(`${devId}${endPoint}${authKey}${dayjs.utc().format('YYYYMMDDHHmmss')}`)
+                        let startTime = performance.now()
+                        let methodSignature = md5(`${devId}${endPoint}${authKey}${dayjs.utc().format('YYYYMMDDHHmmss')}`)
                         let normalBaseUrl = `${baseApi}/${endPoint}json/${devId}/${methodSignature}/${sessionId}/${dayjs.utc().format('YYYYMMDDHHmmss')}${endOfUrl}`
                         try {
 
@@ -861,6 +860,122 @@ class DatabaseHandler {
             return resolve("");
         })
     }
+
+
+    async getMMRChanges(playerID) {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                    select
+                        queueID,newRankingNumber,secondsSinceEpoch
+                     from 
+                        MMRGamePointTracking
+                     where 
+                         playerID = '${playerID}' and
+                         queueID = '474'
+                     order by
+                        secondsSinceEpoch
+                     asc
+                `
+
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+    async getTotalDelay() {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                    select
+                        UNIX_TIMESTAMP()-secondsSinceEpoch as delay
+                    from
+                        MMRGamePointTracking
+                    order by
+                        secondsSinceEpoch desc
+                    limit 1
+                `
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+    async getRealmStats(howFarBackSeconds,queue = '') {
+        return new Promise(async (resolve, reject) => {
+            if(queue === '') {
+                let query =
+                    `
+                    select
+                        count(distinct(queueIDNumber)) as totalGames,
+                        count(playerID) as totalPlayersInMatches,
+                        count(distinct(playerID)) as uniquePlayers
+                    from
+                        MMRGamePointTracking
+                    where 
+                        secondsSinceEpoch > UNIX_TIMESTAMP()-${howFarBackSeconds}
+                `
+                await pool.query(query)
+                    .then(async ([results]) => {
+                            return resolve(results)
+                        }
+                    );
+            } else {
+                let query =
+                    `
+                    select
+                        count(distinct(queueIDNumber)) as totalGames,
+                        count(playerID) as totalPlayersInMatches,
+                        count(distinct(playerID)) as uniquePlayers
+                    from
+                        MMRGamePointTracking
+                    where 
+                        secondsSinceEpoch > UNIX_TIMESTAMP()-${howFarBackSeconds} and
+                        queueID = ${queue}
+                `
+                await pool.query(query)
+                    .then(async ([results]) => {
+                            return resolve(results)
+                        }
+                    );
+            }
+        });
+
+    }
+    async getHighestKills() {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                    select
+                        matchData
+                    from 
+                        realmMatchStats_temp
+                    where
+                        match_id_virtual 
+                        in (
+                                select
+                                    distinct(queueIDNumber) as queueid
+                                from
+                                        MMRGamePointTracking
+                                where 
+                                          queueid = '475' and 
+                                        secondsSinceEpoch > UNIX_TIMESTAMP()-604800*2
+                        )
+                `
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+
 }
 
 module.exports = DatabaseHandler;

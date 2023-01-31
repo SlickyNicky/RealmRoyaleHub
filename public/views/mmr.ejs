@@ -36,7 +36,9 @@
     <link href="/assets/fonts/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
     <link href="/assets/vendor/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
     <link href="/assets/vendor/slick/slick.css" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
 
     <!-- Template CSS-->
     <link href="/assets/css/style-esports.css" rel="stylesheet">
@@ -206,6 +208,54 @@
                             </div>
                         </div>
                         <!-- Game Score / End -->
+
+
+                        <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4">
+                        </header>
+                        <div>
+                            <canvas id="myChart"></canvas>
+                            <script>
+                                const ctx = document.getElementById('myChart');
+
+                                let mmrDateData =
+                                    [<%-
+                                        mmrChanges.map(user => user.secondsSinceEpoch*1000)
+                                    %>]
+                                const ourLabels = mmrDateData
+
+
+                                let mmrData =
+                                [<%-
+                                    mmrChanges.map(user => user.newRankingNumber)
+                                %>]
+                                const ourData = {
+                                    labels: ourLabels,
+                                    datasets: [{
+                                        label: 'Solo MMR',
+                                        data: mmrData,
+                                        fill: false,
+                                        borderColor: 'rgb(75, 192, 192)',
+                                        lineTension: 0.2
+                                    }]
+                                };
+
+                                new Chart(ctx, {
+                                    type: 'line',
+                                    data: ourData,
+                                    options: {
+                                        scales: {
+                                            x: {
+                                                type: "time"
+                                            }
+                                        },
+                                    }
+                                });
+                            </script>
+                        </div>
+                        <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4">
+                        </header>
+
+
 
                         <!-- Game Statistics -->
                         <div class="widget-game-result__section">

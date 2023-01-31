@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <title>Realm Royale Hub</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A place for everything realm royale!">
+    <meta name="author" content="Mike Hunt">
+    <meta name="keywords" content="Mike Hunt Content">
+
+    <!-- Favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="/assets/images/esports/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/esports/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/esports/favicons/favicon-152.png">
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+
+    <!-- Google Web Fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&amp;family&#x3D;Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&amp;display&#x3D;swap"
+          rel="stylesheet">
+
+    <!-- CSS
+    ================================================== -->
+    <!-- Vendor CSS -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="/assets/fonts/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="/assets/vendor/slick/slick.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+
+
+    <!-- Template CSS-->
+    <link href="/assets/css/style-esports.css" rel="stylesheet">
+
+    <!-- Custom CSS-->
+    <link href="/assets/css/custom.css" rel="stylesheet">
+
+
+    <script>
+        var form = document.getElementById("search");
+
+        function handleForm(event) {
+            event.preventDefault();
+        }
+
+        form.addEventListener('submit', handleForm);
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDYKQEDNX3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDYKQEDNX3');
+    </script>
+</head>
+<body data-template="template-esports">
+<% function split(string, delimiter, n) {
+    const parts = string.split(delimiter);
+    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
+}
+%>
+<%
+let queueValues = {
+    474: 'Solo\'s',
+    475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
+    476: 'Squad\'s',
+    10188: 'Solo Custom\'s',
+    10189: 'Duo Custom\'s',
+    10205: 'Trio Custom\'s',
+    10190: 'Squad Custom\'s'
+}
+%>
+
+<div class="site-wrapper clearfix">
+    <div class="site-overlay"></div>
+
+    <!-- Header
+    ================================================== -->
+
+    <!-- Header Mobile -->
+    <div class="header-mobile clearfix" id="header-mobile">
+        <div class="header-mobile__logo">
+            <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                             srcset="/assets/images/esports/logoTemp1.png 1.0x" alt="Alchemists"
+                             class="header-mobile__logo-img"></a>
+        </div>
+        <div class="header-mobile__inner">
+            <a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a>
+            <button type="submit" class="header-mobile__search-submit" style="width: 3rem;height: 5rem"><i
+                        class="fas fa-search"></i></button>
+        </div>
+    </div>
+    <!-- Header Mobile / End -->
+
+    <!-- Header Desktop -->
+    <header class="header header--layout-3">
+
+        <!-- Header Top Bar -->
+        <div class="header__top-bar clearfix">
+        </div>
+        <!-- Header Top Bar / End -->
+
+        <!-- Header Primary -->
+        <!-- Header Primary -->
+        <div class="header__primary">
+            <div class="container">
+                <div class="header__primary-inner">
+
+                    <!-- Header Logo -->
+                    <div class="header-logo">
+                        <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                                         srcset="/assets/images/esports/logoTemp1.png 4x" alt="Realm Refroged Logo"
+                                         class="header-logo__img"></a>
+                    </div>
+                    <!-- Header Logo / End -->
+
+                    <!-- Main Navigation -->
+                    <nav class="main-nav">
+                        <ul class="main-nav__list">
+                            <li class=""><a href="/">Home</a>
+                            </li>
+                            <li class=""><a href="/mmr">MMR</a>
+                                <!-- Mega Menu -->
+                                <!-- Mega Menu / End -->
+                            </li>
+
+                            <li class="active">
+                                <a href="#" style="pointer-events: none;">Lookup</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/stats">Player Stats</a></li>
+                                    <li class="active"><a href="/match">Match Details</a></li>
+                                </ul>
+                            </li>
+                            <!-- Mega Menu / End -->
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Organize Events</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/orgLeague">Organize League</a></li>
+                                    <li class=""><a href="/orgTourney">Organize Tourney</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- Main Navigation / End -->
+
+                    <div class="header__primary-spacer"></div>
+
+                    <!-- Header Search Form -->
+
+                    <!-- Header Search Form / End -->
+
+                    <!-- Header Info Block -->
+
+                    <!-- Header Info Block / End -->
+
+                </div>
+            </div>
+        </div>
+        <!-- Header Primary / End -->
+        <!-- Header Primary / End -->
+
+    </header>
+    <!-- Header / End -->
+
+
+    <!-- Content
+    ================================================== -->
+    <div class="site-content">
+        <div class="container" style="max-width: 1200px">
+
+            <div class="card card--has-table">
+                <div class="widget__title card__header card__header--has-btn">
+                    <h3 style="font-size:2rem">Realm Statistics</h3>
+                    <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4">
+
+                        <h3 class="widget-game-result__title" style="font-size: 0.9rem">
+                            Delay: <%= totalDelay[0]['delay'] %> seconds</h3>
+                    </header>
+
+                </div>
+
+                <div class="card__content" style="margin:0 auto;">
+
+                    <div class="widget-results__content" style="margin:0 auto;">
+                        <div style="padding-right: 2rem;margin:0 auto;">
+                            <h4 style="text-align: center">7 days Stats</h4>
+                            <div>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Total Games Last
+                                    7 days: <%= lastWeekStats[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Solo Games
+                                    - <%= lastWeekStatsSolo[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Trio Games
+                                    - <%= lastWeekStatsTrio[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center">Squad Games
+                                    - <%= lastWeekStatsSquad[0]['totalGames'] %></h5>
+                            </div>
+                            <h5 style="text-align: center">Total Players Last 7
+                                days: <%= lastWeekStats[0]['totalPlayersInMatches'] %></h5>
+                            <h5 style="text-align: center">Total Unqiue Players Last 7
+                                days: <%= lastWeekStats[0]['uniquePlayers'] %></h5>
+                        </div>
+                        <div style="padding-right: 2rem">
+                            <h4 style="text-align: center">Last 24 Hour Stats</h4>
+                            <div>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Total Games Last
+                                    24 hours: <%= lastDayStats[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Solo Games
+                                    - <%= lastDayStatsSolo[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Trio Games
+                                    - <%= lastDayStatsTrio[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center">Squad Games
+                                    - <%= lastDayStatsSquad[0]['totalGames'] %></h5>
+                            </div>
+                            <h5 style="text-align: center">Total Players Last 24
+                                hours: <%= lastDayStats[0]['totalPlayersInMatches'] %></h5>
+                            <h5 style="text-align: center">Total Unique Players Last 24
+                                hours: <%= lastDayStats[0]['uniquePlayers'] %></h5>
+                        </div>
+                        <div style="padding-right: 2rem">
+                            <h4 style="text-align: center">Last Hour Stats</h4>
+                            <div>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Total Games Last
+                                    60 minutes: <%= lastHourStats[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Solo Games
+                                    - <%= lastHourStatsSolo[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Trio Games
+                                    - <%= lastHourStatsTrio[0]['totalGames'] %></h5>
+                                <h5 style="text-align: center">Squad Games
+                                    - <%= lastHourStatsSquad[0]['totalGames'] %></h5>
+                            </div>
+                            <h5 style="text-align: center">Total Players Last 60
+                                minutes: <%= lastHourStats[0]['totalPlayersInMatches'] %></h5>
+                            <h5 style="text-align: center">Total Unique Players Last 60
+                                minutes: <%= lastHourStats[0]['uniquePlayers'] %></h5>
+                        </div>
+                    </div>
+                    <!-- Game #1 / End -->
+                </div>
+            </div>
+        </div>
+        <!-- Last Matches Stats / End -->
+
+
+    </div>
+</div>
+
+<!-- Content / End -->
+
+
+<!-- Footer
+================================================== -->
+<footer id="footer" class="footer">
+</footer>
+<!-- Footer / End -->
+
+</div>
+
+<!-- Javascript Files
+================================================== -->
+<!-- Core JS -->
+<script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/jquery/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/core.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+
+<!-- Vendor JS -->
+<script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
+
+
+<!-- Template JS -->
+<script src="/assets/js/init.js"></script>
+<script src="/assets/js/custom.js"></script>
+
+</body>
+</html>
