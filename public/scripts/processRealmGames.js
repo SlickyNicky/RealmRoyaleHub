@@ -82,6 +82,7 @@ setInterval(async function () {
 
                                     for (const team in teamAndPlayers) {
                                         for (const player in teamAndPlayers[team]) {
+                                            let time = new Date(matchDetails['match_datetime'])
                                             let insertedRow = await database.mmrUpdateMMRPlayerChanges(
                                                 teamAndPlayers[team][player][0],
                                                 match_queue_id,
@@ -90,6 +91,7 @@ setInterval(async function () {
                                                 newRanksTemp[team][player]['mu'] - mmrValues[team][player]['mu'],
                                                 newRanksTemp[team][player]['sigma'],
                                                 newRanksTemp[team][player]['mu'],
+                                                Math.floor(time.getTime()/1000)
                                             )
                                             if (insertedRow === 1) {
                                                 database.mmrUpdateMMRPlayer(

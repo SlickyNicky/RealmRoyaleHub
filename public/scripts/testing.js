@@ -7,28 +7,69 @@ dayjs.extend(utc);
 
 let databaseConfig = require('./realmRoyaleDatabase.js');
 let database = new databaseConfig()
-// const queueIDsToGrab = ['474', '475', '476', '10188', '10189', '10205', '10190']
-
+const queueIDsToGrab = ['474', '475', '476', '10188', '10189', '10205', '10190']
 setTimeout(async function () {
-    console.log('--------------------------')
-    let matches = await database.getHighestKills()
-    let highestKills = 0
-    let queueID = ''
-    for(let match in matches) {
-        for(let team in matches[match]['matchData']['teams']) {
-            let teamKills = 0
-            for(const player in  matches[match]['matchData']['teams'][team]['players']) {
-                teamKills += matches[match]['matchData']['teams'][team]['players'][player]['kills_player']
-            }
-            if(teamKills > highestKills) {
-                highestKills = teamKills
-                queueID = matches[match]['matchData']['match_id']
-            }
+    playerId = (await database.callApi("SearchPlayers", true, 'SearchPlayers', 'Milkybarcheesecake'))
+    console.log(playerId)
+    playerId = playerId[0]
+
+    console.log(playerId)
+    try {
+        // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
+
+
+        if (playerId['name'] !== `${playerUrl}` && playerId['name'] !== `${playerUrl.toLowerCase()}`) {
+            playerId = playerUrl
+        } else {
+            playerId = playerId['id']
         }
+    } catch (e) {
+        playerId = playerUrl
     }
-    console.log(highestKills)
-    console.log(queueID)
-    console.log('--------------------------')
+    console.log(playerId)
+    // for (const queueID in queueIDsToGrab) {
+    //     database.callApi(
+    //         'GetMatchIDsByQueue',
+    //         true,
+    //         `GetMatchIDsByQueue:::SpecificQ::${queueIDsToGrab[queueID]}`,
+    //         queueIDsToGrab[queueID],
+    //         dayjs.utc().format('YYYYMMDD'),
+    //         -1
+    //     ).then(async (matches) => {
+    //         console.log(matches)
+    //         for (const match in matches) {
+    //             if (matches[match]['active_flag'] == 'n') {
+    //                 await database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+    //             }
+    //         }
+    //     })
+    // }
+
+
+                    // '2022-09-24T00:49:01.653'
+    // let test = '2023-01-11T01:46:59.433'
+    // let time = new Date(test)
+    // Math.floor(time.getTime()/1000)
+
+    // console.log('--------------------------')
+    // let matches = await database.getHighestKills()
+    // let highestKills = 0
+    // let queueID = ''
+    // for(let match in matches) {
+    //     for(let team in matches[match]['matchData']['teams']) {
+    //         let teamKills = 0
+    //         for(const player in  matches[match]['matchData']['teams'][team]['players']) {
+    //             teamKills += matches[match]['matchData']['teams'][team]['players'][player]['kills_player']
+    //         }
+    //         if(teamKills > highestKills) {
+    //             highestKills = teamKills
+    //             queueID = matches[match]['matchData']['match_id']
+    //         }
+    //     }
+    // }
+    // console.log(highestKills)
+    // console.log(queueID)
+    // console.log('--------------------------')
 
 
     //  id: 5494864,
@@ -52,5 +93,5 @@ setTimeout(async function () {
     //   mines_wards_placed: 0,
     //   damage_done_in_hand: 0,
     //   healing_player_self: 2027
-    }, 1000 // polls every 30 seconds from realm api (2*2*7*60->1680*24->40320 api pulls from this every day at a minimum)
+    } // polls every 30 seconds from realm api (2*2*7*60->1680*24->40320 api pulls from this every day at a minimum)
 );

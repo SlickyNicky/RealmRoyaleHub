@@ -488,7 +488,8 @@ class DatabaseHandler {
         })
     }
 
-    async mmrUpdateMMRPlayerChanges(playerID, queueID, queueIDNumber, sigmaChange, muChange, newSigma, newMu) {
+    async mmrUpdateMMRPlayerChanges(playerID, queueID, queueIDNumber, sigmaChange, muChange, newSigma, newMu,time) {
+
         return new Promise(async (resolve, reject) => {
             let query = `
                             INSERT IGNORE INTO MMRGamePointTracking VALUES (
@@ -501,7 +502,7 @@ class DatabaseHandler {
                             '${newSigma}',
                             '${newMu}',
                             '${ordinal({ mu: newMu, sigma: newSigma})}',
-                            '${this.seconds_since_epoch()}'
+                            '${time}'
                             )
                         `;
 
