@@ -1064,7 +1064,7 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
                 // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
 
 
-                if (playerId['name'] !== `${playerUrl}` && playerId['name'] !== `${playerUrl.toLowerCase()}`) {
+                if (playerId['name'] !== `${playerUrl}` && playerId['name'].toLowerCase() !== `${playerUrl.toLowerCase()}`) {
                     playerId = playerUrl
                 } else {
                     playerId = playerId['id']
