@@ -89,15 +89,28 @@ let queueValues = {
     477: 'War\'s',
     480: 'Solo\'s Low LvL',
     481: 'Squad\'s Mid LvL',
+    482: 'Duo\'s',
     483: 'Duo\'s Mid LvL',
     10188: 'Solo Custom\'s',
     10189: 'Duo Custom\'s',
     10205: 'Trio Custom\'s',
     10190: 'Squad Custom\'s'
 }
+
+let classValues = {
+    2494: 'Mage',
+    2496: 'Assassin', // who cares about consistency right realm? should be duo kekw thanks reforged
+    2495: 'Engineer',
+    2285: 'Warrior',
+    2493: 'Hunter'
+}
+
+
+
     let queueValuesAlignmentDisplay = {
-        'Combined' : 0,
-        'Solo\'s' : 1,
+        'Combined' : -1,
+        'Solo\'s' : 0,
+        'Duo\'s': 1,
         'Trio\'s' :2,
         'Squad\'s' :3,
         'Solo\'s Low LvL':12,
@@ -247,7 +260,7 @@ let queueValues = {
                                 </header>
 
                                 <header class="widget-game-result__header">
-                                    <h3 class="widget-game-result__title" style="font-size: 1.5rem;letter-spacing: 1px"><%=playerInfo['name']%></h3>
+                                    <h3 class="widget-game-result__title" style="font-size: 1.5rem;letter-spacing: 1px;text-transform: none"><%=playerInfo['name']%></h3>
                                     <div class="widget-game-result__subtitle" style="font-size: 0.8rem">Account Created<br><%=playerInfo['created_datetime']%></div>
                                 </header>
 
@@ -333,7 +346,6 @@ let queueValues = {
 
                 </div>
 
-            </div>
             <div class="row" style="margin-left:auto; margin-right:auto;">
 
             </div>
@@ -350,6 +362,9 @@ let queueValues = {
                         <tr>
                             <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
                                 Match Number
+                            </th>
+                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Queue Mode
                             </th>
                             <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
                                 Class
@@ -376,8 +391,17 @@ let queueValues = {
                                     <%= index %>
                                 </td>
                                 <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty['matches'][team]['class_name'] %>
+                                    <%= queueValues[playerLastFifty['matches'][team]['match_queue_id']] %>
                                 </td>
+                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= classValues[playerLastFifty['matches'][team]['class_id']] %>
+                                </td>
+
+
+
+
+
+
                                 <td data-order="<%=playerLastFifty['matches'][team]['placement']%>" class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
                                     <%=ordinal_suffix_of(playerLastFifty['matches'][team]['placement'])%>
                                 </td>
@@ -411,6 +435,7 @@ let queueValues = {
                     </table>
                 </div>
 
+            </div>
             </div>
             <%}%>
 

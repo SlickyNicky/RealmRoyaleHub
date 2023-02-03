@@ -73,6 +73,7 @@
 <%
 let queueValues = {
     474: 'Solo\'s',
+    482: 'Duo\'s', // :((((((((( thor is going to be the bane of my existence 475 used to be duos
     475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
     476: 'Squad\'s',
     10188: 'Solo Custom\'s',
@@ -192,7 +193,7 @@ let queueValues = {
     ================================================== -->
     <%if(renderDetails){%>
     <div class="site-content">
-        <div class="container" style="max-width: 1000px">
+        <div class="container" style="max-width: 1200px">
 
             <div class="card card--has-table">
                 <div class="card__header">
@@ -242,34 +243,38 @@ let queueValues = {
                                style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center">
                             <thead>
                             <tr>
-                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                <th class="team-result__placement" style="text-align: center;width: 20px;font-size: 18px">
                                     Placement
                                 </th>
                                 <th class="team-result__timealive" style="text-align: center;font-size: 18px" >Seconds Alive</th>
-                                <th class="team-result__vs" style="max-width: 20px;word-break: break-all;font-size: 18px">Players</th>
+                                <th class="team-result__vs" style="width: 400px;word-break: break-all;font-size: 18px">Players</th>
                                 <th class="team-result__kills" style="text-align: center;font-size: 18px">Kills</th>
                                 <th class="team-result__deaths" style="text-align: center;font-size: 18px">Deaths</th>
                                 <th class="team-result__assists" style="text-align: center;font-size: 18px">Damage</th>
                                 <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Damage Taken</th>
+                                <th class="team-result__self_healing" style="text-align: center;max-width: 100px;font-size: 18px">Healing Self</th>
+                                <th class="team-result__team_healing" style="text-align: center;max-width: 100px;font-size: 18px">Healing Others</th>
                             </tr>
                             </thead>
                             <tbody>
                             <% for(const team in matchDetails['teams']){ %>
                                 <tr>
-                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <td data-order="<%=matchDetails['teams'][team]['players'][0]['duration_secs']*-1%>" class="team-result__kills team-color--2" style="width: 20px;font-size: 16px">
                                             <%= matchDetails['teams'][team]['placement'] %>
                                     </td>
-                                    <td class="team-result__date" style="font-size: 16px">
+                                    <td data-order="<%=matchDetails['teams'][team]['players'][0]['duration_secs']%>" class="team-result__date" style="font-size: 16px">
                                         <%= matchDetails['teams'][team]['players'][0]['duration_secs'] %>
                                     </td>
 
-                                    <td class="team-result__outcome" style="max-width: 150px;word-break: break-all;" >
+                                    <td class="team-result__outcome" style="max-width: 400px;word-break: break-all;" >
                                         <div class="team-result__teams-wrapper">
                                             <!-- Team #1 -->
-                                            <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px">
+                                            <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px;flex-direction: column;align-items: flex-start">
                                                         <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                                                <%= matchDetails['teams'][team]['players'][player]['name'] %>
-                                                    <br>
+                                                    <a href="/stats/<%=matchDetails['teams'][team]['players'][player]['id']%>" style="display: inherit">
+                                                        <%= matchDetails['teams'][team]['players'][player]['name'] %>
+                                                    </a>
+                                                <br>
                                                         <% } %>
                                             </div>
                                             <!-- Team #1 / End -->
@@ -344,6 +349,43 @@ let queueValues = {
                                     <td data-order="<%=totalDamageTaken%>" class="team-result__absorbed team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
                                             <% for(const player in matchDetails['teams'][team]['players']){ %>
                                                     <%= matchDetails['teams'][team]['players'][player]['damage_taken'] %>
+                                            <br>
+
+                                        <% } %>
+                                    </td>
+
+
+                                    <%
+                                        // I hate doing this twice, but
+                                        // we need the total points to help table sorting if needed
+                                        let totalSelfHealing = 0;
+
+                                        for(const player in matchDetails['teams'][team]['players']) {
+                                            totalSelfHealing+= matchDetails['teams'][team]['players'][player]['healing_player_self']
+                                        }
+
+                                    %>
+                                    <td data-order="<%=totalSelfHealing%>" class="team-result__self_healing team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
+                                        <% for(const player in matchDetails['teams'][team]['players']){ %>
+                                            <%= matchDetails['teams'][team]['players'][player]['healing_player_self'] %>
+                                            <br>
+
+                                        <% } %>
+                                    </td>
+
+                                    <%
+                                        // I hate doing this twice, but
+                                        // we need the total points to help table sorting if needed
+                                        let totalHealingOthers = 0;
+
+                                        for(const player in matchDetails['teams'][team]['players']) {
+                                            totalHealingOthers+= matchDetails['teams'][team]['players'][player]['healing_player']
+                                        }
+
+                                    %>
+                                    <td data-order="<%=totalHealingOthers%>" class="team-result__team_healing team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
+                                        <% for(const player in matchDetails['teams'][team]['players']){ %>
+                                            <%= matchDetails['teams'][team]['players'][player]['healing_player'] %>
                                             <br>
 
                                         <% } %>

@@ -187,7 +187,7 @@ let queueValues = {
 
             <div class="card card--has-table">
                 <div class="widget__title card__header card__header--has-btn">
-                    <h3 style="font-size:2rem">Realm Statistics</h3>
+                    <h3 style="font-size:2rem">Realm Match Statistics</h3>
                     <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4">
 
                         <h3 class="widget-game-result__title" style="font-size: 0.9rem">
@@ -203,57 +203,504 @@ let queueValues = {
                             <h4 style="text-align: center">7 days Stats</h4>
                             <div>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Total Games Last
-                                    7 days: <%= lastWeekStats[0]['totalGames'] %></h5>
+                                    7 days: <%= lastWeekStats[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Solo Games
-                                    - <%= lastWeekStatsSolo[0]['totalGames'] %></h5>
+                                    - <%= lastWeekStatsSolo[0]['totalGames'].toLocaleString() %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Duo Games
+                                    - <%= lastWeekStatsDuo[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Trio Games
-                                    - <%= lastWeekStatsTrio[0]['totalGames'] %></h5>
+                                    - <%= lastWeekStatsTrio[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center">Squad Games
-                                    - <%= lastWeekStatsSquad[0]['totalGames'] %></h5>
+                                    - <%= lastWeekStatsSquad[0]['totalGames'].toLocaleString() %></h5>
                             </div>
                             <h5 style="text-align: center">Total Players Last 7
-                                days: <%= lastWeekStats[0]['totalPlayersInMatches'] %></h5>
+                                days: <%= lastWeekStats[0]['totalPlayersInMatches'].toLocaleString() %></h5>
                             <h5 style="text-align: center">Total Unqiue Players Last 7
-                                days: <%= lastWeekStats[0]['uniquePlayers'] %></h5>
+                                days: <%= lastWeekStats[0]['uniquePlayers'].toLocaleString() %></h5>
+                            <h5 style="text-align: center">
+                                <a download href="/views/files/playersLastWeek.txt"> Clicking on this will download the
+                                    player list</a>
+                            </h5>
                         </div>
                         <div style="padding-right: 2rem">
                             <h4 style="text-align: center">Last 24 Hour Stats</h4>
                             <div>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Total Games Last
-                                    24 hours: <%= lastDayStats[0]['totalGames'] %></h5>
+                                    24 hours: <%= lastDayStats[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Solo Games
-                                    - <%= lastDayStatsSolo[0]['totalGames'] %></h5>
+                                    - <%= lastDayStatsSolo[0]['totalGames'].toLocaleString() %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Duo Games
+                                    - <%= lastDayStatsDuo[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Trio Games
-                                    - <%= lastDayStatsTrio[0]['totalGames'] %></h5>
+                                    - <%= lastDayStatsTrio[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center">Squad Games
-                                    - <%= lastDayStatsSquad[0]['totalGames'] %></h5>
+                                    - <%= lastDayStatsSquad[0]['totalGames'].toLocaleString() %></h5>
                             </div>
                             <h5 style="text-align: center">Total Players Last 24
-                                hours: <%= lastDayStats[0]['totalPlayersInMatches'] %></h5>
+                                hours: <%= lastDayStats[0]['totalPlayersInMatches'].toLocaleString() %></h5>
                             <h5 style="text-align: center">Total Unique Players Last 24
-                                hours: <%= lastDayStats[0]['uniquePlayers'] %></h5>
+                                hours: <%= lastDayStats[0]['uniquePlayers'].toLocaleString() %></h5>
+                            <h5 style="text-align: center">
+                                <a download href="/views/files/playersLastDay.txt"> Clicking on this will download the
+                                    player list</a>
+                            </h5>
                         </div>
                         <div style="padding-right: 2rem">
                             <h4 style="text-align: center">Last Hour Stats</h4>
                             <div>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Total Games Last
-                                    60 minutes: <%= lastHourStats[0]['totalGames'] %></h5>
+                                    60 minutes: <%= lastHourStats[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Solo Games
-                                    - <%= lastHourStatsSolo[0]['totalGames'] %></h5>
+                                    - <%= lastHourStatsSolo[0]['totalGames'].toLocaleString() %></h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Duo Games
+                                    - <%= lastHourStatsDuo[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Trio Games
-                                    - <%= lastHourStatsTrio[0]['totalGames'] %></h5>
+                                    - <%= lastHourStatsTrio[0]['totalGames'].toLocaleString() %></h5>
                                 <h5 style="text-align: center">Squad Games
-                                    - <%= lastHourStatsSquad[0]['totalGames'] %></h5>
+                                    - <%= lastHourStatsSquad[0]['totalGames'].toLocaleString() %></h5>
                             </div>
                             <h5 style="text-align: center">Total Players Last 60
-                                minutes: <%= lastHourStats[0]['totalPlayersInMatches'] %></h5>
+                                minutes: <%= lastHourStats[0]['totalPlayersInMatches'].toLocaleString() %></h5>
                             <h5 style="text-align: center">Total Unique Players Last 60
-                                minutes: <%= lastHourStats[0]['uniquePlayers'] %></h5>
+                                minutes: <%= lastHourStats[0]['uniquePlayers'].toLocaleString() %></h5>
+                            <h5 style="text-align: center">
+                                <a download href="/views/files/playersLastHour.txt"> Clicking on this will download the
+                                    player list</a>
+                            </h5>
+
                         </div>
                     </div>
                     <!-- Game #1 / End -->
                 </div>
             </div>
+
+
+            <div class="card card--has-table">
+                <div class="widget__title card__header card__header--has-btn">
+                    <h3 style="font-size:2rem">Realm Class Winning Statistics</h3>
+                    <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4">
+
+                    </header>
+
+                </div>
+
+                <div class="card__content" style="margin:0 auto;">
+
+                    <div class="widget-results__content" style="margin:0 auto;">
+                        <div style="padding-right: 2rem;margin:0 auto;">
+                            <h3 style="text-align: center">7 days Stats (inaccurate until 2/9)</h3>
+                            <div>
+                                <div>
+                                    <h4 style="text-align: center;margin-bottom: 0rem">
+                                        Solo Games
+                                    </h4>
+                                    <% if(classWinrateSoloLastWeek.length !== 0){ %>
+
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSoloLastWeek[0]['class_name'] %> -
+                                            <%= classWinrateSoloLastWeek[0]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSoloLastWeek[1]['class_name'] %> -
+                                            <%= classWinrateSoloLastWeek[1]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSoloLastWeek[2]['class_name'] %> -
+                                            <%= classWinrateSoloLastWeek[2]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSoloLastWeek[3]['class_name'] %> -
+                                            <%= classWinrateSoloLastWeek[3]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSoloLastWeek[4]['class_name'] %> -
+                                            <%= classWinrateSoloLastWeek[4]['games_won_solo'] %>
+                                        </h5>
+                                    <% } else { %>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            No wins the last week
+                                        </h5>
+                                    <%}%>
+                                </div>
+                                <br>
+                                <div>
+                                    <h4 style="text-align: center;margin-bottom: 0rem">
+                                        Duo Games
+                                    </h4>
+                                    <% if(classWinrateDuoLastWeek.length !== 0){ %>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateDuoLastWeek[0]['class_name'] %> -
+                                            <%= classWinrateDuoLastWeek[0]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateDuoLastWeek[1]['class_name'] %> -
+                                            <%= classWinrateDuoLastWeek[1]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateDuoLastWeek[2]['class_name'] %> -
+                                            <%= classWinrateDuoLastWeek[2]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateDuoLastWeek[3]['class_name'] %> -
+                                            <%= classWinrateDuoLastWeek[3]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateDuoLastWeek[4]['class_name'] %> -
+                                            <%= classWinrateDuoLastWeek[4]['games_won_solo'] %>
+                                        </h5>
+                                    <% } else { %>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            No wins the last week
+                                        </h5>
+                                    <%}%>
+                                </div>
+                                <br>
+                                <div>
+                                    <h4 style="text-align: center;margin-bottom: 0rem">
+                                        Trio Games
+                                    </h4>
+                                    <% if(classWinrateTrioLastWeek.length !== 0){ %>
+
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateTrioLastWeek[0]['class_name'] %> -
+                                            <%= classWinrateTrioLastWeek[0]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateTrioLastWeek[1]['class_name'] %> -
+                                            <%= classWinrateTrioLastWeek[1]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateTrioLastWeek[2]['class_name'] %> -
+                                            <%= classWinrateTrioLastWeek[2]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateTrioLastWeek[3]['class_name'] %> -
+                                            <%= classWinrateTrioLastWeek[3]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateTrioLastWeek[4]['class_name'] %> -
+                                            <%= classWinrateTrioLastWeek[4]['games_won_solo'] %>
+                                        </h5>
+                                    <% } else { %>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            No wins the last week
+                                        </h5>
+                                    <%}%>
+
+                                </div>
+                                <br>
+                                <div>
+
+                                    <h4 style="text-align: center;margin-bottom: 0rem">
+                                        Squad Games
+                                    </h4>
+                                    <% if(classWinrateSquadLastWeek.length !== 0){ %>
+
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSquadLastWeek[0]['class_name'] %> -
+                                            <%= classWinrateSquadLastWeek[0]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSquadLastWeek[1]['class_name'] %> -
+                                            <%= classWinrateSquadLastWeek[1]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSquadLastWeek[2]['class_name'] %> -
+                                            <%= classWinrateSquadLastWeek[2]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSquadLastWeek[3]['class_name'] %> -
+                                            <%= classWinrateSquadLastWeek[3]['games_won_solo'] %>
+                                        </h5>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            <%= classWinrateSquadLastWeek[4]['class_name'] %> -
+                                            <%= classWinrateSquadLastWeek[4]['games_won_solo'] %>
+                                        </h5>
+                                    <% } else { %>
+                                        <h5 style="text-align: center;margin-bottom: 0rem">
+                                            No wins the last week
+                                        </h5>
+                                    <%}%>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div style="padding-right: 2rem">
+                            <h3 style="text-align: center">Last Day Stats</h3>
+                            <div>
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Solo Games
+                                </h4>
+                                <% if(classWinrateSoloLastHour.length !== 0){ %>
+
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSoloLastDay[0]['class_name'] %> -
+                                    <%= classWinrateSoloLastDay[0]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSoloLastDay[1]['class_name'] %> -
+                                    <%= classWinrateSoloLastDay[1]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSoloLastDay[2]['class_name'] %> -
+                                    <%= classWinrateSoloLastDay[2]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSoloLastDay[3]['class_name'] %> -
+                                    <%= classWinrateSoloLastDay[3]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSoloLastDay[4]['class_name'] %> -
+                                    <%= classWinrateSoloLastDay[4]['games_won_solo'] %>
+                                </h5>
+                                <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last day
+                                    </h5>
+                                <%}%>
+                            </div>
+                            <br>
+                            <div>
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Duo Games
+                                </h4>
+                                <% if(classWinrateDuoLastHour.length !== 0){ %>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateDuoLastDay[0]['class_name'] %> -
+                                    <%= classWinrateDuoLastDay[0]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateDuoLastDay[1]['class_name'] %> -
+                                    <%= classWinrateDuoLastDay[1]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateDuoLastDay[2]['class_name'] %> -
+                                    <%= classWinrateDuoLastDay[2]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateDuoLastDay[3]['class_name'] %> -
+                                    <%= classWinrateDuoLastDay[3]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateDuoLastDay[4]['class_name'] %> -
+                                    <%= classWinrateDuoLastDay[4]['games_won_solo'] %>
+                                </h5>
+                                <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last day
+                                    </h5>
+                                <%}%>
+                            </div>
+                            <br>
+                            <div>
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Trio Games
+                                </h4>
+                                <% if(classWinrateTrioLastHour.length !== 0){ %>
+
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateTrioLastDay[0]['class_name'] %> -
+                                    <%= classWinrateTrioLastDay[0]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateTrioLastDay[1]['class_name'] %> -
+                                    <%= classWinrateTrioLastDay[1]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateTrioLastDay[2]['class_name'] %> -
+                                    <%= classWinrateTrioLastDay[2]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateTrioLastDay[3]['class_name'] %> -
+                                    <%= classWinrateTrioLastDay[3]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateTrioLastDay[4]['class_name'] %> -
+                                    <%= classWinrateTrioLastDay[4]['games_won_solo'] %>
+                                </h5>
+                                    <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last day
+                                    </h5>
+                                <%}%>
+
+                            </div>
+                            <br>
+                            <div>
+
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Squad Games
+                                </h4>
+                                <% if(classWinrateSquadLastHour.length !== 0){ %>
+
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSquadLastDay[0]['class_name'] %> -
+                                    <%= classWinrateSquadLastDay[0]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSquadLastDay[1]['class_name'] %> -
+                                    <%= classWinrateSquadLastDay[1]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSquadLastDay[2]['class_name'] %> -
+                                    <%= classWinrateSquadLastDay[2]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSquadLastDay[3]['class_name'] %> -
+                                    <%= classWinrateSquadLastDay[3]['games_won_solo'] %>
+                                </h5>
+                                <h5 style="text-align: center;margin-bottom: 0rem">
+                                    <%= classWinrateSquadLastDay[4]['class_name'] %> -
+                                    <%= classWinrateSquadLastDay[4]['games_won_solo'] %>
+                                </h5>
+                                <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last day
+                                    </h5>
+                                <%}%>
+                            </div>
+                        </div>
+
+                        <div style="padding-right: 2rem">
+                            <h3 style="text-align: center">Last Hour Stats</h3>
+                            <div>
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Solo Games
+                                </h4>
+                                <% if(classWinrateSoloLastHour.length !== 0){ %>
+
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSoloLastHour[0]['class_name'] %> -
+                                        <%= classWinrateSoloLastHour[0]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSoloLastHour[1]['class_name'] %> -
+                                        <%= classWinrateSoloLastHour[1]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSoloLastHour[2]['class_name'] %> -
+                                        <%= classWinrateSoloLastHour[2]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSoloLastHour[3]['class_name'] %> -
+                                        <%= classWinrateSoloLastHour[3]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSoloLastHour[4]['class_name'] %> -
+                                        <%= classWinrateSoloLastHour[4]['games_won_solo'] %>
+                                    </h5>
+                                <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last 24 hours
+                                    </h5>
+                                <%}%>
+                            </div>
+                            <br>
+                            <div>
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Duo Games
+                                </h4>
+                                <% if(classWinrateDuoLastHour.length !== 0){ %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateDuoLastHour[0]['class_name'] %> -
+                                        <%= classWinrateDuoLastHour[0]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateDuoLastHour[1]['class_name'] %> -
+                                        <%= classWinrateDuoLastHour[1]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateDuoLastHour[2]['class_name'] %> -
+                                        <%= classWinrateDuoLastHour[2]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateDuoLastHour[3]['class_name'] %> -
+                                        <%= classWinrateDuoLastHour[3]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateDuoLastHour[4]['class_name'] %> -
+                                        <%= classWinrateDuoLastHour[4]['games_won_solo'] %>
+                                    </h5>
+                                <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last 24 hours
+                                    </h5>
+                                <%}%>
+                            </div>
+                            <br>
+                            <div>
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Trio Games
+                                </h4>
+                                <% if(classWinrateTrioLastHour.length !== 0){ %>
+
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateTrioLastHour[0]['class_name'] %> -
+                                        <%= classWinrateTrioLastHour[0]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateTrioLastHour[1]['class_name'] %> -
+                                        <%= classWinrateTrioLastHour[1]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateTrioLastHour[2]['class_name'] %> -
+                                        <%= classWinrateTrioLastHour[2]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateTrioLastHour[3]['class_name'] %> -
+                                        <%= classWinrateTrioLastHour[3]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateTrioLastHour[4]['class_name'] %> -
+                                        <%= classWinrateTrioLastHour[4]['games_won_solo'] %>
+                                    </h5>
+                                <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last 24 hours
+                                    </h5>
+                                <%}%>
+
+                            </div>
+                            <br>
+                            <div>
+
+                                <h4 style="text-align: center;margin-bottom: 0rem">
+                                    Squad Games
+                                </h4>
+                                <% if(classWinrateSquadLastHour.length !== 0){ %>
+
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSquadLastHour[0]['class_name'] %> -
+                                        <%= classWinrateSquadLastHour[0]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSquadLastHour[1]['class_name'] %> -
+                                        <%= classWinrateSquadLastHour[1]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSquadLastHour[2]['class_name'] %> -
+                                        <%= classWinrateSquadLastHour[2]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSquadLastHour[3]['class_name'] %> -
+                                        <%= classWinrateSquadLastHour[3]['games_won_solo'] %>
+                                    </h5>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        <%= classWinrateSquadLastHour[4]['class_name'] %> -
+                                        <%= classWinrateSquadLastHour[4]['games_won_solo'] %>
+                                    </h5>
+                                <% } else { %>
+                                    <h5 style="text-align: center;margin-bottom: 0rem">
+                                        No wins the last 24 hours
+                                    </h5>
+                                <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Game #1 / End -->
+                </div>
+            </div>
+
         </div>
         <!-- Last Matches Stats / End -->
 

@@ -11,7 +11,7 @@ dayjs.extend(utc);
 let databaseConfig = require('./realmRoyaleDatabase.js');
 let database = new databaseConfig()
 
-const queueIDsToGrab = ['474', '475', '476', '10188', '10189', '10205', '10190']
+const queueIDsToGrab = ['474', '475', '476','482', '10188', '10189', '10205', '10190']
 
 setInterval(async function () {
 

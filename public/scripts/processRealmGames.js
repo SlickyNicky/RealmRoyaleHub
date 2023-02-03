@@ -17,6 +17,93 @@ const logger = winston.createLogger({
     ],
 });
 
+function fixRealmGameOutput(totalGameDetails,anArrayOfGameDetail=false) {
+    if(anArrayOfGameDetail) {
+        for(const [key,value] of totalGameDetails.entries()) {
+            let idStored = []
+            for(const gameVals in value) {
+                if(gameVals === 'teams') {
+                    let index = 0
+                    for(const teams in value[gameVals]) {
+                        if(idStored[value[gameVals][teams]['id']] === undefined) {
+                            idStored[value[gameVals][teams]['id']] = {index: index}
+                        } else {
+                            for(const player in value[gameVals][teams]['players']) {
+                                totalGameDetails.get(key)[gameVals][idStored[value[gameVals][teams]['id']]['index']]['players'].push(
+                                    value[gameVals][teams]['players'][player])
+                            }
+                            delete totalGameDetails.get(key)[gameVals][index]
+                        }
+                        index+=1
+                    }
+                }
+            }
+        }
+
+        // console.log(totalGameDetails)
+        return totalGameDetails
+    } else {
+        let idStored = []
+        for(const gameVals in totalGameDetails) {
+            if(gameVals === 'teams') {
+                let index = 0
+                for(const teams in totalGameDetails[gameVals]) {
+
+                    if(idStored[totalGameDetails[gameVals][teams]['id']] === undefined) {
+                        idStored[totalGameDetails[gameVals][teams]['id']] = {index: index}
+                    } else {
+                        for(const player in totalGameDetails[gameVals][teams]['players']) {
+                            totalGameDetails[gameVals][teams]['players'][player]['duration_secs']= totalGameDetails[gameVals][idStored[totalGameDetails[gameVals][teams]['id']]['index']]['players'][0]['duration_secs']
+                            totalGameDetails[gameVals][idStored[totalGameDetails[gameVals][teams]['id']]['index']]['players'].push(
+                                totalGameDetails[gameVals][teams]['players'][player])
+                        }
+                        delete totalGameDetails[gameVals][index]
+                    }
+                    index+=1
+                }
+            }
+        }
+        return totalGameDetails
+    }
+}
+
+
+
+async function insertFormattedGameMatches(gameMatch) {
+
+
+    await database.insertNewMatchInformationOverview(gameMatch);
+
+    for(const team in gameMatch['teams']) {
+        for(const players in gameMatch['teams'][team]) {
+            for(const player in gameMatch['teams'][team][players]) {
+
+                if((await database.getStoredPlayerInformation(gameMatch['teams'][team][players][player]['id'])).length === 0) {
+                    let playerInfo = await database.callApi(
+                        'GetPlayer',
+                        true,
+                        `GetPlayer::${gameMatch['teams'][team][players][player]['id']}`,
+                        gameMatch['teams'][team][players][player]['id'],
+                        'hirez'
+                    )
+                    await database.insertNewPlayerInformation(playerInfo)
+                }
+
+
+
+                await database.insertNewMatchInformationPerPerson(
+                    gameMatch['teams'][team][players][player],
+                    gameMatch['match_id'],
+                    gameMatch['teams'][team][players][player]['id'],
+                    gameMatch['teams'][team]
+                );
+            }
+
+        }
+    }
+}
+
+
 setInterval(async function () {
 
         database.realmGetMatchesToProcess().then(async matches => {
@@ -36,10 +123,13 @@ setInterval(async function () {
                             `GetMatchDetails::${matches[match]['match_id']}`,
                             matches[match]['match_id']
                         ).then(async matchDetails => {
-
+                            matchDetails = fixRealmGameOutput(matchDetails)
+                            await insertFormattedGameMatches(matchDetails)
 
                             if (matchDetails['ret_msg'] === null) {
+
                                 logger.error(`Match:::GOOD_MATCH:::${matches[match]['match_id']}::RET_MSG:${matchDetails['ret_msg']}`)
+
                                 let match_queue_id = matchDetails['match_queue_id'] // 474->solos,475->duos,476->squads,etc...
 
                                 let placementOrder = []

@@ -102,6 +102,38 @@ function convertMMRToRank(mmrValue) {
     }
 }
 
+async function getPlayerID(searchInput) {
+    let playerId = 0
+    let players = await database.callApi(
+        "SearchPlayers",
+        true,
+        'SearchPlayers',
+        searchInput
+    )
+
+    for (const player in players) {
+        if (players[player]['name'] === searchInput) {
+            playerId = players[player]['id']
+            break
+        }
+    }
+    if (playerId === 0) {
+        playerId = players[0]
+        try {
+            // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
+
+            if (playerId['name'] !== `${searchInput}` && playerId['name'].toLowerCase() !== `${searchInput.toLowerCase()}`) {
+                playerId = searchInput
+            } else {
+                playerId = playerId['id']
+            }
+        } catch (e) {
+            playerId = searchInput
+        }
+    }
+    return playerId
+}
+
 function sortTopPlayers(players) {
     let result = {};
     for (const player in players) {
@@ -162,6 +194,7 @@ function split(string, delimiter, n) {
 }
 
 const winston = require('winston');
+const fs = require("fs");
 
 const logger = winston.createLogger({
     maxsize: '1000000 ',
@@ -976,25 +1009,15 @@ routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
     if (playerUrl !== undefined && playerUrl !== '') {
 
         if (playerUrl !== undefined && playerUrl !== '') {
-            let playerId;
 
-            playerId = (await database.callApi("SearchPlayers", true, 'SearchPlayers', playerUrl))[0]
-            try {
-                // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
-                if (playerId['name'] !== `${playerUrl}`) {
-                    playerId = playerUrl
-                } else {
-                    playerId = playerId['id']
-                }
-            } catch (e) {
-                playerId = playerUrl
-            }
+            let playerId = await getPlayerID(playerUrl.trimEnd())
+
 
             let [temp1, temp2,temp3,temp4] = await Promise.all([
                 database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez'),
                 database.getMMRChanges(playerId),
                 database.mmrPlayerGetStats(playerId),
-                database.mmrGetTopPlayersTemp()
+                database.mmrGetTopPlayersTemp_v2()
             ]);
 
             req.session.getPlayerProfileStats = temp1
@@ -1014,7 +1037,7 @@ routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
                 playerStats: req.session.getPlayerProfileStats
             });
         } else {
-            let topPlayerMMRStats = await database.mmrGetTopPlayersTemp()
+            let topPlayerMMRStats = await database.mmrGetTopPlayersTemp_v2()
             req.session.bestPlayers = sortTopPlayers(topPlayerMMRStats)
 
             res.render('mmr', {
@@ -1028,7 +1051,7 @@ routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
         req.session.destroy(); //might need this in the future?
 
     } else {
-        let topPlayerMMRStats = await database.mmrGetTopPlayersTemp()
+        let topPlayerMMRStats = await database.mmrGetTopPlayersTemp_v2()
         req.session.bestPlayers = sortTopPlayers(topPlayerMMRStats)
 
 
@@ -1039,10 +1062,7 @@ routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
             playerStats: ''
         });
     }
-
-
 });
-
 routerNonProd.post('/mmr', async function (req, res) {
     res.redirect(303, `/mmr/${req.body.search}`)
 });
@@ -1056,22 +1076,9 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
 
             // handles cases with %20 spaces in them :) and other special characters
             playerUrl = decodeURI(playerUrl)
-            let playerId;
 
-            playerId = (await database.callApi("SearchPlayers", true, 'SearchPlayers', playerUrl))[0]
+            let playerId = await getPlayerID(playerUrl.trimEnd())
 
-            try {
-                // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
-
-
-                if (playerId['name'] !== `${playerUrl}` && playerId['name'].toLowerCase() !== `${playerUrl.toLowerCase()}`) {
-                    playerId = playerUrl
-                } else {
-                    playerId = playerId['id']
-                }
-            } catch (e) {
-                playerId = playerUrl
-            }
 
 
             req.session.getPlayerProfileStats = await database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez')
@@ -1194,49 +1201,148 @@ routerNonProd.get('/match*', cache(5000), async (req, res) => {
     }
 });
 
-routerNonProd.get('/admin*', cache(10000), async (req, res) => {
+// let data = ()
+// console.log(data)
+// await writeFileWithDictData(data,'test432')
+
+async function writeFileWithDictData(dict,fileName) {
+    return new Promise(async (resolve, reject) => {
+
+        let flatten = "Player IDs:\n"
+        for (const temp in dict) {
+            flatten += 'https://realm.slickynicky.com/stats/' + (dict[temp]['players'] + "\n")
+        }
+
+        fs.writeFileSync(`${fileName}.txt`, flatten, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+        return resolve(true)
+    })
+}
+
+
+//482
+routerNonProd.get('/admin*', cache(15000), async (req, res) => {
     let [
+        classWinrateSoloLastWeek,
+        classWinrateDuoLastWeek,
+        classWinrateTrioLastWeek,
+        classWinrateSquadLastWeek,
+        classWinrateSoloLastDay,
+        classWinrateDuoLastDay,
+        classWinrateTrioLastDay,
+        classWinrateSquadLastDay,
+        classWinrateSoloLastHour,
+        classWinrateDuoLastHour,
+        classWinrateTrioLastHour,
+        classWinrateSquadLastHour,
+        getPlayersWeek,
+        getPlayersDay,
+        getPlayersHour,
         delay,
         lastWeekStats,
         lastWeekStatsSolo,
+        lastWeekStatsDuo,
         lastWeekStatsTrio,
         lastWeekStatsSquad,
         lastDayStats,
         lastDayStatsSolo,
+        lastDayStatsDuo,
         lastDayStatsTrio,
         lastDayStatsSquad,
         lastHourStats,
         lastHourStatsSolo,
+        lastHourStatsDuo,
         lastHourStatsTrio,
         lastHourStatsSquad
     ] = await Promise.all([
+        database.getClassWinRate(604800,'474'),
+        database.getClassWinRate(604800,'482'),
+        database.getClassWinRate(604800,'475'),
+        database.getClassWinRate(604800,'476'),
+        database.getClassWinRate(86400,'474'),
+        database.getClassWinRate(86400,'482'),
+        database.getClassWinRate(86400,'475'),
+        database.getClassWinRate(86400,'476'),
+        database.getClassWinRate(3600,'474'),
+        database.getClassWinRate(3600,'482'),
+        database.getClassWinRate(3600,'475'),
+        database.getClassWinRate(3600,'476'),
+        database.getPlayers(604800),
+        database.getPlayers(86400),
+        database.getPlayers(3600),
         database.getTotalDelay(),
         database.getRealmStats(604800),
         database.getRealmStats(604800,'474'),
+        database.getRealmStats(604800,'482'),
         database.getRealmStats(604800,'475'),
         database.getRealmStats(604800,'476'),
         database.getRealmStats(86400),
         database.getRealmStats(86400,'474'),
+        database.getRealmStats(86400,'482'),
         database.getRealmStats(86400,'475'),
         database.getRealmStats(86400,'476'),
         database.getRealmStats(3600),
         database.getRealmStats(3600,'474'),
+        database.getRealmStats(3600,'482'),
         database.getRealmStats(3600,'475'),
         database.getRealmStats(3600,'476')
     ]);
+    //let queueValues = {
+    //     474: 'Solo\'s',
+    //     475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
+    //     476: 'Squad\'s',
+    //     477: 'War\'s',
+    //     480: 'Solo\'s Low LvL',
+    //     481: 'Squad\'s Mid LvL',
+    //     482: 'Duo\'s',
+    //     483: 'Duo\'s Mid LvL',
+    //     10188: 'Solo Custom\'s',
+    //     10189: 'Duo Custom\'s',
+    //     10205: 'Trio Custom\'s',
+    //     10190: 'Squad Custom\'s'
+    // }
+
+
+    let [
+        getPlayersWeekFile,
+        getPlayersDayFile,
+        getPlayersHourFile
+    ] = await Promise.all([
+        writeFileWithDictData(getPlayersWeek,'public/views/files/playersLastWeek'),
+        writeFileWithDictData(getPlayersDay,'public/views/files/playersLastDay'),
+        writeFileWithDictData(getPlayersHour,'public/views/files/playersLastHour')
+    ]);
 
     res.render('admin', {
+        classWinrateSoloLastWeek:classWinrateSoloLastWeek,
+        classWinrateDuoLastWeek:classWinrateDuoLastWeek,
+        classWinrateTrioLastWeek:classWinrateTrioLastWeek,
+        classWinrateSquadLastWeek:classWinrateSquadLastWeek,
+        classWinrateSoloLastDay:classWinrateSoloLastDay,
+        classWinrateDuoLastDay:classWinrateDuoLastDay,
+        classWinrateTrioLastDay:classWinrateTrioLastDay,
+        classWinrateSquadLastDay:classWinrateSquadLastDay,
+        classWinrateSoloLastHour:classWinrateSoloLastHour,
+        classWinrateDuoLastHour:classWinrateDuoLastHour,
+        classWinrateTrioLastHour:classWinrateTrioLastHour,
+        classWinrateSquadLastHour:classWinrateSquadLastHour,
         totalDelay:             delay,
         lastWeekStats:          lastWeekStats,
         lastWeekStatsSolo:      lastWeekStatsSolo,
+        lastWeekStatsDuo:       lastWeekStatsDuo,
         lastWeekStatsTrio:      lastWeekStatsTrio,
         lastWeekStatsSquad:     lastWeekStatsSquad,
         lastDayStats:           lastDayStats,
         lastDayStatsSolo:       lastDayStatsSolo,
+        lastDayStatsDuo:       lastDayStatsDuo,
         lastDayStatsTrio:       lastDayStatsTrio,
         lastDayStatsSquad:      lastDayStatsSquad,
         lastHourStats:          lastHourStats,
         lastHourStatsSolo:      lastHourStatsSolo,
+        lastHourStatsDuo:      lastHourStatsDuo,
         lastHourStatsTrio:      lastHourStatsTrio,
         lastHourStatsSquad:     lastHourStatsSquad
     });

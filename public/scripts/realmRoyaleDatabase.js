@@ -25,7 +25,7 @@ let config = {
     password: process.env.mysqlPassword,
     database: 'realm_royale',
     charset: 'UTF8MB4_0900_AI_CI',
-    connectionLimit: 60,
+    connectionLimit: 120,
 }
 var pool = mysql.createPool(config);
 
@@ -536,6 +536,9 @@ class DatabaseHandler {
     async mmrGetTopPlayersTemp() {
         return new Promise(async (resolve, reject) => {
             // sad inner select query's engage
+
+
+
             let query = `
                         SELECT *
                         FROM (
@@ -559,7 +562,27 @@ class DatabaseHandler {
 
         });
     }
+    async mmrGetTopPlayersTemp_v2() {
+        return new Promise(async (resolve, reject) => {
+            // sad inner select query's engage
+            const queueIDsToGrab = ['474', '475', '476', '482', '10188', '10189', '10205', '10190']
+            let resultString = []
+            for(const queue in queueIDsToGrab) {
 
+                let query = `
+                    select * from MMRPlayerStorage where queueTypeID = '${queueIDsToGrab[queue]}'
+                     order by mmrRankingNumber desc limit 3;
+                `
+                let result = (await pool.query(query))[0]
+                resultString.push(result[0])
+                resultString.push(result[1])
+                resultString.push(result[2])
+            }
+            return resolve(resultString);
+
+
+        });
+    }
 
     async realmAddMatchDetails(matchDetails) {
         return new Promise(async (resolve, reject) => {
@@ -655,7 +678,24 @@ class DatabaseHandler {
             // return resolve("");
         })
     }
+    async realmGetProcessedMatchOverview(queueID) {
+        return new Promise(async (resolve, reject) => {
+            let query = `select * from matchDataOverview where match_id = '${queueID}'`;
+            await pool.query(query)
+                .then(async ([results]) => {
+                        if (results === undefined) {
+                            return resolve([])
+                        } else if (results.length === 0) {
+                            return resolve([])
+                        } else {
+                            return resolve(results);
+                        }
+                    }
+                );
 
+            // return resolve("");
+        })
+    }
     async realmAddProcessedMatch(queueID,processedMessage = '') {
         return new Promise(async (resolve, reject) => {
             let query = `replace into processedMatchId VALUES ('${queueID}','${this.seconds_since_epoch()}')`;
@@ -977,6 +1017,220 @@ class DatabaseHandler {
         });
     }
 
+    async getPlayers(time) {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                select
+                    distinct(playerID) as players
+                from
+                    MMRGamePointTracking
+                where 
+                    secondsSinceEpoch > UNIX_TIMESTAMP()-${time}
+                    `
+
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+
+
+    async  getStoredPlayerInformation(playerID) {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                    select * from player_information
+                    where playerID = ${playerID}
+                    `
+
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+
+    async  insertNewPlayerInformation(playerInfo) {
+        return new Promise(async (resolve, reject) => {
+            let playerID = playerInfo['id']
+            let  portal_id = playerInfo['portal_id']
+            let  platform = playerInfo['platform']
+            let  region = playerInfo['region']
+            let  steam_id = playerInfo['steam_id']
+            let  created_datetime = playerInfo['created_datetime']
+            let query =
+                `
+                    insert into player_information VALUES(
+                        '${playerID}',
+                        '${portal_id}',
+                        '${platform}',
+                        '${region}',
+                        '${steam_id}',
+                        '${Math.floor(new Date(created_datetime).getTime()/1000)}'
+                    )
+                    `
+
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+    mysql_real_escape_string (str) {
+        if (typeof str != 'string')
+            return str;
+
+        return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+            switch (char) {
+                case "\0":
+                    return "\\0";
+                case "\x08":
+                    return "\\b";
+                case "\x09":
+                    return "\\t";
+                case "\x1a":
+                    return "\\z";
+                case "\n":
+                    return "\\n";
+                case "\r":
+                    return "\\r";
+                case "\"":
+                case "'":
+                case "\\":
+                case "%":
+                    return "\\"+char; // prepends a backslash to backslash, percent,
+                                      // and double/single quotes
+            }
+        });
+    }
+
+
+    async  insertNewMatchInformationPerPerson(gameMatch,gameMatchMatchID,playerID,teamInfo) {
+        return new Promise(async (resolve, reject) => {
+            let player_match_id              = gameMatchMatchID
+            let player_id                = playerID
+            let team_id              = teamInfo['id']
+            let placement                = teamInfo['placement']
+            let name                 = this.mysql_real_escape_string(gameMatch['name'])
+            let level                = gameMatch['level']
+            let deaths               = gameMatch['deaths']
+            let assists              = gameMatch['assists']
+            let class_id            = gameMatch['class_id']
+            let earned_xp           = gameMatch['earned_xp']
+            let kills_bot           = gameMatch['kills_bot']
+            let class_name          = gameMatch['class_name']
+            let damage_taken        = gameMatch['damage_taken']
+            let kills_player        = gameMatch['kills_player']
+            let damage_player       = gameMatch['damage_player']
+            let duration_secs       = gameMatch['duration_secs']
+            let earned_tokens       = gameMatch['earned_tokens']
+            let healing_player      = gameMatch['healing_player']
+            let damage_mitigated          = gameMatch['damage_mitigated']
+            let dropped_out_flag         = gameMatch['dropped_out_flag']
+            let killing_spree_max        = gameMatch['killing_spree_max']
+            let mines_wards_placed       = gameMatch['mines_wards_placed']
+            let damage_done_in_hand     = gameMatch['damage_done_in_hand']
+            let healing_player_self     = gameMatch['healing_player_self']
+
+            let query =
+
+                `
+                    insert into matchDataOverview_players VALUES(
+                            '${player_match_id}',
+                            '${player_id}',
+                            '${team_id}',
+                            '${placement}',
+                            '${name}',
+                            '${level}',
+                            '${deaths}',
+                            '${assists}',
+                            '${class_id}',
+                            '${earned_xp}',
+                            '${kills_bot}',
+                            '${class_name}',
+                            '${damage_taken}',
+                            '${kills_player}',
+                            '${damage_player}',
+                            '${duration_secs}',
+                            '${earned_tokens}',
+                            '${healing_player}',
+                            '${damage_mitigated}',
+                            '${dropped_out_flag}',
+                            '${killing_spree_max}',
+                            '${mines_wards_placed}',
+                            '${damage_done_in_hand}',
+                            '${healing_player_self}'
+                    )
+                    `
+
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+
+    async  insertNewMatchInformationOverview(gameMatch) {
+        return new Promise(async (resolve, reject) => {
+            let region = gameMatch['region']
+            let match_id = gameMatch['match_id']
+            let duration_secs = gameMatch['duration_secs']
+            let match_datetime =  Math.floor(new Date(gameMatch['match_datetime']).getTime()/1000)
+            let match_queue_id = gameMatch['match_queue_id']
+            let match_queue_name = gameMatch['match_queue_name']
+
+            let query =
+                `
+                    insert into matchDataOverview VALUES(
+                        '${region}',
+                        '${match_id}',
+                        '${duration_secs}',
+                        '${match_datetime}',
+                        '${match_queue_id}',
+                        '${match_queue_name}'
+                    )
+                    `
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+    async getClassWinRate(secondsToGoback,queueMode) {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                 select class_name,count(*) as games_won_solo from matchDataOverview_players where
+                 match_id in 
+                 (
+                 select match_id from matchDataOverview where
+                 match_queue_id = ${queueMode}
+                 and duration_secs+ match_datetime > UNIX_TIMESTAMP()-${secondsToGoback}
+                 )
+                 and 
+                 placement = '1'
+                 group by class_name
+                 order by games_won_solo desc;
+                    `
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+        });
+    }
 }
 
 module.exports = DatabaseHandler;
