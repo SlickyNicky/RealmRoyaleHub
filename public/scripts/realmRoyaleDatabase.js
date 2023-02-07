@@ -25,7 +25,7 @@ let config = {
     password: process.env.mysqlPassword,
     database: 'realm_royale',
     charset: 'UTF8MB4_0900_AI_CI',
-    connectionLimit: 120,
+    connectionLimit: 20,
 }
 var pool = mysql.createPool(config);
 

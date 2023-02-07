@@ -53,6 +53,7 @@ let config = {
     charset: 'UTF8MB4_0900_AI_CI',
     connectionLimit: 60,
 }
+
 var pool = mysql.createPool(config);
 
 async function testConnection() {
@@ -93,8 +94,6 @@ function fixRealmGameOutput(totalGameDetails, anArrayOfGameDetail = false) {
                 }
             }
         }
-
-        // console.log(totalGameDetails)
         return totalGameDetails
     } else {
         let idStored = []
@@ -175,18 +174,55 @@ async function writeFileWithDictData(dict,fileName) {
 }
 
 
+// var stringTemp = fs.readFileSync("/tmp/test.txt").toString('utf-8');;
+
+
+
+
+
+
+
+
+let finalString = []
 setTimeout(async function () {
+    // console.log(stringTemp)
     // let data = (await(database.getPlayers(604800)))
     // // console.log(data)
     // await writeFileWithDictData(data,'test432')
 
-    database.callApi(
-        'GetDataUsed',
-        true,
-        `GetDataUsed`,
-    ).then(async (matches) => {
-        console.log(matches)
-    })
+    // database.callApi(
+    //     'GetPlayerStats',
+    //     true,
+    //     `GetPlayerStats`,
+    //     4718048
+    // ).then(async (matches) => {
+    //     console.log(matches)
+    // })
+    // console.log(fixRealmGameOutput(stringTemp,true))
+
+    // stringTemp = stringTemp.split('\n')
+    // stringTemp.pop();
+    // console.log(stringTemp)
+    // console.log('\n')
+    // console.log('\n')
+
+    // let test = fixRealmGameOutput(JSON.parse(stringTemp[0]))
+
+    // console.log(test)
+
+
+    const readStream = fs.createReadStream("/tmp/matchDataOutput.txt");
+
+    let output = ""
+    readStream.on('data', function(chunk) {
+    output += chunk.toString('utf8');
+    });
+
+    readStream.on('end', function() {
+        console.log('done!')
+    });
+
+
     // let bestPlayers = await database.mmrGetTopPlayersTemp()
     // for(const queue in bestPlayers) {
     //     console.log('==========')
@@ -198,12 +234,12 @@ setTimeout(async function () {
     //     console.log('==========')
     //
     // }
-    console.log(await database.mmrGetTopPlayersTemp())
-    console.log('----')
-    console.log('----')
-    console.log('----')
-    console.log(await database.mmrGetTopPlayersTemp_v2())
-        //
+    // console.log(await database.mmrGetTopPlayersTemp())
+    // console.log('----')
+    // console.log('----')
+    // console.log('----')
+    // console.log(await database.mmrGetTopPlayersTemp_v2())
+    //     //
         //     let matches = await database.callApi(
         //         'GetMatchIDsByQueue',
         //         true,
