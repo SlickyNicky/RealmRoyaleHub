@@ -51,7 +51,7 @@
         var form = document.getElementById("search");
 
         function handleForm(event) {
-            event.preventDefault();
+            // event.preventDefault();
         }
 
         form.addEventListener('submit', handleForm);
@@ -130,9 +130,19 @@
                             <li class="">
                                 <a href="#" style="pointer-events: none;">Organize Events</a>
                                 <ul class="main-nav__sub">
-                                    <li class="active"><a href="/orgLeague">Organize League</a></li>
+                                    <li class=""><a href="/orgLeague">Organize League</a></li>
                                     <li class=""><a href="/orgTourney">Organize Tourney</a></li>
                                 </ul>
+                            </li>
+                            <li style="padding-left: 12rem;"></li>
+                            <li class="">
+                                <a href="/leaderboard">Leaderboard </a>
+                            </li>
+                            <li class="">
+                                <a href="/admin">Admin</a>
+                            </li>
+                            <li class="">   
+                                <a href="/v2_admin">Admin-Graph</a>
                             </li>
 
                         </ul>
@@ -201,7 +211,7 @@
                                 </header>
 
                                 <header class="widget-game-result__header">
-                                    <h3 class="widget-game-result__title" style="font-size: 1.5rem;letter-spacing: 1px"><%=playerStats['name']%></h3>
+                                    <h3 class="widget-game-result__title" style="font-size: 1.5rem;letter-spacing: 1px;text-transform: none;"><%=playerStats['name']%></h3>
                                     <div class="widget-game-result__subtitle" style="font-size: 0.8rem">Account Created<br><%=playerStats['created_datetime']%></div>
                                 </header>
 
@@ -219,14 +229,14 @@
 
                                 let mmrDateData =
                                     [<%-
-                                        mmrChanges.map(user => user.secondsSinceEpoch*1000)
+                                        mmrChanges.map(user => user.secondssinceepoch*1000)
                                     %>]
                                 const ourLabels = mmrDateData
 
 
                                 let mmrData =
                                 [<%-
-                                    mmrChanges.map(user => user.newRankingNumber)
+                                    mmrChanges.map(user => user.newrankingnumber)
                                 %>]
                                 const ourData = {
                                     labels: ourLabels,
@@ -275,7 +285,7 @@
                                             <%
                                             for(let queueIndvStats in queueStats[queue]) {
 
-                                                if (queueIndvStats === 'playerID' || queueIndvStats === 'customDuo') {
+                                                if (queueIndvStats === 'playerid' || queueIndvStats === 'customduo') {
                                                     continue
                                                 } %>
 
@@ -337,8 +347,7 @@
                                                 style="font-size: 1.25rem;line-height: 20px">
                                                 <br>
                                                 <%= JSON.stringify(bestPlayers[queue][players][0]['score']).slice(1, -1) %>
-                                                <br><br><a href=
-                                                           /mmr/<%= JSON.stringify(bestPlayers[queue][players][1]['profileLink']).split('/stats/')[1].slice(0, -1) %>
+                                                <br><br><a href="/mmr/<%= JSON.stringify(bestPlayers[queue][players][1]['profileLink']).split('/stats/')[1].slice(0, -1) %>"
                                                 >Profile Link </a>
                                                 <br>
                                             </td>

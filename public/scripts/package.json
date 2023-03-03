@@ -1,0 +1,16 @@
+{
+    "name": "realm_main_site_and_testing_domains",
+    "version": "v0.85",
+    "description": "See Name",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "JSONStream": "^1.3.5",
+        "openskill": "^3.0.1",
+        "pg": "^8.9.0",
+        "pg-promise": "^11.2.0",
+        "postgres": "^3.3.3"
+    }
+}

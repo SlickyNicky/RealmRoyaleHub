@@ -50,7 +50,7 @@
         var form = document.getElementById("search");
 
         function handleForm(event) {
-            event.preventDefault();
+            // event.preventDefault();
         }
 
         form.addEventListener('submit', handleForm);
@@ -193,9 +193,19 @@ let classValues = {
                             <li class="">
                                 <a href="#" style="pointer-events: none;">Organize Events</a>
                                 <ul class="main-nav__sub">
-                                    <li class="active"><a href="/orgLeague">Organize League</a></li>
+                                    <li class=""><a href="/orgLeague">Organize League</a></li>
                                     <li class=""><a href="/orgTourney">Organize Tourney</a></li>
                                 </ul>
+                            </li>
+                            <li style="padding-left: 12rem;"></li>
+                            <li class="">
+                                <a href="/leaderboard">Leaderboard </a>
+                            </li>
+                            <li class="">
+                                <a href="/admin">Admin</a>
+                            </li>
+                            <li class="">   
+                                <a href="/v2_admin">Admin-Graph</a>
                             </li>
 
                         </ul>
@@ -280,7 +290,7 @@ let classValues = {
                 </div>
 
                 <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
-                     style="margin: 1rem auto auto;width: 75rem">
+                     style="margin-left: 7rem;">
                     <div class="widget__title card__header card__header--has-btn">
                         <h3 style="font-size:2rem">Overall Stats</h3>
                     </div>
@@ -319,7 +329,7 @@ let classValues = {
                                 </td>
                                 <% for(const stats in playerOverallStats){ %>
                                     <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                        <%= playerOverallStats[stats].toFixed() %>
+                                        <%= Number(playerOverallStats[stats].toFixed()).toLocaleString() %>
                                     </td>
                             <% } %>
                             </tr>
@@ -335,7 +345,7 @@ let classValues = {
 
 
                                 <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerAggStats[stats][stat].toFixed() %>
+                                    <%= Number(playerAggStats[stats][stat].toFixed()).toLocaleString() %>
                                 </td>
 
                                     <%
@@ -355,9 +365,9 @@ let classValues = {
             </div>
 
             <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
-                     style="margin-left:auto; margin-right:auto;width: 85rem">
+                     style="margin-left:auto; margin-right:auto">
                 <div class="widget__title card__header card__header--has-btn">
-                    <h3 style="font-size:2rem">Last Fifty Matches</h3>
+                    <h3 style="font-size:2rem">Match History</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover" id="lastFifty"
@@ -368,68 +378,98 @@ let classValues = {
                                 Match Number
                             </th>
                             <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Queue Mode
+                                Date
                             </th>
                             <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Name
+                            </th>
+                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Region
+                            </th>
+                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Game Mode
+                            </th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
                                 Class
                             </th>
-                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
                                 Placement
                             </th>
-                            <th class="team-result__timealive" style="text-align: center;max-width: 90px;;font-size: 18px" >Seconds Alive</th>
-                            <th class="team-result__kills" style="text-align: center;max-width: 90px;font-size: 18px">Kills</th>
-                            <th class="team-result__deaths" style="text-align: center;max-width: 90px;font-size: 18px">Deaths</th>
-                            <th class="team-result__assists" style="text-align: center;font-size: 18px">Damage</th>
-                            <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Damage Taken</th>
-                            <th class="team-result__absorbed" style="text-align: center;max-width: 100px;font-size: 18px">Match Details</th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Time Alive
+                            </th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Kills
+                            </th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Deaths
+                            </th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Damage
+                            </th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Damage Taken
+                            </th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Dropped Out
+                            </th>
+																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                Match
+                            </th>	
 
                         </tr>
                         </thead>
                         <tbody>
                         <%
                         let index = 0
-                        for(const team in playerLastFifty['matches']){
+                        for(const game in playerLastFifty){
                             index+=1%>
                             <tr>
                                 <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= index %>
+																																	<%= playerLastFifty[game]['game_number'] %>
+                                </td>
+																																<%
+																																let date = new Date(playerLastFifty[game]['match_datetime']*1000)
+																																var formattedDate = (date.getUTCMonth() + 1)+ '/' + date.getUTCDate() + '/' + date.getUTCFullYear()% 100
+																																%>
+                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= formattedDate %>
                                 </td>
                                 <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= queueValues[playerLastFifty['matches'][team]['match_queue_id']] %>
+                                    <%= playerLastFifty[game]['name'] %>
                                 </td>
                                 <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= classValues[playerLastFifty['matches'][team]['class_id']] %>
+                                    <%= playerLastFifty[game]['region'] %>
                                 </td>
-
-
-
-
-
-
-                                <td data-order="<%=playerLastFifty['matches'][team]['placement']%>" class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%=ordinal_suffix_of(playerLastFifty['matches'][team]['placement'])%>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= queueValues[playerLastFifty[game]['match_queue_id']] %>
                                 </td>
-                                <td class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
-                                    <%= playerLastFifty['matches'][team]['time_in_match_secs'] %>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= classValues[playerLastFifty[game]['class_id']] %>
                                 </td>
-
-                                <td data-order="<%=playerLastFifty['matches'][team]['kills']%>" class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
-                                    <%= playerLastFifty['matches'][team]['kills'] %>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerLastFifty[game]['placement'] %>
                                 </td>
-
-                                <td data-order="<%=playerLastFifty['matches'][team]['deaths']%>" class="team-result__deaths team-meta__name team-color--2" style="font-size: 16px">
-                                    <%= playerLastFifty['matches'][team]['deaths'] %>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerLastFifty[game]['duration_secs'] %>
                                 </td>
-
-                                <td data-order="<%=playerLastFifty['matches'][team]['damage']%>" class="team-result__assists team-meta__name team-color--2" style="font-size: 16px">
-                                    <%= playerLastFifty['matches'][team]['damage'] %>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerLastFifty[game]['kills_player'] %>
                                 </td>
-
-                                <td data-order="<%=playerLastFifty['matches'][team]['damage_taken']%>" class="team-result__absorbed team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
-                                    <%= playerLastFifty['matches'][team]['damage_taken'] %>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerLastFifty[game]['deaths'] %>
                                 </td>
-                                <td class="team-result__replay">
-                                    <a href="/match/<%=playerLastFifty['matches'][team]['match_id']%>" class="btn btn-xs btn-default-alt btn-single-icon btn-circle" data-toggle="tooltip" data-placement="top" title="View Match"><i class="fas fa-play"></i></a>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerLastFifty[game]['damage_player'] %>
+                                </td>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= playerLastFifty[game]['damage_taken'] %>
+                                </td>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                    <%= Number(playerLastFifty[game]['dropped_out_flag']) === 0 ? "false": "true"%>
+                                </td>
+																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+																																	<a href="/match/<%=playerLastFifty[game]['match_id']%>" class="btn btn-xs btn-default-alt btn-single-icon btn-circle" data-toggle="tooltip" data-placement="top" title="View Match"><i class="fas fa-play"></i></a>
                                 </td>
 
                             </tr>

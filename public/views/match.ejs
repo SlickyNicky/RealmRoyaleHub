@@ -46,15 +46,7 @@
     <link href="/assets/css/custom.css" rel="stylesheet">
 
 
-    <script>
-        var form = document.getElementById("search");
 
-        function handleForm(event) {
-            event.preventDefault();
-        }
-
-        form.addEventListener('submit', handleForm);
-    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDYKQEDNX3"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -152,6 +144,16 @@ let queueValues = {
                                     <li class=""><a href="/orgTourney">Organize Tourney</a></li>
                                 </ul>
                             </li>
+                            <li style="padding-left: 12rem;"></li>
+                            <li class="">
+                                <a href="/leaderboard">Leaderboard </a>
+                            </li>
+                            <li class="">
+                                <a href="/admin">Admin</a>
+                            </li>
+                            <li class="">   
+                                <a href="/v2_admin">Admin-Graph</a>
+                            </li>
 
                         </ul>
                     </nav>
@@ -200,39 +202,38 @@ let queueValues = {
                     <h4>Match Stats</h4>
                     <div class="widget-results__title">
                         <div class="widget-results__title">
-                        Region: <%= matchDetails['region'] %>
+                        Region: <%=matchOverview[0]['region']%>
                         </div>
                         <div class="widget-results__title">
-                        Mode: <%= queueValues[matchDetails['match_queue_id']] %>
+                        Mode: <%=queueValues[matchOverview[0]['match_queue_id']]%>
                         </div>
                     </div>
                     <div class="widget-results__title">
                         <div class="widget-results__title">
-                            Match ID: <%= matchDetails['match_id'] %>
+                            Match ID: <%=matchOverview[0]['match_id']%>
                         </div>
                         <div class="widget-results__title">
-                            <%
-                            let totalLength = 0 ;
-                            for(const team in matchDetails['teams']) {
-                                totalLength += matchDetails['teams'][team]['players'].length
-                            }
+                            <% 
+                            let count = 0
+                                for(const team in matchDetails){
+                                    for(const name in matchDetails[team]['name']) {
+                                        count+=1
+                                    }
+                                }
                             %>
-                            Players: <%= totalLength%>
+                            Players: <%=count%>
                         </div>
                     </div>
 
                     <div class="widget-results__title">
                         <div class="widget-results__title">
 
-                            Date: <%= matchDetails['match_datetime'].split('T')[0] %>
+                            Date: <%=new Date(matchOverview[0]['match_datetime']*1000).toLocaleDateString()%>
                         </div>
                         <div class="widget-results__title">
 
-                            <%
-                            theDate = new Date(Date.parse(matchDetails['match_datetime'] + 'Z'));
-                            %>
 
-                            Time: <%= theDate.toLocaleTimeString() %> UTC
+                            Time: <%=new Date(matchOverview[0]['match_datetime']*1000).toLocaleTimeString()%> UTC
                         </div>
                     </div>
 
@@ -257,22 +258,22 @@ let queueValues = {
                             </tr>
                             </thead>
                             <tbody>
-                            <% for(const team in matchDetails['teams']){ %>
+                            <% for(const team in matchDetails){ %>
                                 <tr>
-                                    <td data-order="<%=matchDetails['teams'][team]['players'][0]['duration_secs']*-1%>" class="team-result__kills team-color--2" style="width: 20px;font-size: 16px">
-                                            <%= matchDetails['teams'][team]['placement'] %>
+                                    <td data-order="<%=matchDetails[team]['duration_secs']*-1%>" class="team-result__kills team-color--2" style="width: 20px;font-size: 16px">
+                                            <%= matchDetails[team]['placement'] %>
                                     </td>
-                                    <td data-order="<%=matchDetails['teams'][team]['players'][0]['duration_secs']%>" class="team-result__date" style="font-size: 16px">
-                                        <%= matchDetails['teams'][team]['players'][0]['duration_secs'] %>
+                                    <td data-order="<%=matchDetails[team]['duration_secs']%>" class="team-result__date" style="font-size: 16px">
+                                        <%= matchDetails[team]['duration_secs'] %>
                                     </td>
 
                                     <td class="team-result__outcome" style="max-width: 400px;word-break: break-all;" >
                                         <div class="team-result__teams-wrapper">
                                             <!-- Team #1 -->
                                             <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px;flex-direction: column;align-items: flex-start">
-                                                        <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                                    <a href="/stats/<%=matchDetails['teams'][team]['players'][player]['id']%>" style="display: inherit">
-                                                        <%= matchDetails['teams'][team]['players'][player]['name'] %>
+                                                        <% for(const player in matchDetails[team]['name']){ %>
+                                                    <a href="/stats/<%=matchDetails[team]['id'][player]%>" style="display: inherit">
+                                                        <%= matchDetails[team]['name'][player] %>
                                                     </a>
                                                 <br>
                                                         <% } %>
@@ -287,14 +288,14 @@ let queueValues = {
                                         // we need the total points to help table sorting if needed
                                     let totalKills = 0;
 
-                                    for(const player in matchDetails['teams'][team]['players']) {
-                                        totalKills+= matchDetails['teams'][team]['players'][player]['kills_player']
+                                    for(const kills in matchDetails[team]['kills_player']) {
+                                        totalKills+= matchDetails[team]['kills_player'][kills]
                                     }
 
                                     %>
                                     <td data-order="<%=totalKills%>" class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
-                                         <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                                        <%= matchDetails['teams'][team]['players'][player]['kills_player'] %>
+                                         <% for(const kills in matchDetails[team]['kills_player']){ %>
+                                                        <%= matchDetails[team]['kills_player'][kills] %>
                                             <br>
 
                                         <% } %>
@@ -304,14 +305,14 @@ let queueValues = {
                                         // we need the total points to help table sorting if needed
                                         let totalDeaths = 0;
 
-                                        for(const player in matchDetails['teams'][team]['players']) {
-                                            totalDeaths+= matchDetails['teams'][team]['players'][player]['deaths']
+                                        for(const deaths in matchDetails[team]['deaths']) {
+                                            totalDeaths+= matchDetails[team]['deaths'][deaths]
                                         }
 
                                     %>
                                     <td data-order="<%=totalDeaths%>" class="team-result__deaths team-meta__name team-color--2" style="font-size: 16px">
-                                            <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                                    <%= matchDetails['teams'][team]['players'][player]['deaths'] %>
+                                            <% for(const deaths in matchDetails[team]['deaths']){ %>
+                                                    <%= matchDetails[team]['deaths'][deaths] %>
                                             <br>
 
                                         <% } %>
@@ -323,14 +324,16 @@ let queueValues = {
                                         // we need the total points to help table sorting if needed
                                         let totalDamage = 0;
 
-                                        for(const player in matchDetails['teams'][team]['players']) {
-                                            totalDamage+= matchDetails['teams'][team]['players'][player]['damage_player']
+                                        for(const damage_player in matchDetails[team]['damage_player']) {
+                                            totalDamage+= matchDetails[team]['damage_player'][damage_player]
                                         }
 
                                     %>
                                     <td data-order="<%=totalDamage%>" class="team-result__assists team-meta__name team-color--2" style="font-size: 16px">
-                                            <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                                    <%= matchDetails['teams'][team]['players'][player]['damage_player'] %>
+                                            <%
+                                        for(const damage_player in matchDetails[team]['damage_player']) {
+                                                     %>
+                                                    <%= matchDetails[team]['damage_player'][damage_player] %>
                                             <br>
 
                                         <% } %>
@@ -341,14 +344,14 @@ let queueValues = {
                                         // we need the total points to help table sorting if needed
                                         let totalDamageTaken = 0;
 
-                                        for(const player in matchDetails['teams'][team]['players']) {
-                                            totalDamageTaken+= matchDetails['teams'][team]['players'][player]['damage_taken']
+                                        for(const damage_taken in matchDetails[team]['damage_taken']) {
+                                            totalDamageTaken+= matchDetails[team]['damage_taken'][damage_taken]
                                         }
 
                                     %>
                                     <td data-order="<%=totalDamageTaken%>" class="team-result__absorbed team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
-                                            <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                                    <%= matchDetails['teams'][team]['players'][player]['damage_taken'] %>
+                                            <% for(const damage_taken in matchDetails[team]['damage_taken']) { %>
+                                                    <%= matchDetails[team]['damage_taken'][damage_taken] %>
                                             <br>
 
                                         <% } %>
@@ -360,14 +363,14 @@ let queueValues = {
                                         // we need the total points to help table sorting if needed
                                         let totalSelfHealing = 0;
 
-                                        for(const player in matchDetails['teams'][team]['players']) {
-                                            totalSelfHealing+= matchDetails['teams'][team]['players'][player]['healing_player_self']
+                                        for(const healing_player_self in matchDetails[team]['healing_player_self']) {
+                                            totalSelfHealing+= matchDetails[team]['healing_player_self'][healing_player_self]
                                         }
 
                                     %>
                                     <td data-order="<%=totalSelfHealing%>" class="team-result__self_healing team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
-                                        <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                            <%= matchDetails['teams'][team]['players'][player]['healing_player_self'] %>
+                                        <%  for(const healing_player_self in matchDetails[team]['healing_player_self']) { %>
+                                            <%= matchDetails[team]['healing_player_self'][healing_player_self] %>
                                             <br>
 
                                         <% } %>
@@ -378,14 +381,14 @@ let queueValues = {
                                         // we need the total points to help table sorting if needed
                                         let totalHealingOthers = 0;
 
-                                        for(const player in matchDetails['teams'][team]['players']) {
-                                            totalHealingOthers+= matchDetails['teams'][team]['players'][player]['healing_player']
+                                        for(const healing_player in matchDetails[team]['healing_player']) {
+                                            totalHealingOthers+= matchDetails[team]['healing_player'][healing_player]
                                         }
 
                                     %>
                                     <td data-order="<%=totalHealingOthers%>" class="team-result__team_healing team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
-                                        <% for(const player in matchDetails['teams'][team]['players']){ %>
-                                            <%= matchDetails['teams'][team]['players'][player]['healing_player'] %>
+                                        <% for(const healing_player in matchDetails[team]['healing_player']) { %>
+                                            <%= matchDetails[team]['healing_player'][healing_player] %>
                                             <br>
 
                                         <% } %>

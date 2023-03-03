@@ -44,12 +44,41 @@
     <!-- Custom CSS-->
     <link href="/assets/css/custom.css" rel="stylesheet">
 
+    <% 
+        let translateTourneyNames = {
+            tourneyname: "Tournament Name",
+            amountofgames: "Game Count",
+            bestofgames: "Best Of",
+            queuetype: "Game Mode",
+            pointsperkill: "Points Per Kill",
+            pointsperplacement: "Placement Points",
+            sortBylowestpoints: "Reverse Scoring"
+        }
+        function ordinal_suffix_of(i) {
+            var j = i % 10,
+                k = i % 100;
+            if (j == 1 && k != 11) {
+                return i + "st";
+            }
+            if (j == 2 && k != 12) {
+                return i + "nd";
+            }
+            if (j == 3 && k != 13) {
+                return i + "rd";
+            }
+            return i + "th";
+        }
+
+    %>
 
     <script>
+
+
         var form = document.getElementById("search");
 
         function handleForm(event) {
-            event.preventDefault();
+            console.log('wowzers')
+            // event.preventDefault();
         }
 
         form.addEventListener('submit', handleForm);
@@ -136,6 +165,16 @@
                                     <li class=""><a href="/orgLeague">Organize League</a></li>
                                     <li class="active"><a href="/orgTourney">Organize Tourney</a></li>
                                 </ul>
+                            </li>
+                            <li style="padding-left: 12rem;"></li>
+                            <li class="">
+                                <a href="/leaderboard">Leaderboard </a>
+                            </li>
+                            <li class="">
+                                <a href="/admin">Admin</a>
+                            </li>
+                            <li class="">   
+                                <a href="/v2_admin">Admin-Graph</a>
                             </li>
 
                         </ul>
@@ -266,7 +305,15 @@
             <% if(viewer){ %>
                 <div class="card">
                     <div class="card__header">
-                        <h4 style="font-size: 1.75rem">Tournament Information</h4>
+                        <h4 style="font-size: 1.75rem;text-transform: none;">Tournament - <%=decodeURI(tourneyOverviewInfo['tourneyname'])%> </h4>
+                        <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4" style="flex-direction: column;">
+                            <h3 class="widget-game-result__title" style="font-size: 0.9rem;padding-top: 0.5rem;">
+                                Game Mode - <%=tourneyOverviewInfo['queuetype']%>
+                            </h3>
+                            <h2 class="widget-game-result__title" style="font-size: 0.9rem;padding-top: 0.5rem;">
+                                <a href="<%=publicLink%>">Public Link</a>
+                            </h2>                           
+                        </header>
                     </div>
                     <div class="card__content"
                          style="margin-top: -50px;margin-bottom: -50px;margin-right: -75px;margin-left: -75px">
@@ -290,24 +337,85 @@
                                         ">
 
                                             <%
-                                                let count = 0;
-                                                    for(const [key, value] of Object.entries(tourneyOverviewInfo)) {
+                                                for(const [key, value] of Object.entries(tourneyOverviewInfo)) {
                                             %>
+                                            <% if(
+                                                translateTourneyNames[key] === 'Reverse Scoring' ||
+                                                translateTourneyNames[key] === 'Game Mode' ||
+                                                translateTourneyNames[key] === 'Tournament Name' 
+                                            ){
+                                                continue;
+                                            }
 
-                                                <% if (count === 0) {
-                                                    count += 1
-                                                    continue
-                                                } %>
-                                                <li style="word-break: normal;">
 
-                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
-                                                        <%= key %>:
+
+                                                 if(translateTourneyNames[key] === 'Placement Points'){
+                                                    %>
+                                                    <li style="word-break: normal;">
+                                                    <h3 style="font-size:1.3rem;letter-spacing: 1px;text-transform: none;">
+                                                        <%= translateTourneyNames[key] %>:
                                                     </h3>
-                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                    
+                                                    <%
+                                                    var array = decodeURI(value).split(',');
+                                                    let  grouped = array.reduce((r, v, i, a) => {
+                                                        if (v === a[i - 1]) {
+                                                            r[r.length - 1].push(v);
+                                                        } else {
+                                                            r.push(v === a[i + 1] ? [v] : v);
+                                                        }
+                                                        return r;
+                                                    }, []);
+
+                                                    let currentPlacement = 1;
+                                                        for (let i = 0; i < grouped.length; i++) {
+                                                            if(typeof(grouped[i]) !== 'object') {
+                                                                %>
+                                                                <h3 style="font-size:1rem;letter-spacing: 1px;text-transform: none;">
+                                                                    <%= `${ordinal_suffix_of(currentPlacement)} place: ${grouped[i]}` %>
+                                                                </h3>
+                                                                <%
+                                                                currentPlacement+=1;
+                                                            } else {
+                                                                %>
+                                                                <h3 style="font-size:1rem;letter-spacing: 1px;text-transform: none;">
+                                                                    <%= `${ordinal_suffix_of(currentPlacement)} - ${ordinal_suffix_of(currentPlacement+(grouped[i].length-1))} place: ${grouped[i][0]}` %>
+                                                                </h3>
+                                                                <%
+                                                                currentPlacement+=(grouped[i].length)
+                                                            }
+                                                        }
+                                                
+                                                    %>
+
+
+
+                                                </li>
+                                                <%}else if (translateTourneyNames[key] === 'Game Count'){%>
+                                                    <li style="word-break: normal;">
+                                                    <h2 style="font-size:1.3rem;letter-spacing: 1px;text-transform: none;">
+                                                        Games Scored
+                                                    </h2>
+                                                    <h3 style="font-size:1rem;letter-spacing: 1px;text-transform: none;">
+                                                           Best <%=tourneyOverviewInfo['bestofgames']%> / <%= decodeURI(value) %>
+                                                    </h3>
+                                                </li>   
+
+
+                                                    <%
+                                            
+                                                    break;
+                                                }else{%>
+
+                                                <li style="word-break: normal;">
+                                                    <h2 style="font-size:1.3rem;letter-spacing: 1px;text-transform: none;">
+                                                        <%= translateTourneyNames[key] %>:
+                                                    </h2>
+                                                    <h3 style="font-size:1rem;letter-spacing: 1px;text-transform: none;">
                                                         <%= decodeURI(value) %>
                                                     </h3>
                                                 </li>
-                                            <% } %>
+                                            <% }} %>
                                         </ul>
                                     </div>
 
@@ -340,8 +448,9 @@
                                         <ul style="
                                                       display: grid;
                                                       grid-template-columns: repeat(auto-fit, 15rem);
-                                                      grid-gap: 2rem;
-                                                      justify-content: space-between;
+                                                      row-gap: 3rem;
+                                                      column-gap: 5rem;
+                                                      justify-content: flex-start;
                                                       align-content: flex-start;
                                                       list-style: none;
                                                       overflow: auto;
@@ -352,31 +461,25 @@
                                                     for (const [key, value] of Object.entries(placementTeamAndPoints)) {
                                                 placementCounter += 1;
                                             %>
+
                                             <li style="word-break: normal;">
-
-
-
-                                                <div class="dropdown">
-                                                    <button class="dropbtn" style="pointer-events: none;">Best Games</button>
-                                                    <div class="dropdown-content">
-                                                        <%for(const matchDetails in highestGamesForTeam[key] ){%>
-                                                            <a href="/match/<%=highestGamesForTeam[key][matchDetails]['queueID']%>">
-                                                                Points: <%=highestGamesForTeam[key][matchDetails]['points']%>
-                                                                &nbsp;&nbsp;&nbsp;
-                                                                Match: <%=highestGamesForTeam[key][matchDetails]['queueID']%>
-                                                            </a>
-                                                        <%}%>
-<!--                                                        <a href="#">Link 2</a>-->
-<!--                                                        <a href="#">Link 3</a>-->
-                                                    </div>
+                                                <div class="dropdown" style="position: absolute;margin-left: 10rem;padding-right: 2rem;">
+                                                <button class="dropbtn" style="pointer-events: none;">Best Games</button>
+                                                <div class="dropdown-content">
+                                                    <%for(const matchDetails in highestGamesForTeam[key] ){%>
+                                                        <a href="/match/<%=highestGamesForTeam[key][matchDetails]['queueID']%>">
+                                                            Points: <%=highestGamesForTeam[key][matchDetails]['points']%>
+                                                            &nbsp;&nbsp;&nbsp;
+                                                            Match: <%=highestGamesForTeam[key][matchDetails]['queueID']%>
+                                                        </a>
+                                                    <%}%>
                                                 </div>
-
-
+                                            </div>
 
 
                                                 <h3 style="font-size:1rem;letter-spacing: 1px">
-                                                    Placement: <%= placementCounter %> |
-                                                    Points: <%= decodeURI(value) %>
+                                                    <%=ordinal_suffix_of(placementCounter)%> - <%= decodeURI(value)%> Points
+
                                                 </h3>
 
                                                 <%
@@ -384,15 +487,15 @@
                                                         for(const name in names) {
                                                     let removeFirst = names[name].substring(1)
                                                 if(parseInt(name) === parseInt(names.length - 2)) { %>
-                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                    <h4 style="font-size:.9rem;letter-spacing: 1px">
                                                         <%= removeFirst.slice(0, -2); %>
-                                                    </h3>
+                                                    </h4>
                                                 <%
                                                 } else { %>
-                                                    <h3 style="font-size:1rem;letter-spacing: 1px">
+                                                    <h4 style="font-size:.9rem;letter-spacing: 1px">
                                                         <%= removeFirst %>
                                                         <br>
-                                                    </h3>
+                                                    </h4>
                                                 <% } %>
 
                                                 <% } %>
@@ -441,7 +544,7 @@
                                         ">
 
                                             <%
-                                            for(let i = tourneyOverviewInfo['amountOfGames'];i > 0;i--) {
+                                            for(let i = tourneyOverviewInfo['amountofgames'];i > 0;i--) {
                                             %>
                                                 <div class="stats_overview" id="stats_overview"
                                                      style="margin-left: -12.5px">
@@ -481,8 +584,28 @@
 
                                                         </form>
 
-                                                    <% } %>
+                                                    <% } else { %>
 
+                                                        <form action='#' id="#" method='#'>
+
+                                                        <input type="hidden" id="matchNum" name="matchNum"
+                                                            style="display: none;"
+                                                            value=<%= i %>>
+                                                        <input type="hidden" id="urlpath" name="urlpath"
+                                                            style="display: none;"
+                                                            value=<%= privateLink %>>
+
+                                                        <% if (totalGamesOutputInfo.get(i) !== undefined) { %>
+                                                        <label for="queueId">
+                                                            Match Id: <%= decodeURIComponent(totalGamesOutputInfo.get(i)['queueId']) %></label>
+                                                        <% } else { %>
+                                                            <label for="queueId">QueueID: </label>
+
+                                                        <% } %>
+                                                        </form>
+
+
+                                                    <% } %>
                                                     </p>
                                                 </div>
 

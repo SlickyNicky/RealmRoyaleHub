@@ -8,7 +8,7 @@ dayjs.extend(utc);
 
 // solo duo(trio in reality) squad custom solo, duo, trio, squad
 
-let databaseConfig = require('./realmRoyaleDatabase.js');
+let databaseConfig = require('./realmRoyaleDatabase_v2.js');
 let database = new databaseConfig()
 
 const queueIDsToGrab = ['474', '475', '476','482', '10188', '10189', '10205', '10190']
@@ -26,7 +26,11 @@ setInterval(async function () {
             ).then( (matches) => {
                 for (const match in matches) {
                     if (matches[match]['active_flag'] == 'n') {
-                        database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+                        if(matches[match]['ret_msg'] === null) {
+                            database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
+                        } else {
+                            database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+                        }
                     }
                 }
             })
@@ -40,8 +44,11 @@ setInterval(async function () {
             ).then( (matches) => {
                 for (const match in matches) {
                     if (matches[match]['active_flag'] == 'n') {
-                        database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
-                    }
+                        if(matches[match]['ret_msg'] === null) {
+                            database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
+                        } else {
+                            database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+                        }                    }
                 }
             })
         }

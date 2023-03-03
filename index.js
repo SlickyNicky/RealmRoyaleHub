@@ -14,7 +14,7 @@ let SteamStrategy = passportSteam.Strategy;
 const requestIp = require('request-ip');
 
 
-let databaseConfig = require('./public/scripts/realmRoyaleDatabase.js');
+let databaseConfig = require('./public/scripts/realmRoyaleDatabase_v2.js');
 
 let database = new databaseConfig()
 
@@ -137,12 +137,12 @@ async function getPlayerID(searchInput) {
 function sortTopPlayers(players) {
     let result = {};
     for (const player in players) {
-        if (result[queueValues[players[player]['queueTypeID']]] === undefined) {
-            result[queueValues[players[player]['queueTypeID']]] = []
+        if (result[queueValues[players[player]['queuetypeid']]] === undefined) {
+            result[queueValues[players[player]['queuetypeid']]] = []
         }
-        result[queueValues[players[player]['queueTypeID']]].push([
-            {'score': convertMMRToRank(players[player]['mmrRankingNumber'])},
-            {'profileLink': `https://realm.slickynicky.com/stats/${players[player]['playerID']}`}
+        result[queueValues[players[player]['queuetypeid']]].push([
+            {'score': convertMMRToRank(players[player]['mmrrankingnumber'])},
+            {'profileLink': `https://realm.slickynicky.com/stats/${players[player]['playerid']}`}
         ])
     }
     return result
@@ -150,8 +150,8 @@ function sortTopPlayers(players) {
 
 function formatPlayerMMR(player) {
     for (const playerDetails in player) {
-        player[playerDetails]['queueTypeID'] = queueValues[player[playerDetails]['queueTypeID']]
-        player[playerDetails]['mmrRankingNumber'] = convertMMRToRank(player[playerDetails]['mmrRankingNumber'])
+        player[playerDetails]['queuetypeid'] = queueValues[player[playerDetails]['queuetypeid']]
+        player[playerDetails]['mmrrankingnumber'] = convertMMRToRank(player[playerDetails]['mmrrankingnumber'])
     }
     return player
 }
@@ -208,9 +208,9 @@ const logger = winston.createLogger({
     ],
 });
 
-
 const cache = (durationMs) => {
     return (req, res, next) => {
+
         let key = '__express__' + req.originalUrl || req.url
         let cachedBody = mcache.get(key)
         if (cachedBody) {
@@ -232,6 +232,12 @@ const cache = (durationMs) => {
 
 app.set('views', __dirname + '/public/views/');
 app.set('view engine', 'ejs');
+
+app.use(function (req, res, next) {
+    res.set('Cache-control', 'public, max-age=15')
+    next()
+ })
+ 
 app.use(session({
     secret: '4567ighjcvjft7jc5',
     resave: true,
@@ -289,20 +295,20 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                 let totalGamesQueueOutputMap = new Map();
 
                 for (const val in totalGamesOutput) {
-                    totalGamesOutputMap.set(totalGamesOutput[val]['gameNumber'], totalGamesOutput[val]);
+                    totalGamesOutputMap.set(totalGamesOutput[val]['gamenumber'], totalGamesOutput[val]);
                     totalGamesQueueOutputMap.set(
-                        totalGamesOutput[val]['gameNumber'],
+                        totalGamesOutput[val]['gamenumber'],
                         await database.callApi(
                             "GetMatchDetails",
                             true,
                             'GetMatchDetails',
-                            totalGamesOutput[val]['queueId']
+                            totalGamesOutput[val]['queueid']
                         )
                     );
                 }
                 totalGamesQueueOutputMap = fixRealmGameOutput(totalGamesQueueOutputMap,true)
                 const totalPlacementPoints = new Map();
-                let split = tourneyOverview['pointsPerPlacement'].split(',')
+                let split = tourneyOverview['pointsperplacement'].split(',')
                 for (const val in split) {
                     let index = parseInt(val) + 1
                     totalPlacementPoints.set(index, split[val]);
@@ -316,7 +322,6 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                 var highestGames = {}
                 let teamNames = []
                 for (const [key, value] of totalGamesQueueOutputMap) {
-                    console.log(value)
                     for (const overallTeams in value['teams']) {
                         // used to keep track of teams and if someone uses the same name system still works
                         let teamName = []
@@ -335,7 +340,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                             for (const player in value['teams'][overallTeams][team]) {
                                 teamName[0][0] += [value['teams'][overallTeams][team][player]['id']]
                                 teamName[0][1] += " |" + value['teams'][overallTeams][team][player]['name'] + "| "
-                                tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsPerKill'])
+                                tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsperkill'])
                             }
                         }
                         let totalKillPoints = 0
@@ -355,7 +360,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                         }
 
                         let totalGamePoints = totalKillPoints + teamPlacementPoints
-                        if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestOfGames']) {
+                        if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestofgames']) {
                             highestGames[teamName[0][0] + "|" + teamName[0][1]].push(
                                 {
                                     points: totalGamePoints,
@@ -394,7 +399,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
 
 
                 //sorts teams from highest->lowest or vice versa
-                if (tourneyOverview['sortByLowestPoints'] !== 1) {
+                if (tourneyOverview['sortbylowestpoints'] !== 1) {
                     teamDict = Object.fromEntries(
                         Object.entries(teamDict)
                             .sort((a, b) => -a[1] - -b[1]) // don't question it
@@ -414,7 +419,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                     tourneyAndHash[1]
 
 
-                tourneyOverview['sortByLowestPoints'] = (tourneyOverview['sortByLowestPoints'] === 1)
+                tourneyOverview['sortbylowestpoints'] = (tourneyOverview['sortbylowestpoints'] === 1)
 
                 teamNames = []
                 for(const team in teamDict) {
@@ -468,7 +473,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
             }
             const totalPlacementPoints = new Map();
 
-            let split = tourneyOverview['pointsPerPlacement'].split(',')
+            let split = tourneyOverview['pointsperplacement'].split(',')
             for (const val in split) {
                 let index = parseInt(val) + 1
                 totalPlacementPoints.set(index, split[val]);
@@ -497,7 +502,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                         for (const player in value['teams'][overallTeams][team]) {
                             teamName[0][0] += [value['teams'][overallTeams][team][player]['id']]
                             teamName[0][1] += " |" + value['teams'][overallTeams][team][player]['name'] + "| "
-                            tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsPerKill'])
+                            tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsperkill'])
                         }
                     }
                     let totalKillPoints = 0
@@ -516,7 +521,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                     }
 
                     let totalGamePoints = totalKillPoints + teamPlacementPoints
-                    if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestOfGames']) {
+                    if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestofgames']) {
                         highestGames[teamName[0][0] + "|" + teamName[0][1]].push(
                             {
                                 points: totalGamePoints,
@@ -553,7 +558,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
 
                 }
             }
-            if (tourneyOverview['sortByLowestPoints'] !== 1) {
+            if (tourneyOverview['sortbylowestpoints'] !== 1) {
                 teamDict = Object.fromEntries(
                     Object.entries(teamDict)
                         .sort((a, b) => -a[1] - -b[1]) // don't question it
@@ -566,7 +571,7 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
             }
 
 
-            tourneyOverview['sortByLowestPoints'] = (tourneyOverview['sortByLowestPoints'] === 1)
+            tourneyOverview['sortbylowestpoints'] = (tourneyOverview['sortbylowestpoints'] === 1)
 
 
             // tourney viewer / spectator
@@ -610,6 +615,8 @@ routerNonProd.post('/orgtourney', async function (req, res) {
     let hashedTourney = crypto.randomBytes(64).toString('hex');
 
     let tourneyNumber = parseInt(await database.tourneyNameChecker(tourneyName)) + 1
+
+
     await database.createTourney(
         hashedTourney,
         tourneyName,
@@ -618,7 +625,7 @@ routerNonProd.post('/orgtourney', async function (req, res) {
         req.body.queueType,
         req.body.pointsPerKill,
         req.body.placementPoints,
-        parseInt(tourneyNumber),
+        tourneyNumber,
         (req.body.lowerPoints === 'lowerPoints')
     )
     res.redirect(303, `/orgtourney/${tourneyName}/${tourneyNumber}/${hashedTourney}`)
@@ -657,6 +664,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
                 let totalGamesOutputMap = new Map();
                 let totalGamesQueueOutputMap = new Map();
 
+
                 for (const val in totalGamesOutput) {
                     totalGamesOutputMap.set(totalGamesOutput[val]['gameNumber'], totalGamesOutput[val]);
                     totalGamesQueueOutputMap.set(
@@ -675,7 +683,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
 
 
                 const totalPlacementPoints = new Map();
-                let split = tourneyOverview['pointsPerPlacement'].split(',')
+                let split = tourneyOverview['pointsperplacement'].split(',')
                 for (const val in split) {
                     let index = parseInt(val) + 1
                     totalPlacementPoints.set(index, split[val]);
@@ -706,7 +714,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
                             for (const player in value['teams'][overallTeams][team]) {
                                 teamName[0][0] += [value['teams'][overallTeams][team][player]['id']]
                                 teamName[0][1] += " |" + value['teams'][overallTeams][team][player]['name'] + "| "
-                                tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsPerKill'])
+                                tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsperkill'])
                             }
                         }
                         let totalKillPoints = 0
@@ -726,7 +734,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
 
 
                         let totalGamePoints = totalKillPoints + teamPlacementPoints
-                        if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestOfGames']) {
+                        if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestofgames']) {
                             highestGames[teamName[0][0] + "|" + teamName[0][1]].push(
                                 {
                                     points: totalGamePoints,
@@ -765,7 +773,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
 
 
                 //sorts teams from highest->lowest or vice versa
-                if (tourneyOverview['sortByLowestPoints'] !== 1) {
+                if (tourneyOverview['sortbylowestpoints'] !== 1) {
                     teamDict = Object.fromEntries(
                         Object.entries(teamDict)
                             .sort((a, b) => -a[1] - -b[1]) // don't question it
@@ -785,7 +793,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
                     tourneyAndHash[1]
 
 
-                tourneyOverview['sortByLowestPoints'] = (tourneyOverview['sortByLowestPoints'] === 1)
+                tourneyOverview['sortbylowestpoints'] = (tourneyOverview['sortbylowestpoints'] === 1)
 
                 res.render('orgLeague', {
                     tourneySetupOption: false,
@@ -832,7 +840,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
 
 
             const totalPlacementPoints = new Map();
-            let split = tourneyOverview['pointsPerPlacement'].split(',')
+            let split = tourneyOverview['pointsperplacement'].split(',')
             for (const val in split) {
                 let index = parseInt(val) + 1
                 totalPlacementPoints.set(index, split[val]);
@@ -860,7 +868,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
                         for (const player in value['teams'][overallTeams][team]) {
                             teamName[0][0] += [value['teams'][overallTeams][team][player]['id']]
                             teamName[0][1] += " |" + value['teams'][overallTeams][team][player]['name'] + "| "
-                            tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsPerKill'])
+                            tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsperkill'])
                         }
                     }
                     let totalKillPoints = 0
@@ -879,7 +887,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
                     }
 
                     let totalGamePoints = totalKillPoints + teamPlacementPoints
-                    if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestOfGames']) {
+                    if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestofgames']) {
                         highestGames[teamName[0][0] + "|" + teamName[0][1]].push(
                             {
                                 points: totalGamePoints,
@@ -915,7 +923,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
 
                 }
             }
-            if (tourneyOverview['sortByLowestPoints'] !== 1) {
+            if (tourneyOverview['sortbylowestpoints'] !== 1) {
                 teamDict = Object.fromEntries(
                     Object.entries(teamDict)
                         .sort((a, b) => -a[1] - -b[1]) // don't question it
@@ -928,7 +936,7 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
             }
 
 
-            tourneyOverview['sortByLowestPoints'] = (tourneyOverview['sortByLowestPoints'] === 1)
+            tourneyOverview['sortbylowestpoints'] = (tourneyOverview['sortbylowestpoints'] === 1)
 
             let totalAmountOfGames = (await database.getLeagueTotalGamesEntered(tourneyAndHash[0], tourneyAndHash[1]))
 
@@ -1009,7 +1017,8 @@ routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
     if (playerUrl !== undefined && playerUrl !== '') {
 
         if (playerUrl !== undefined && playerUrl !== '') {
-
+            
+            playerUrl = decodeURI(playerUrl)
             let playerId = await getPlayerID(playerUrl.trimEnd())
 
 
@@ -1137,9 +1146,11 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
                 }
 
 
-                // req.session.getAggStats = await database.callApi("GetPlayerStats", true, 'GetPlayerStats', playerId)
                 req.session.findPlayerStatsOverall = agStats
-                req.session.getLastFifty = await database.callApi("GetPlayerMatchHistory", true, 'GetPlayerMatchHistory', playerId)
+
+                req.session.getLastFifty = await database.getPlayerMatchHistory(playerId)
+
+
 
                 res.render('stats', {
                     displayStats: true,
@@ -1177,22 +1188,26 @@ routerNonProd.get('/match*', cache(5000), async (req, res) => {
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
         if (tourneyAndHash.length === 1) {
-            let match = await database.callApi(
-                "GetMatchDetails",
-                true,
-                'GetMatchDetails',
-                tourneyAndHash[0]
-            )
-            if (match['ret_msg'] === `No Match Details:${tourneyAndHash[0]}`) {
-                res.render('match', {
-                    renderDetails: false
-                });
-            } else {
+            // let match = await database.callApi(
+            //     "GetMatchDetails",
+            //     true,
+            //     'GetMatchDetails',
+            //     tourneyAndHash[0]
+            // )
+            // if (match['ret_msg'] === `No Match Details:${tourneyAndHash[0]}`) {
+            //     res.render('match', {
+            //         renderDetails: false
+            //     });
+            // } else {
+                let match = (await database.getMatchInformation(tourneyAndHash[0]))[0]
+                let matchOverview = (await database.getMatchInformation(tourneyAndHash[0]))[1]
+
                 res.render('match', {
                     renderDetails: true,
-                    matchDetails: match
+                    matchDetails: match,
+                    matchOverview:matchOverview
                 });
-            }
+            // }
         }
     } else {
         res.render('match', {
@@ -1201,9 +1216,6 @@ routerNonProd.get('/match*', cache(5000), async (req, res) => {
     }
 });
 
-// let data = ()
-// console.log(data)
-// await writeFileWithDictData(data,'test432')
 
 async function writeFileWithDictData(dict,fileName) {
     return new Promise(async (resolve, reject) => {
@@ -1256,55 +1268,91 @@ routerNonProd.get('/admin*', cache(15000), async (req, res) => {
         lastHourStatsSolo,
         lastHourStatsDuo,
         lastHourStatsTrio,
-        lastHourStatsSquad
+        lastHourStatsSquad,
+        lastWeekCrossplayStatsSolo,
+        lastWeekCrossplayStatsDuo,
+        lastWeekCrossplayStatsTrio,
+        lastWeekCrossplayStatsSquad,
+        lastDayCrossplayStatsSolo,
+        lastDayCrossplayStatsDuo,
+        lastDayCrossplayStatsTrio,
+        lastDayCrossplayStatsSquad,
+        lastHourCrossplayStatsSolo,
+        lastHourCrossplayStatsDuo,
+        lastHourCrossplayStatsTrio,
+        lastHourCrossplayStatsSquad,
+        lastWeekMatchStatsSolo,
+        lastWeekMatchStatsDuo,
+        lastWeekMatchStatsTrio,
+        lastWeekMatchStatsSquad,
+        lastDayMatchStatsSolo,
+        lastDayMatchStatsDuo,
+        lastDayMatchStatsTrio,
+        lastDayMatchStatsSquad,
+        lastHourMatchStatsSolo,
+        lastHourMatchStatsDuo,
+        lastHourMatchStatsTrio,
+        lastHourMatchStatsSquad
     ] = await Promise.all([
-        database.getClassWinRate(604800,'474'),
-        database.getClassWinRate(604800,'482'),
-        database.getClassWinRate(604800,'475'),
-        database.getClassWinRate(604800,'476'),
-        database.getClassWinRate(86400,'474'),
-        database.getClassWinRate(86400,'482'),
-        database.getClassWinRate(86400,'475'),
-        database.getClassWinRate(86400,'476'),
-        database.getClassWinRate(3600,'474'),
-        database.getClassWinRate(3600,'482'),
-        database.getClassWinRate(3600,'475'),
-        database.getClassWinRate(3600,'476'),
-        database.getPlayers(604800),
-        database.getPlayers(86400),
-        database.getPlayers(3600),
+        database.getClassWinRate_v2(604800,'474'),
+        database.getClassWinRate_v2(604800,'482'),
+        database.getClassWinRate_v2(604800,'475'),
+        database.getClassWinRate_v2(604800,'476'),
+        database.getClassWinRate_v2(86400,'474'),
+        database.getClassWinRate_v2(86400,'482'),
+        database.getClassWinRate_v2(86400,'475'),
+        database.getClassWinRate_v2(86400,'476'),
+        database.getClassWinRate_v2(3600,'474'),
+        database.getClassWinRate_v2(3600,'482'),
+        database.getClassWinRate_v2(3600,'475'),
+        database.getClassWinRate_v2(3600,'476'),
+        database.getPlayers_v2(604800),
+        database.getPlayers_v2(86400),
+        database.getPlayers_v2(3600),
         database.getTotalDelay(),
-        database.getRealmStats(604800),
-        database.getRealmStats(604800,'474'),
-        database.getRealmStats(604800,'482'),
-        database.getRealmStats(604800,'475'),
-        database.getRealmStats(604800,'476'),
-        database.getRealmStats(86400),
-        database.getRealmStats(86400,'474'),
-        database.getRealmStats(86400,'482'),
-        database.getRealmStats(86400,'475'),
-        database.getRealmStats(86400,'476'),
-        database.getRealmStats(3600),
-        database.getRealmStats(3600,'474'),
-        database.getRealmStats(3600,'482'),
-        database.getRealmStats(3600,'475'),
-        database.getRealmStats(3600,'476')
-    ]);
-    //let queueValues = {
-    //     474: 'Solo\'s',
-    //     475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
-    //     476: 'Squad\'s',
-    //     477: 'War\'s',
-    //     480: 'Solo\'s Low LvL',
-    //     481: 'Squad\'s Mid LvL',
-    //     482: 'Duo\'s',
-    //     483: 'Duo\'s Mid LvL',
-    //     10188: 'Solo Custom\'s',
-    //     10189: 'Duo Custom\'s',
-    //     10205: 'Trio Custom\'s',
-    //     10190: 'Squad Custom\'s'
-    // }
+        database.getRealmStats_v2(604800),
+        database.getRealmStats_v2(604800,'474'),
+        database.getRealmStats_v2(604800,'482'),
+        database.getRealmStats_v2(604800,'475'),
+        database.getRealmStats_v2(604800,'476'),
+        database.getRealmStats_v2(86400),
+        database.getRealmStats_v2(86400,'474'),
+        database.getRealmStats_v2(86400,'482'),
+        database.getRealmStats_v2(86400,'475'),
+        database.getRealmStats_v2(86400,'476'),
+        database.getRealmStats_v2(3600),
+        database.getRealmStats_v2(3600,'474'),
+        database.getRealmStats_v2(3600,'482'),
+        database.getRealmStats_v2(3600,'475'),
+        database.getRealmStats_v2(3600,'476'),
+        database.getCrossPlayPercentage(604800,'474'),
+        database.getCrossPlayPercentage(604800,'482'),
+        database.getCrossPlayPercentage(604800,'475'),
+        database.getCrossPlayPercentage(604800,'476'),
+        database.getCrossPlayPercentage(86400,'474'),
+        database.getCrossPlayPercentage(86400,'482'),
+        database.getCrossPlayPercentage(86400,'475'),
+        database.getCrossPlayPercentage(86400,'476'),
+        database.getCrossPlayPercentage(3600,'474'),
+        database.getCrossPlayPercentage(3600,'482'),
+        database.getCrossPlayPercentage(3600,'475'),
+        database.getCrossPlayPercentage(3600,'476'),
+        database.getAveragePlayersPerGamePerRegion(604800,'474'),
+        database.getAveragePlayersPerGamePerRegion(604800,'482'),
+        database.getAveragePlayersPerGamePerRegion(604800,'475'),
+        database.getAveragePlayersPerGamePerRegion(604800,'476'),
+        database.getAveragePlayersPerGamePerRegion(86400,'474'),
+        database.getAveragePlayersPerGamePerRegion(86400,'482'),
+        database.getAveragePlayersPerGamePerRegion(86400,'475'),
+        database.getAveragePlayersPerGamePerRegion(86400,'476'),
+        database.getAveragePlayersPerGamePerRegion(3600,'474'),
+        database.getAveragePlayersPerGamePerRegion(3600,'482'),
+        database.getAveragePlayersPerGamePerRegion(3600,'475'),
+        database.getAveragePlayersPerGamePerRegion(3600,'476')
+        ]);
 
+
+    var startTime = performance.now()
 
     let [
         getPlayersWeekFile,
@@ -1316,6 +1364,10 @@ routerNonProd.get('/admin*', cache(15000), async (req, res) => {
         writeFileWithDictData(getPlayersHour,'public/views/files/playersLastHour')
     ]);
 
+        
+var endTime = performance.now()
+
+console.log(`Call to doSomething_files took ${endTime - startTime} milliseconds`)
     res.render('admin', {
         classWinrateSoloLastWeek:classWinrateSoloLastWeek,
         classWinrateDuoLastWeek:classWinrateDuoLastWeek,
@@ -1344,14 +1396,396 @@ routerNonProd.get('/admin*', cache(15000), async (req, res) => {
         lastHourStatsSolo:      lastHourStatsSolo,
         lastHourStatsDuo:      lastHourStatsDuo,
         lastHourStatsTrio:      lastHourStatsTrio,
-        lastHourStatsSquad:     lastHourStatsSquad
+        lastHourStatsSquad:     lastHourStatsSquad,
+        lastWeekCrossplayStatsSolo : lastWeekCrossplayStatsSolo,
+        lastWeekCrossplayStatsDuo : lastWeekCrossplayStatsDuo,
+        lastWeekCrossplayStatsTrio : lastWeekCrossplayStatsTrio,
+        lastWeekCrossplayStatsSquad : lastWeekCrossplayStatsSquad,
+        lastDayCrossplayStatsSolo : lastDayCrossplayStatsSolo,
+        lastDayCrossplayStatsDuo : lastDayCrossplayStatsDuo,
+        lastDayCrossplayStatsTrio : lastDayCrossplayStatsTrio,
+        lastDayCrossplayStatsSquad : lastDayCrossplayStatsSquad,
+        lastHourCrossplayStatsSolo : lastHourCrossplayStatsSolo,
+        lastHourCrossplayStatsDuo : lastHourCrossplayStatsDuo,
+        lastHourCrossplayStatsTrio : lastHourCrossplayStatsTrio,
+        lastHourCrossplayStatsSquad : lastHourCrossplayStatsSquad,
+        lastWeekMatchStatsSolo	: lastWeekMatchStatsSolo	,
+        lastWeekMatchStatsDuo   : lastWeekMatchStatsDuo  ,
+        lastWeekMatchStatsTrio  : lastWeekMatchStatsTrio ,
+        lastWeekMatchStatsSquad : lastWeekMatchStatsSquad,
+        lastDayMatchStatsSolo   : lastDayMatchStatsSolo  ,
+        lastDayMatchStatsDuo    : lastDayMatchStatsDuo   ,
+        lastDayMatchStatsTrio   : lastDayMatchStatsTrio  ,
+        lastDayMatchStatsSquad  : lastDayMatchStatsSquad ,
+        lastHourMatchStatsSolo  : lastHourMatchStatsSolo ,
+        lastHourMatchStatsDuo   : lastHourMatchStatsDuo  ,
+        lastHourMatchStatsTrio  : lastHourMatchStatsTrio ,
+        lastHourMatchStatsSquad : lastHourMatchStatsSquad
     });
-
 });
+
+
+//482
+routerNonProd.get('/v2_admin*', cache(3600000), async (req, res) => {
+        var startTime = performance.now()
+    let [
+        testingMonth,
+        testingWeek,
+        testingDay,
+        testingHour,
+        averagePlayersPerMonthNASolo          	,
+        averagePlayersPerMonthNADuo          	,
+        averagePlayersPerMonthNATrio          	,
+        averagePlayersPerMonthNASquad        	,
+        averagePlayersPerMonthBrazilSolo      	,
+        averagePlayersPerMonthBrazilDuo       	,
+        averagePlayersPerMonthBrazilTrio      	,
+        averagePlayersPerMonthBrazilSquad     	,
+        averagePlayersPerMonthAustraliaSolo   	,
+        averagePlayersPerMonthAustraliaDuo    	,
+        averagePlayersPerMonthAustraliaTrio   	,
+        averagePlayersPerMonthAustraliaSquad  	,
+        averagePlayersPerMonthEUSolo          	,
+        averagePlayersPerMonthEUDuo           	,
+        averagePlayersPerMonthEUTrio          	,
+        averagePlayersPerMonthEUSquad         	,
+        averagePlayersPerMonthSoutheastAsiaSolo	,
+        averagePlayersPerMonthSoutheastAsiaDuo 	,
+        averagePlayersPerMonthSoutheastAsiaTrio	,
+        averagePlayersPerMonthSoutheastAsiaSquad,	
+
+        averagePlayersPerWeekNASolo          	,
+        averagePlayersPerWeekNADuo          	,
+        averagePlayersPerWeekNATrio          	,
+        averagePlayersPerWeekNASquad        	,
+        averagePlayersPerWeekBrazilSolo      	,
+        averagePlayersPerWeekBrazilDuo       	,
+        averagePlayersPerWeekBrazilTrio      	,
+        averagePlayersPerWeekBrazilSquad     	,
+        averagePlayersPerWeekAustraliaSolo   	,
+        averagePlayersPerWeekAustraliaDuo    	,
+        averagePlayersPerWeekAustraliaTrio   	,
+        averagePlayersPerWeekAustraliaSquad  	,
+        averagePlayersPerWeekEUSolo          	,
+        averagePlayersPerWeekEUDuo           	,
+        averagePlayersPerWeekEUTrio          	,
+        averagePlayersPerWeekEUSquad         	,
+        averagePlayersPerWeekSoutheastAsiaSolo	,
+        averagePlayersPerWeekSoutheastAsiaDuo 	,
+        averagePlayersPerWeekSoutheastAsiaTrio	,
+        averagePlayersPerWeekSoutheastAsiaSquad,	
+
+        averagePlayersPerDayNASolo          	,
+        averagePlayersPerDayNADuo          	,
+        averagePlayersPerDayNATrio          	,
+        averagePlayersPerDayNASquad        	,
+        averagePlayersPerDayBrazilSolo      	,
+        averagePlayersPerDayBrazilDuo       	,
+        averagePlayersPerDayBrazilTrio      	,
+        averagePlayersPerDayBrazilSquad     	,
+        averagePlayersPerDayAustraliaSolo   	,
+        averagePlayersPerDayAustraliaDuo    	,
+        averagePlayersPerDayAustraliaTrio   	,
+        averagePlayersPerDayAustraliaSquad  	,
+        averagePlayersPerDayEUSolo          	,
+        averagePlayersPerDayEUDuo           	,
+        averagePlayersPerDayEUTrio          	,
+        averagePlayersPerDayEUSquad         	,
+        averagePlayersPerDaySoutheastAsiaSolo	,
+        averagePlayersPerDaySoutheastAsiaDuo 	,
+        averagePlayersPerDaySoutheastAsiaTrio	,
+        averagePlayersPerDaySoutheastAsiaSquad,	
+
+        averagePlayersPerHourNASolo          	,
+        averagePlayersPerHourNADuo          	,
+        averagePlayersPerHourNATrio          	,
+        averagePlayersPerHourNASquad        	,
+        averagePlayersPerHourBrazilSolo      	,
+        averagePlayersPerHourBrazilDuo       	,
+        averagePlayersPerHourBrazilTrio      	,
+        averagePlayersPerHourBrazilSquad     	,
+        averagePlayersPerHourAustraliaSolo   	,
+        averagePlayersPerHourAustraliaDuo    	,
+        averagePlayersPerHourAustraliaTrio   	,
+        averagePlayersPerHourAustraliaSquad  	,
+        averagePlayersPerHourEUSolo          	,
+        averagePlayersPerHourEUDuo           	,
+        averagePlayersPerHourEUTrio          	,
+        averagePlayersPerHourEUSquad         	,
+        averagePlayersPerHourSoutheastAsiaSolo	,
+        averagePlayersPerHourSoutheastAsiaDuo 	,
+        averagePlayersPerHourSoutheastAsiaTrio	,
+        averagePlayersPerHourSoutheastAsiaSquad , 
+
+		sameInputOverTimeMonthSolo ,
+		sameInputOverTimeMonthDuo  ,
+		sameInputOverTimeMonthTrio ,
+		sameInputOverTimeMonthSquad,
+		
+		sameInputOverTimeWeekSolo  ,
+		sameInputOverTimeWeekDuo   ,
+		sameInputOverTimeWeekTrio  ,
+		sameInputOverTimeWeekSquad ,
+								   
+		sameInputOverTimeDaySolo   ,
+		sameInputOverTimeDayDuo    ,
+		sameInputOverTimeDayTrio   ,
+		sameInputOverTimeDaySquad  ,
+		
+		sameInputOverTimeHourSolo  ,
+		sameInputOverTimeHourDuo   ,
+		sameInputOverTimeHourTrio  ,
+		sameInputOverTimeHourSquad 
+	
+        
+    ] = await Promise.all([
+        database.graphTestingV1(2630000*12,2630000),
+        database.graphTestingV1(604800*5,604800),
+        database.graphTestingV1(86400*21,86400),
+        database.graphTestingV1(129600,3600),
+        
+        database.averagePlayersOverTime(2630000*12,2630000,474,'NA'),
+        database.averagePlayersOverTime(2630000*12,2630000,483,'NA'),
+        database.averagePlayersOverTime(2630000*12,2630000,475,'NA'),
+        database.averagePlayersOverTime(2630000*12,2630000,476,'NA'),
+        database.averagePlayersOverTime(2630000*12,2630000,474,'Brazil'),
+        database.averagePlayersOverTime(2630000*12,2630000,483,'Brazil'),
+        database.averagePlayersOverTime(2630000*12,2630000,475,'Brazil'),
+        database.averagePlayersOverTime(2630000*12,2630000,476,'Brazil'),
+        database.averagePlayersOverTime(2630000*12,2630000,474,'Australia'),
+        database.averagePlayersOverTime(2630000*12,2630000,483,'Australia'),
+        database.averagePlayersOverTime(2630000*12,2630000,475,'Australia'),
+        database.averagePlayersOverTime(2630000*12,2630000,476,'Australia'),
+        database.averagePlayersOverTime(2630000*12,2630000,474,'EU'),
+        database.averagePlayersOverTime(2630000*12,2630000,483,'EU'),
+        database.averagePlayersOverTime(2630000*12,2630000,475,'EU'),
+        database.averagePlayersOverTime(2630000*12,2630000,476,'EU'),
+        database.averagePlayersOverTime(2630000*12,2630000,474,'Southeast Asia'),
+        database.averagePlayersOverTime(2630000*12,2630000,483,'Southeast Asia'),
+        database.averagePlayersOverTime(2630000*12,2630000,475,'Southeast Asia'),
+        database.averagePlayersOverTime(2630000*12,2630000,476,'Southeast Asia'),
+
+        database.averagePlayersOverTime(604800*14,604800,474,'NA'),
+        database.averagePlayersOverTime(604800*14,604800,483,'NA'),
+        database.averagePlayersOverTime(604800*14,604800,475,'NA'),
+        database.averagePlayersOverTime(604800*14,604800,476,'NA'),
+        database.averagePlayersOverTime(604800*14,604800,474,'Brazil'),
+        database.averagePlayersOverTime(604800*14,604800,483,'Brazil'),
+        database.averagePlayersOverTime(604800*14,604800,475,'Brazil'),
+        database.averagePlayersOverTime(604800*14,604800,476,'Brazil'),
+        database.averagePlayersOverTime(604800*14,604800,474,'Australia'),
+        database.averagePlayersOverTime(604800*14,604800,483,'Australia'),
+        database.averagePlayersOverTime(604800*14,604800,475,'Australia'),
+        database.averagePlayersOverTime(604800*14,604800,476,'Australia'),
+        database.averagePlayersOverTime(604800*14,604800,474,'EU'),
+        database.averagePlayersOverTime(604800*14,604800,483,'EU'),
+        database.averagePlayersOverTime(604800*14,604800,475,'EU'),
+        database.averagePlayersOverTime(604800*14,604800,476,'EU'),
+        database.averagePlayersOverTime(604800*14,604800,474,'Southeast Asia'),
+        database.averagePlayersOverTime(604800*14,604800,483,'Southeast Asia'),
+        database.averagePlayersOverTime(604800*14,604800,475,'Southeast Asia'),
+        database.averagePlayersOverTime(604800*14,604800,476,'Southeast Asia'),
+		
+		database.averagePlayersOverTime(86400*14,86400,474,'NA'),
+        database.averagePlayersOverTime(86400*14,86400,483,'NA'),
+        database.averagePlayersOverTime(86400*14,86400,475,'NA'),
+        database.averagePlayersOverTime(86400*14,86400,476,'NA'),
+        database.averagePlayersOverTime(86400*14,86400,474,'Brazil'),
+        database.averagePlayersOverTime(86400*14,86400,483,'Brazil'),
+        database.averagePlayersOverTime(86400*14,86400,475,'Brazil'),
+        database.averagePlayersOverTime(86400*14,86400,476,'Brazil'),
+        database.averagePlayersOverTime(86400*14,86400,474,'Australia'),
+        database.averagePlayersOverTime(86400*14,86400,483,'Australia'),
+        database.averagePlayersOverTime(86400*14,86400,475,'Australia'),
+        database.averagePlayersOverTime(86400*14,86400,476,'Australia'),
+        database.averagePlayersOverTime(86400*14,86400,474,'EU'),
+        database.averagePlayersOverTime(86400*14,86400,483,'EU'),
+        database.averagePlayersOverTime(86400*14,86400,475,'EU'),
+        database.averagePlayersOverTime(86400*14,86400,476,'EU'),
+        database.averagePlayersOverTime(86400*14,86400,474,'Southeast Asia'),
+        database.averagePlayersOverTime(86400*14,86400,483,'Southeast Asia'),
+        database.averagePlayersOverTime(86400*14,86400,475,'Southeast Asia'),
+        database.averagePlayersOverTime(86400*14,86400,476,'Southeast Asia'),
+
+        database.averagePlayersOverTime(3600*24,3600 ,474,'NA'),
+        database.averagePlayersOverTime(3600*24,3600 ,483,'NA'),
+        database.averagePlayersOverTime(3600*24,3600 ,475,'NA'),
+        database.averagePlayersOverTime(3600*24,3600 ,476,'NA'),
+        database.averagePlayersOverTime(3600*24,3600 ,474,'Brazil'),
+        database.averagePlayersOverTime(3600*24,3600 ,483,'Brazil'),
+        database.averagePlayersOverTime(3600*24,3600 ,475,'Brazil'),
+        database.averagePlayersOverTime(3600*24,3600 ,476,'Brazil'),
+        database.averagePlayersOverTime(3600*24,3600 ,474,'Australia'),
+        database.averagePlayersOverTime(3600*24,3600 ,483,'Australia'),
+        database.averagePlayersOverTime(3600*24,3600 ,475,'Australia'),
+        database.averagePlayersOverTime(3600*24,3600 ,476,'Australia'),
+        database.averagePlayersOverTime(3600*24,3600 ,474,'EU'),
+        database.averagePlayersOverTime(3600*24,3600 ,483,'EU'),
+        database.averagePlayersOverTime(3600*24,3600 ,475,'EU'),
+        database.averagePlayersOverTime(3600*24,3600 ,476,'EU'),
+        database.averagePlayersOverTime(3600*24,3600 ,474,'Southeast Asia'),
+        database.averagePlayersOverTime(3600*24,3600 ,483,'Southeast Asia'),
+        database.averagePlayersOverTime(3600*24,3600 ,475,'Southeast Asia'),
+        database.averagePlayersOverTime(3600*24,3600 ,476,'Southeast Asia'),
+
+        database.sameInputPlayersOverTime(2630000*12,2630000,474),
+        database.sameInputPlayersOverTime(2630000*12,2630000,483),
+        database.sameInputPlayersOverTime(2630000*12,2630000,475),
+        database.sameInputPlayersOverTime(2630000*12,2630000,476),
+        
+
+        database.sameInputPlayersOverTime(604800*14,604800,474),
+        database.sameInputPlayersOverTime(604800*14,604800,483),
+        database.sameInputPlayersOverTime(604800*14,604800,475),
+        database.sameInputPlayersOverTime(604800*14,604800,476),
+        
+		
+		database.sameInputPlayersOverTime(86400*14,86400,474),
+        database.sameInputPlayersOverTime(86400*14,86400,483),
+        database.sameInputPlayersOverTime(86400*14,86400,475),
+        database.sameInputPlayersOverTime(86400*14,86400,476),
+        
+
+        database.sameInputPlayersOverTime(3600*24,3600 ,474),
+        database.sameInputPlayersOverTime(3600*24,3600 ,483),
+        database.sameInputPlayersOverTime(3600*24,3600 ,475),
+        database.sameInputPlayersOverTime(3600*24,3600 ,476)
+    
+        ]);
+       var endTime = performance.now()
+        console.log(`Call to doSomething1 took ${endTime - startTime} milliseconds`)
+    res.render('v2_admin', {
+        testingMonth:testingMonth,
+        testingWeek:testingWeek,
+        testingDay:testingDay,
+        testingHour:testingHour,
+
+        averagePlayersPerMonthNASolo          	: averagePlayersPerMonthNASolo,
+        averagePlayersPerMonthNADuo          		: averagePlayersPerMonthNADuo,
+        averagePlayersPerMonthNATrio          	: averagePlayersPerMonthNATrio,
+        averagePlayersPerMonthNASquad        		: averagePlayersPerMonthNASquad,
+        averagePlayersPerMonthBrazilSolo      	: averagePlayersPerMonthBrazilSolo,
+        averagePlayersPerMonthBrazilDuo       	: averagePlayersPerMonthBrazilDuo,
+        averagePlayersPerMonthBrazilTrio      	: averagePlayersPerMonthBrazilTrio,
+        averagePlayersPerMonthBrazilSquad     	: averagePlayersPerMonthBrazilSquad,
+        averagePlayersPerMonthAustraliaSolo   	: averagePlayersPerMonthAustraliaSolo,
+        averagePlayersPerMonthAustraliaDuo    	: averagePlayersPerMonthAustraliaDuo,
+        averagePlayersPerMonthAustraliaTrio   	: averagePlayersPerMonthAustraliaTrio,
+        averagePlayersPerMonthAustraliaSquad  	: averagePlayersPerMonthAustraliaSquad,
+        averagePlayersPerMonthEUSolo          	: averagePlayersPerMonthEUSolo,
+        averagePlayersPerMonthEUDuo           	: averagePlayersPerMonthEUDuo,
+        averagePlayersPerMonthEUTrio          	: averagePlayersPerMonthEUTrio,
+        averagePlayersPerMonthEUSquad         	: averagePlayersPerMonthEUSquad,
+        averagePlayersPerMonthSoutheastAsiaSolo	: averagePlayersPerMonthSoutheastAsiaSolo,
+        averagePlayersPerMonthSoutheastAsiaDuo 	: averagePlayersPerMonthSoutheastAsiaDuo,
+        averagePlayersPerMonthSoutheastAsiaTrio	: averagePlayersPerMonthSoutheastAsiaTrio,
+        averagePlayersPerMonthSoutheastAsiaSquad	: averagePlayersPerMonthSoutheastAsiaSquad,
+
+        averagePlayersPerWeekNASolo          	: averagePlayersPerWeekNASolo,
+        averagePlayersPerWeekNADuo          		: averagePlayersPerWeekNADuo,
+        averagePlayersPerWeekNATrio          	: averagePlayersPerWeekNATrio,
+        averagePlayersPerWeekNASquad        		: averagePlayersPerWeekNASquad,
+        averagePlayersPerWeekBrazilSolo      	: averagePlayersPerWeekBrazilSolo,
+        averagePlayersPerWeekBrazilDuo       	: averagePlayersPerWeekBrazilDuo,
+        averagePlayersPerWeekBrazilTrio      	: averagePlayersPerWeekBrazilTrio,
+        averagePlayersPerWeekBrazilSquad     	: averagePlayersPerWeekBrazilSquad,
+        averagePlayersPerWeekAustraliaSolo   	: averagePlayersPerWeekAustraliaSolo,
+        averagePlayersPerWeekAustraliaDuo    	: averagePlayersPerWeekAustraliaDuo,
+        averagePlayersPerWeekAustraliaTrio   	: averagePlayersPerWeekAustraliaTrio,
+        averagePlayersPerWeekAustraliaSquad  	: averagePlayersPerWeekAustraliaSquad,
+        averagePlayersPerWeekEUSolo          	: averagePlayersPerWeekEUSolo,
+        averagePlayersPerWeekEUDuo           	: averagePlayersPerWeekEUDuo,
+        averagePlayersPerWeekEUTrio          	: averagePlayersPerWeekEUTrio,
+        averagePlayersPerWeekEUSquad         	: averagePlayersPerWeekEUSquad,
+        averagePlayersPerWeekSoutheastAsiaSolo	: averagePlayersPerWeekSoutheastAsiaSolo,
+        averagePlayersPerWeekSoutheastAsiaDuo 	: averagePlayersPerWeekSoutheastAsiaDuo,
+        averagePlayersPerWeekSoutheastAsiaTrio	: averagePlayersPerWeekSoutheastAsiaTrio,
+        averagePlayersPerWeekSoutheastAsiaSquad	: averagePlayersPerWeekSoutheastAsiaSquad,
+
+        averagePlayersPerDayNASolo          	: averagePlayersPerDayNASolo,
+        averagePlayersPerDayNADuo          		: averagePlayersPerDayNADuo,
+        averagePlayersPerDayNATrio          	: averagePlayersPerDayNATrio,
+        averagePlayersPerDayNASquad        		: averagePlayersPerDayNASquad,
+        averagePlayersPerDayBrazilSolo      	: averagePlayersPerDayBrazilSolo,
+        averagePlayersPerDayBrazilDuo       	: averagePlayersPerDayBrazilDuo,
+        averagePlayersPerDayBrazilTrio      	: averagePlayersPerDayBrazilTrio,
+        averagePlayersPerDayBrazilSquad     	: averagePlayersPerDayBrazilSquad,
+        averagePlayersPerDayAustraliaSolo   	: averagePlayersPerDayAustraliaSolo,
+        averagePlayersPerDayAustraliaDuo    	: averagePlayersPerDayAustraliaDuo,
+        averagePlayersPerDayAustraliaTrio   	: averagePlayersPerDayAustraliaTrio,
+        averagePlayersPerDayAustraliaSquad  	: averagePlayersPerDayAustraliaSquad,
+        averagePlayersPerDayEUSolo          	: averagePlayersPerDayEUSolo,
+        averagePlayersPerDayEUDuo           	: averagePlayersPerDayEUDuo,
+        averagePlayersPerDayEUTrio          	: averagePlayersPerDayEUTrio,
+        averagePlayersPerDayEUSquad         	: averagePlayersPerDayEUSquad,
+        averagePlayersPerDaySoutheastAsiaSolo	: averagePlayersPerDaySoutheastAsiaSolo,
+        averagePlayersPerDaySoutheastAsiaDuo 	: averagePlayersPerDaySoutheastAsiaDuo,
+        averagePlayersPerDaySoutheastAsiaTrio	: averagePlayersPerDaySoutheastAsiaTrio,
+        averagePlayersPerDaySoutheastAsiaSquad	: averagePlayersPerDaySoutheastAsiaSquad,
+
+        averagePlayersPerHourNASolo          	: averagePlayersPerHourNASolo,
+        averagePlayersPerHourNADuo          		: averagePlayersPerHourNADuo,
+        averagePlayersPerHourNATrio          	: averagePlayersPerHourNATrio,
+        averagePlayersPerHourNASquad        		: averagePlayersPerHourNASquad,
+        averagePlayersPerHourBrazilSolo      	: averagePlayersPerHourBrazilSolo,
+        averagePlayersPerHourBrazilDuo       	: averagePlayersPerHourBrazilDuo,
+        averagePlayersPerHourBrazilTrio      	: averagePlayersPerHourBrazilTrio,
+        averagePlayersPerHourBrazilSquad     	: averagePlayersPerHourBrazilSquad,
+        averagePlayersPerHourAustraliaSolo   	: averagePlayersPerHourAustraliaSolo,
+        averagePlayersPerHourAustraliaDuo    	: averagePlayersPerHourAustraliaDuo,
+        averagePlayersPerHourAustraliaTrio   	: averagePlayersPerHourAustraliaTrio,
+        averagePlayersPerHourAustraliaSquad  	: averagePlayersPerHourAustraliaSquad,
+        averagePlayersPerHourEUSolo          	: averagePlayersPerHourEUSolo,
+        averagePlayersPerHourEUDuo           	: averagePlayersPerHourEUDuo,
+        averagePlayersPerHourEUTrio          	: averagePlayersPerHourEUTrio,
+        averagePlayersPerHourEUSquad         	: averagePlayersPerHourEUSquad,
+        averagePlayersPerHourSoutheastAsiaSolo	: averagePlayersPerHourSoutheastAsiaSolo,
+        averagePlayersPerHourSoutheastAsiaDuo 	: averagePlayersPerHourSoutheastAsiaDuo,
+        averagePlayersPerHourSoutheastAsiaTrio	: averagePlayersPerHourSoutheastAsiaTrio,
+        averagePlayersPerHourSoutheastAsiaSquad	: averagePlayersPerHourSoutheastAsiaSquad,
+        
+		sameInputOverTimeMonthSolo :sameInputOverTimeMonthSolo ,
+		sameInputOverTimeMonthDuo  :sameInputOverTimeMonthDuo  ,
+		sameInputOverTimeMonthTrio :sameInputOverTimeMonthTrio ,
+		sameInputOverTimeMonthSquad:sameInputOverTimeMonthSquad,
+															   
+		sameInputOverTimeWeekSolo  :sameInputOverTimeWeekSolo  ,
+		sameInputOverTimeWeekDuo   :sameInputOverTimeWeekDuo   ,
+		sameInputOverTimeWeekTrio  :sameInputOverTimeWeekTrio  ,
+		sameInputOverTimeWeekSquad :sameInputOverTimeWeekSquad ,
+															   
+		sameInputOverTimeDaySolo   :sameInputOverTimeDaySolo   ,
+		sameInputOverTimeDayDuo    :sameInputOverTimeDayDuo    ,
+		sameInputOverTimeDayTrio   :sameInputOverTimeDayTrio   ,
+		sameInputOverTimeDaySquad  :sameInputOverTimeDaySquad  ,
+															   
+		sameInputOverTimeHourSolo  :sameInputOverTimeHourSolo  ,
+		sameInputOverTimeHourDuo   :sameInputOverTimeHourDuo   ,
+		sameInputOverTimeHourTrio  :sameInputOverTimeHourTrio  ,
+		sameInputOverTimeHourSquad :sameInputOverTimeHourSquad ,
+    });
+});
+
 
 
 routerNonProd.post('/match', async function (req, res) {
     res.redirect(303, `/match/${req.body.search}`)
+});
+
+routerNonProd.get('/leaderboard*', cache(30000), async (req, res) => {
+
+
+    let [highestSoloKills, HighestTeamKills,monthlyLeaderboard] = await Promise.all([
+        database.getHighestIndivKills(),
+        database.getHighestTeamKills(),
+        database.getMonthlyRealmLeaderboardStats()
+    ]);
+
+    res.render('leaderboard', {
+        highestSoloKills:highestSoloKills,
+        HighestTeamKills:HighestTeamKills,
+        monthlyLeaderboard:monthlyLeaderboard
+    });
 });
 
 routerNonProd.get('*', cache(5000), (req, res) => {

@@ -1,4 +1,4 @@
-let databaseConfig = require('./realmRoyaleDatabase.js');
+let databaseConfig = require('./realmRoyaleDatabase_v2.js');
 let database = new databaseConfig()
 
 let {rate, rating} = require('openskill')
@@ -40,7 +40,6 @@ function fixRealmGameOutput(totalGameDetails,anArrayOfGameDetail=false) {
             }
         }
 
-        // console.log(totalGameDetails)
         return totalGameDetails
     } else {
         let idStored = []
@@ -78,7 +77,7 @@ async function insertFormattedGameMatches(gameMatch) {
         for(const players in gameMatch['teams'][team]) {
             for(const player in gameMatch['teams'][team][players]) {
 
-                if((await database.getStoredPlayerInformation(gameMatch['teams'][team][players][player]['id'])).length === 0) {
+                if((Object.keys(await database.getStoredPlayerInformation(gameMatch['teams'][team][players][player]['id']))).length === 0) {
                     let playerInfo = await database.callApi(
                         'GetPlayer',
                         true,
@@ -123,10 +122,11 @@ setInterval(async function () {
                             `GetMatchDetails::${matches[match]['match_id']}`,
                             matches[match]['match_id']
                         ).then(async matchDetails => {
-                            matchDetails = fixRealmGameOutput(matchDetails)
-                            await insertFormattedGameMatches(matchDetails)
 
                             if (matchDetails['ret_msg'] === null) {
+                                matchDetails = fixRealmGameOutput(matchDetails)
+                                await insertFormattedGameMatches(matchDetails)
+    
 
                                 logger.error(`Match:::GOOD_MATCH:::${matches[match]['match_id']}::RET_MSG:${matchDetails['ret_msg']}`)
 
@@ -136,6 +136,7 @@ setInterval(async function () {
                                 let teamAndPlayers = []
                                 let teamIndex = 0;
                                 let mmrValues = []
+
 
                                 for (const team in matchDetails['teams']) {
                                     teamAndPlayers[teamIndex] = []
@@ -164,6 +165,7 @@ setInterval(async function () {
 
                                     teamIndex += 1
                                 }
+
                                 try {
                                     let newRanksTemp = rate(
                                         mmrValues,
@@ -173,6 +175,8 @@ setInterval(async function () {
                                     for (const team in teamAndPlayers) {
                                         for (const player in teamAndPlayers[team]) {
                                             let time = new Date(matchDetails['match_datetime'])
+                                            let offSet = ((new Date(matchDetails['match_datetime']).getTimezoneOffset())*-60)
+
                                             let insertedRow = await database.mmrUpdateMMRPlayerChanges(
                                                 teamAndPlayers[team][player][0],
                                                 match_queue_id,
@@ -181,7 +185,7 @@ setInterval(async function () {
                                                 newRanksTemp[team][player]['mu'] - mmrValues[team][player]['mu'],
                                                 newRanksTemp[team][player]['sigma'],
                                                 newRanksTemp[team][player]['mu'],
-                                                Math.floor(time.getTime()/1000)
+                                                Math.floor(time.getTime()/1000)+offSet
                                             )
                                             if (insertedRow === 1) {
                                                 database.mmrUpdateMMRPlayer(
@@ -196,6 +200,7 @@ setInterval(async function () {
                                             }
                                         }
                                     }
+
                                     logger.error(`realmAddMatchDetails:::${matches[match]['match_id']}::RET_MSG:${matchDetails['ret_msg']}`)
                                     database.realmAddMatchDetails(JSON.stringify(matchDetails))
                                     database.realmAddProcessedMatch(matches[match]['match_id'], 'SUCCESS')
@@ -204,6 +209,7 @@ setInterval(async function () {
                                     logger.error(`MMR:::Error::${error}:${matches[match]['match_id']}`)
                                     // expected output: TypeError: some q id's don't work from realm api :(
                                 }
+
 
                             } else {
                                 if (matchDetails['ret_msg'] === `No Match Details:${matches[match]['match_id']}`) {
@@ -221,10 +227,10 @@ setInterval(async function () {
                     }
                 })
 
-            }
+            } 
         })
     },
-    5000 // polls every 3 seconds )
+    10000 // polls every 3 seconds )
 );
 
 

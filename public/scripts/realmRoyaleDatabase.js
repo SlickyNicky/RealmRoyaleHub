@@ -81,32 +81,6 @@ class DatabaseHandler {
         }
     }
 
-    async mmrQueueIDExists(queueID) {
-        return new Promise(async (resolve, reject) => {
-            let query = `select * from MMRQueueIDsEntered where queueID = '${queueID}'`
-            await pool.query(query)
-                .then(async ([results]) => {
-                        if (results.length === 0) {
-                            return resolve("")
-                        } else {
-                            return resolve("EXISTS")
-                        }
-                    }
-                );
-        });
-
-    }
-
-    async mmrAddQueueID(queueID) {
-        return new Promise(async (resolve, reject) => {
-            let query = `INSERT INTO MMRQueueIDsEntered VALUES ('${queueID}')`;
-
-            await pool.query(query);
-            return resolve("");
-        })
-    }
-
-
     async tourneyExists(hashedName) {
         return new Promise(async (resolve, reject) => {
             let query = `select * from realmTourneys where hashedTourneyName = '${hashedName}'`
@@ -128,7 +102,14 @@ class DatabaseHandler {
         return new Promise(async (resolve, reject) => {
             let query =
                 `
-                    select * from realmTourneys where
+                    select
+                    pointsPerPlacement,
+                    pointsPerKill     ,
+                    tourneyName       ,
+                    amountOfGames     ,
+                    bestOfGames       ,
+                    queueType         
+                    from realmTourneys where
                     sameTourneyNumber = '${dupTourneyNum}' and
                     tourneyName = '${tourneyName}'
                     `
@@ -491,8 +472,10 @@ class DatabaseHandler {
     async mmrUpdateMMRPlayerChanges(playerID, queueID, queueIDNumber, sigmaChange, muChange, newSigma, newMu,time) {
 
         return new Promise(async (resolve, reject) => {
+
+
             let query = `
-                            INSERT IGNORE INTO MMRGamePointTracking VALUES (
+                            INSERT ignore INTO MMRGamePointTracking VALUES (
                             '${playerID}',
                             '${queueID}',
                             '${queueIDNumber}',
@@ -621,7 +604,7 @@ class DatabaseHandler {
 
     async realmGetMatchesToProcess() {
         return new Promise(async (resolve, reject) => {
-            let query = `select match_id from matchIdToProcess where active_flag = 'n' limit 200`;
+            let query = `select match_id from matchIdToProcess where active_flag = 'n' order by match_id asc limit 200`;
 
             await pool.query(query)
                 .then(async ([results]) => {
@@ -931,13 +914,13 @@ class DatabaseHandler {
         return new Promise(async (resolve, reject) => {
             let query =
                 `
-                    select
-                        UNIX_TIMESTAMP()-secondsSinceEpoch as delay
-                    from
-                        MMRGamePointTracking
-                    order by
-                        secondsSinceEpoch desc
-                    limit 1
+                select
+                    UNIX_TIMESTAMP()-(match_datetime+duration_secs) as delay 
+                from
+                    matchDataOverview 
+                order by
+                    (match_datetime+duration_secs)
+                desc limit 1;
                 `
             await pool.query(query)
                 .then(async ([results]) => {
@@ -1064,15 +1047,17 @@ class DatabaseHandler {
             let  region = playerInfo['region']
             let  steam_id = playerInfo['steam_id']
             let  created_datetime = playerInfo['created_datetime']
+            let offSet = ((new Date(playerInfo['created_datetime']).getTimezoneOffset())*-60)
+
             let query =
                 `
-                    insert into player_information VALUES(
+                    replace into player_information VALUES(
                         '${playerID}',
                         '${portal_id}',
                         '${platform}',
                         '${region}',
                         '${steam_id}',
-                        '${Math.floor(new Date(created_datetime).getTime()/1000)}'
+                        '${(Math.floor(new Date(created_datetime).getTime()/1000)+offSet)}'
                     )
                     `
 
@@ -1143,13 +1128,13 @@ class DatabaseHandler {
             let query =
 
                 `
-                    insert into matchDataOverview_players VALUES(
+                    replace into matchDataOverview_players VALUES(
                             '${player_match_id}',
                             '${player_id}',
                             '${team_id}',
                             '${placement}',
                             '${name}',
-                            '${level}',
+                            '${level}', 
                             '${deaths}',
                             '${assists}',
                             '${class_id}',
@@ -1186,16 +1171,20 @@ class DatabaseHandler {
             let match_id = gameMatch['match_id']
             let duration_secs = gameMatch['duration_secs']
             let match_datetime =  Math.floor(new Date(gameMatch['match_datetime']).getTime()/1000)
+            let offSet = ((new Date(gameMatch['match_datetime']).getTimezoneOffset())*-60)
+
             let match_queue_id = gameMatch['match_queue_id']
             let match_queue_name = gameMatch['match_queue_name']
 
             let query =
                 `
-                    insert into matchDataOverview VALUES(
+                REPLACE INTO
+                    matchDataOverview(region,match_id,duration_secs,match_datetime,match_queue_id,match_queue_name)
+                VALUES(
                         '${region}',
                         '${match_id}',
                         '${duration_secs}',
-                        '${match_datetime}',
+                        '${match_datetime+offSet}',
                         '${match_queue_id}',
                         '${match_queue_name}'
                     )
@@ -1231,7 +1220,58 @@ class DatabaseHandler {
                 );
         });
     }
+
+
+    async  getMatchHistoryBreakdown(queueID,lengthOfTime) {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                select count(*) matchesPlayed,region from matchDataOverview where
+                match_id in (
+                select
+                    distinct(queueIDNumber)
+                from
+                    MMRGamePointTracking
+                where 
+                    secondsSinceEpoch > UNIX_TIMESTAMP()-${lengthOfTime} and
+                    queueID = ${queueID}
+                )
+                group by region
+                order by matchesPlayed desc
+                `
+
+            await pool.query(query)
+                .then(async ([results]) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+    async getCrossplayMatchStats(secondsToGoback,queueMode) {
+        return new Promise(async (resolve, reject) => {
+            let query =
+                `
+                 select *
+                 from matchDataOverview_stats_crossplay_stats_total where
+                 queueID = ${queueMode} and
+                 earliestMatchEpochDate = ${secondsToGoback}
+                    `
+            await pool.query(query)
+                .then(async (results) => {
+                        return resolve(results)
+                    }
+                );
+        });
+    }
+
+
+
+
+
+
+
+
 }
 
 module.exports = DatabaseHandler;
-//gamesPlayed = gamesPlayed + '1'

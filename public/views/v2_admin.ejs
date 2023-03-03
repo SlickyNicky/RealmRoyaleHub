@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+
+    <!-- Basic Page Needs
+    ================================================== -->
+    <title>Realm Royale Hub</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A place for everything realm royale!">
+    <meta name="author" content="Mike Hunt">
+    <meta name="keywords" content="Mike Hunt Content">
+
+    <!-- Favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="/assets/images/esports/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/esports/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/esports/favicons/favicon-152.png">
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+
+    <!-- Google Web Fonts
+    ================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&amp;family&#x3D;Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&amp;display&#x3D;swap"
+          rel="stylesheet">
+
+    <!-- CSS
+    ================================================== -->
+    <!-- Vendor CSS -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/fonts/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="/assets/fonts/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="/assets/vendor/slick/slick.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <!-- Template CSS-->
+    <link href="/assets/css/style-esports.css" rel="stylesheet">
+
+    <!-- Custom CSS-->
+    <link href="/assets/css/custom.css" rel="stylesheet">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDYKQEDNX3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-PDYKQEDNX3');
+    </script>
+    <script>
+        function testUpdate(newLabels,uniquePlayers,totalPlayers) {
+
+            let currentCountUnique = new Array(uniquePlayers.length-2).fill(null)
+            currentCountUnique.push(...((uniquePlayers).slice(-2)))
+
+
+            let currentTotalPlayers = new Array(totalPlayers.length-2).fill(null)
+            currentTotalPlayers.push(...((totalPlayers).slice(-2)))
+
+
+            var data = graph.config.data;
+
+
+            data.datasets[0].data = currentCountUnique;
+            data.datasets[1].data = uniquePlayers.slice(0,-1);
+            data.datasets[2].data = currentTotalPlayers;
+            data.datasets[3].data = totalPlayers.slice(0,-1);
+
+
+
+
+            data.labels = newLabels;
+            graph.update();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+</head>
+<body data-template="template-esports">
+<% function split(string, delimiter, n) {
+    const parts = string.split(delimiter);
+    return parts.slice(0, n - 1).concat([parts.slice(n - 1).join(delimiter)]);
+}
+%>
+<%
+let queueValues = {
+    474: 'Solo\'s',
+    475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
+    476: 'Squad\'s',
+    10188: 'Solo Custom\'s',
+    10189: 'Duo Custom\'s',
+    10205: 'Trio Custom\'s',
+    10190: 'Squad Custom\'s'
+}
+let regions = {
+	"Australia": "AU",
+	"Brazil": "BR",
+	"Southeast Asia": "SEA",
+	"NA": "NA",
+	"EU": "EU",
+
+}
+%>
+
+<div class="site-wrapper clearfix">
+    <div class="site-overlay"></div>
+
+    <!-- Header
+    ================================================== -->
+
+    <!-- Header Mobile -->
+    <div class="header-mobile clearfix" id="header-mobile">
+        <div class="header-mobile__logo">
+            <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                             srcset="/assets/images/esports/logoTemp1.png 1.0x" alt="Alchemists"
+                             class="header-mobile__logo-img"></a>
+        </div>
+        <div class="header-mobile__inner">
+            <a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a>
+            <button type="submit" class="header-mobile__search-submit" style="width: 3rem;height: 5rem"><i
+                        class="fas fa-search"></i></button>
+        </div>
+    </div>
+    <!-- Header Mobile / End -->
+
+    <!-- Header Desktop -->
+    <header class="header header--layout-3">
+
+        <!-- Header Top Bar -->
+        <div class="header__top-bar clearfix">
+        </div>
+        <!-- Header Top Bar / End -->
+
+        <!-- Header Primary -->
+        <!-- Header Primary -->
+        <div class="header__primary">
+            <div class="container">
+                <div class="header__primary-inner">
+
+                    <!-- Header Logo -->
+                    <div class="header-logo">
+                        <a href="/"><img src="/assets/images/esports/logoTemp1.png"
+                                         srcset="/assets/images/esports/logoTemp1.png 4x" alt="Realm Refroged Logo"
+                                         class="header-logo__img"></a>
+                    </div>
+                    <!-- Header Logo / End -->
+
+                    <!-- Main Navigation -->
+                    <nav class="main-nav">
+                        <ul class="main-nav__list">
+                            <li class=""><a href="/">Home</a>
+                            </li>
+                            <li class=""><a href="/mmr">MMR</a> 
+                                <!-- Mega Menu -->
+                                <!-- Mega Menu / End -->
+                            </li>
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Lookup</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/stats">Player Stats</a></li>
+                                    <li class=""><a href="/match">Match Details</a></li>
+                                </ul>
+                            </li>
+                            <!-- Mega Menu / End -->
+
+                            <li class="">
+                                <a href="#" style="pointer-events: none;">Organize Events</a>
+                                <ul class="main-nav__sub">
+                                    <li class=""><a href="/orgLeague">Organize League</a></li>
+                                    <li class=""><a href="/orgTourney">Organize Tourney</a></li>
+                                </ul>
+                            </li>
+                            <li style="padding-left: 12rem;"></li>
+                            <li class="">
+                                <a href="/leaderboard">Leaderboard </a>
+                            </li>
+                            <li class="">
+                                <a href="/admin">Admin</a>
+                            </li>
+                            <li class="active">   
+                                <a href="/v2_admin">Admin-Graph</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-- Main Navigation / End -->
+
+                    <div class="header__primary-spacer"></div>
+
+                    <!-- Header Search Form -->
+
+                    <!-- Header Search Form / End -->
+
+                    <!-- Header Info Block -->
+
+                    <!-- Header Info Block / End -->
+
+                </div>
+            </div>
+        </div>
+        <!-- Header Primary / End -->
+        <!-- Header Primary / End -->
+
+    </header>
+    <!-- Header / End -->
+
+
+    <!-- Content
+    ================================================== -->
+    <div class="site-content">
+        <div class="container">
+
+            <div class="card card--has-table">
+                <div class="widget__title card__header card__header--has-btn">
+                    <h3 style="font-size:2rem">Player Info</h3>
+                    
+                </div>
+            
+                <div class="card__content">
+
+                    <div class="widget-results__content">
+                        <div style="width: 1200px;height: 450px;vertical-align:top">
+                            <div style="width: 48%;margin: 0;display: inline-block;">
+                                <script>
+                                    function testUpdate(newLabels,uniquePlayers,totalPlayers) {
+
+                                        let currentCountUnique = new Array(uniquePlayers.length-2).fill(null)
+                                        currentCountUnique.push(...((uniquePlayers).slice(-2)))
+
+
+                                        let currentTotalPlayers = new Array(totalPlayers.length-2).fill(null)
+                                        currentTotalPlayers.push(...((totalPlayers).slice(-2)))
+
+
+                                        var data = graph.config.data;
+
+
+                                        data.datasets[0].data = currentCountUnique;
+                                        data.datasets[1].data = uniquePlayers.slice(0,-1);
+                                        data.datasets[2].data = currentTotalPlayers;
+                                        data.datasets[3].data = totalPlayers.slice(0,-1);
+
+
+
+
+                                        data.labels = newLabels;
+                                        graph.update();
+                                    }
+                                </script>
+                                <div class="" style="align-items: center;text-align: center;width: 100%;">
+                                    <h3 style="font-size:2rem">Count</h3>
+                                </div>
+                                <div class="demo" style="display: table; width: 100%;table-layout: fixed;">
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                        onclick="testUpdate(
+                                            [<%-testingMonth.map(user => user.date*1000)%>],
+                                            [<%-testingMonth.map(user => user.uniqueplayers)%>],
+                                            [<%-testingMonth.map(user => user.totalplayersinmatches)%>]
+                                        )">
+                                        Month
+                                        </a>
+                                        </span>
+                                        <span style="display: table-cell;text-align: center;">
+                                    
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                            onclick="testUpdate(
+                                                [<%-testingWeek.map(user => user.date*1000)%>],
+                                                [<%-testingWeek.map(user => user.uniqueplayers)%>],
+                                                [<%-testingWeek.map(user => user.totalplayersinmatches)%>]
+                                            )">
+                                            Week
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            testUpdate(
+                                                [<%-testingDay.map(user => user.date*1000)%>],
+                                                [<%-testingDay.map(user => user.uniqueplayers)%>],
+                                                [<%-testingDay.map(user => user.totalplayersinmatches)%>]
+                                            )">
+                                            Day
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            testUpdate(
+                                                [<%-testingHour.map(user => user.date*1000)%>],
+                                                [<%-testingHour.map(user => user.uniqueplayers)%>],
+                                                [<%-testingHour.map(user => user.totalplayersinmatches)%>]
+                                            )">
+                                            Hour
+                                        </a>
+                                    </span>
+                                </div>
+                                <br>
+                                <div class="chart-container" style="width: 98%;height:300px">
+                                    <canvas id="myChart"></canvas>
+                                    <script>
+                                    let currentCountUnique = new Array(<%-(Object.keys(testingWeek.map(user => user.uniqueplayers)).length)-2%>).fill(null)
+                                    currentCountUnique.push(...([<%-Array.from((testingWeek.map(user => user.uniqueplayers)).values())%>]).slice(-2))
+
+
+                                    let currentCountTotal = new Array(<%-(Object.keys(testingWeek.map(user => user.totalplayersinmatches)).length)-2%>).fill(null)
+                                    currentCountTotal.push(...([<%-Array.from((testingWeek.map(user => user.totalplayersinmatches)).values())%>]).slice(-2))
+
+
+
+                                        const ctx = document.getElementById('myChart').getContext('2d');
+                                        let config = {
+                                            type: 'line',
+                                            data: {
+                                                labels: [<%-testingWeek.map(user => user.date*1000)%>],
+                                                datasets: [
+                                                    {
+                                                        label: 'Unique Latest',
+                                                        data: currentCountUnique,
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 230, 0)',
+                                                        borderDash: [20, 30],
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: 'Unique Players',
+                                                        data: [<%-testingWeek.map(user => user.uniqueplayers).slice(0,-1)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 230, 0)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+                                                    },
+                                                    {
+                                                        label: 'Total Latest',
+                                                        data: currentCountTotal,
+                                                        fill: false,
+                                                        borderColor: 'rgb(3, 202, 252)',
+                                                        borderDash: [20, 30],
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+                                                    },
+                                                    {
+                                                        label: 'Total Players',
+                                                        data: [<%-testingWeek.map(user => user.totalplayersinmatches).slice(0,-1)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(3, 202, 252)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+                                                    }   
+                                                ]
+                                            },
+                                            options: {
+                                                interaction: {
+                                                    mode: 'nearest'
+                                                },
+                                                plugins: {
+                                                    legend: {
+                                                        display: false
+                                                    },
+                                                },
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                scales: {
+                                                    x: {
+                                                        type: "time",
+                                                        parser: function (utcMoment) {
+                                                            return utcMoment.utcOffset('+0000');
+                                                        }      
+                                                    }
+                                                }
+                                            }
+                                        }
+        
+                                        var graph = new Chart(ctx,config);
+                                    </script>
+                                </div>
+                            </div>
+
+                            <div style="width: 48%;margin: 0;display: inline-block;">
+                                <script>
+                                    function inputChangeDurationTimeline(interval) {
+                                            switch(interval) {
+                                                case 'hour':
+                                                    var data = graph0.config.data;
+
+
+                                                    data.datasets[0].data = [<%-sameInputOverTimeHourSolo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-sameInputOverTimeHourDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-sameInputOverTimeHourTrio[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-sameInputOverTimeHourSquad[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-sameInputOverTimeHourSolo[2].map(user => user.time*1000)%>]
+                                                    graph0.update();
+                                                    break;
+                                                case 'day':
+                                                    var data = graph0.config.data;
+
+
+                                                    data.datasets[0].data = [<%-sameInputOverTimeDaySolo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-sameInputOverTimeDayDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-sameInputOverTimeDayTrio[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-sameInputOverTimeDaySquad[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-sameInputOverTimeDaySolo[2].map(user => user.time*1000)%>]
+                                                    graph0.update();
+                                                    break;
+                                                case 'week':
+                                                    var data = graph0.config.data;
+
+
+                                                    data.datasets[0].data = [<%-sameInputOverTimeWeekSolo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-sameInputOverTimeWeekDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-sameInputOverTimeWeekTrio[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-sameInputOverTimeWeekSquad[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-sameInputOverTimeWeekSolo[2].map(user => user.time*1000)%>]
+                                                    graph0.update();
+                                                    break;
+                                                case 'month':   
+                                                    var data = graph0.config.data;
+
+
+                                                    data.datasets[0].data = [<%-sameInputOverTimeMonthSolo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-sameInputOverTimeMonthDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-sameInputOverTimeMonthTrio[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-sameInputOverTimeMonthSquad[2].map(user => user.count)%>]
+
+                                                    data.labels = [<%-sameInputOverTimeMonthSolo[2].map(user => user.time*1000)%>]
+                                                    graph0.update();
+                                                    break;
+                                            }
+                                        }
+                                </script>
+                                <div class="" style="align-items: center;text-align: center;width: 100%;">
+                                    <h3 style="font-size:2rem">Same-Input %</h3>
+                                </div>
+                                <div class="demo" style="display: table; width: 100%;table-layout: fixed;">
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                            onclick="
+                                            inputChangeDurationTimeline(
+                                                'month'
+                                            )">
+                                        Month
+                                        </a>
+                                        </span>
+                                        <span style="display: table-cell;text-align: center;">
+                                    
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                            onclick="
+                                            inputChangeDurationTimeline(
+                                                'week'
+                                            )">
+                                            Week
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            inputChangeDurationTimeline(
+                                                'day')">
+                                            Day
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            inputChangeDurationTimeline(
+                                                'hour'
+                                            )">
+                                            Hour
+                                        </a>
+                                    </span>
+                                </div>
+                                <br>
+                                <div class="chart-container" style="width: 98%;height:300px">
+                                    <canvas id="myChart0"></canvas>
+                                    <script>
+                                            
+                                        const ctx0 = document.getElementById('myChart0').getContext('2d');
+                                        let config0 = {
+                                            type: 'line',
+                                            data: {
+                                                labels: [<%-sameInputOverTimeHourSolo[2].map(user => user.time*1000)%>],
+                                                datasets: [
+                                                    {
+                                                        label: 'Solo',
+                                                        data: [<%-sameInputOverTimeHourSolo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(3, 202, 252)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+                                                    },
+                                                    {
+                                                        label: 'Duo',
+                                                        data: [<%-sameInputOverTimeHourDuo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 255, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+                                                    },
+                                                    {
+                                                        label: 'Trio',
+                                                        data: [<%-sameInputOverTimeHourTrio[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 230, 0)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+                                                    },
+                                                    {
+                                                        label: 'Squad',
+                                                        data: [<%-sameInputOverTimeHourSquad[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(220, 5, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+                                                    }
+                                                
+                                                ]
+                                            },
+                                            options: {
+                                                interaction: {
+                                                    mode: 'nearest'
+                                                },
+                                                plugins: {
+                                                    legend: {
+                                                        display: true
+                                                    },
+                                                },
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                scales: {
+                                                    x: {
+                                                        type: "time"   
+                                                    },
+                                                    y: {
+                                                        ticks: {
+                                                            format: {
+                                                                style: 'percent'
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+        
+                                        var graph0 = new Chart(ctx0,config0);
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Game #1 / End -->
+                </div>
+            </div>
+
+
+
+            <div class="card card--has-table">
+                <div class="widget__title card__header card__header--has-btn">
+                    <h3 style="font-size:2rem">Average Player Count</h3>
+                </div>
+                <div class="widget-results__content">
+                    <div style="width: 1200px;height: 850px;vertical-align:top">
+                            <div style="width: 48%;margin: 0;display: inline-block;">
+                                <div class="" style="align-items: center;text-align: center;width: 100%;vertical-align:top">
+                                    <h3 style="font-size:2rem">Solo</h3>
+                                </div>
+                                <div class="demo" style="display: table; width: 100%;table-layout: fixed;">
+                                    <script>
+                                        function soloChangeDurationTimeline(interval) {
+                                            switch(interval) {
+                                                case 'hour':
+                                                var data = graph1.config.data;
+
+
+                                                data.datasets[0].data = [<%-averagePlayersPerHourNASolo[2].map(user => user.count)%>]
+                                                data.datasets[1].data = [<%-averagePlayersPerHourBrazilSolo[2].map(user => user.count)%>]
+                                                data.datasets[2].data = [<%-averagePlayersPerHourAustraliaSolo[2].map(user => user.count)%>]
+                                                data.datasets[3].data = [<%-averagePlayersPerHourEUSolo[2].map(user => user.count)%>]
+                                                data.datasets[4].data = [<%-averagePlayersPerHourSoutheastAsiaSolo[2].map(user => user.count)%>]
+
+
+                                                data.labels = [<%-averagePlayersPerHourNASolo[2].map(user => user.to_timestamp*1000)%>]
+                                                graph1.update();
+                                                break;
+                                                case 'day':
+                                                    var data = graph1.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerDayNASolo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerDayBrazilSolo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerDayAustraliaSolo[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerDayEUSolo[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerDaySoutheastAsiaSolo[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerDayNASolo[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph1.update();
+                                                    break;
+                                                case 'week':
+                                                var data = graph1.config.data;
+
+
+                                                data.datasets[0].data = [<%-averagePlayersPerWeekNASolo[2].map(user => user.count)%>]
+                                                data.datasets[1].data = [<%-averagePlayersPerWeekBrazilSolo[2].map(user => user.count)%>]
+                                                data.datasets[2].data = [<%-averagePlayersPerWeekAustraliaSolo[2].map(user => user.count)%>]
+                                                data.datasets[3].data = [<%-averagePlayersPerWeekEUSolo[2].map(user => user.count)%>]
+                                                data.datasets[4].data = [<%-averagePlayersPerWeekSoutheastAsiaSolo[2].map(user => user.count)%>]
+
+
+                                                data.labels = [<%-averagePlayersPerWeekNASolo[2].map(user => user.to_timestamp*1000)%>]
+                                                graph1.update();
+                                                break;
+                                                case 'month':   
+                                                    var data = graph1.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerMonthNASolo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerMonthBrazilSolo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerMonthAustraliaSolo[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerMonthEUSolo[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerMonthSoutheastAsiaSolo[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerMonthNASolo[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph1.update();
+                                                    break;
+                                            }
+                                        }
+                                    </script>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="soloChangeDurationTimeline('month')">
+                                        Month
+                                        </a>    
+                                        </span>
+                                        <span style="display: table-cell;text-align: center;">
+                                    
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                            onclick="soloChangeDurationTimeline('week')">
+                                            Week
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            soloChangeDurationTimeline('day')">
+                                            Day
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="soloChangeDurationTimeline('hour')"> 
+                                            Hour
+                                        </a>
+                                    </span>
+                                </div>
+                                <br>
+                                <div class="chart-container" style="width: 98%;height:300px">
+                                    <canvas id="myChart1"></canvas>
+                                    <script>
+                                        const ctx1 = document.getElementById('myChart1').getContext('2d');
+                                        let config1 = {
+                                            type: 'line',
+                                            data: {
+                                                labels: [<%-averagePlayersPerDayNASolo[2].map(user => user.to_timestamp*1000)%>],
+                                                datasets: [
+                                                    {
+                                                        label: "NA",
+                                                        data: [<%-averagePlayersPerDayNASolo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 255, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Brazil",
+                                                        data: [<%-averagePlayersPerDayBrazilSolo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(3, 202, 252)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Australia",
+                                                        data: [<%-averagePlayersPerDayAustraliaSolo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(220, 5, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label:"EU",
+                                                        data: [<%-averagePlayersPerDayEUSolo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 230, 0)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Southeast Asia",
+                                                        data: [<%-averagePlayersPerDaySoutheastAsiaSolo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(29, 182, 85)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    }
+                                                
+                                                ]
+                                            },
+                                            options: {
+                                                interaction: {
+                                                    mode: 'nearest'
+                                                },
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                scales: {
+                                                    x: {
+                                                        type: "time"  
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        var graph1 = new Chart(ctx1,config1);
+                                    </script>
+                                </div>
+                            </div>
+                            <div style="width: 48%;margin: 0;display: inline-block;margin:0;padding:0;vertical-align:top">
+                                <div class="" style="align-items: center;text-align: center;width: 100%;">
+                                    <h3 style="font-size:2rem">Duo</h3>
+                                </div>
+                                <div class="demo" style="display: table; width: 100%;table-layout: fixed;">
+                                    <script>
+                                        function duoChangeDurationTimeline(interval) {
+                                            switch(interval) {
+                                                case 'hour':
+                                                    var data = graph2.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerHourNADuo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerHourBrazilDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerHourAustraliaDuo[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerHourEUDuo[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerHourSoutheastAsiaDuo[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerHourNADuo[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph2.update();
+                                                    break;
+                                                case 'day':
+                                                    var data = graph2.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerDayNADuo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerDayBrazilDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerDayAustraliaDuo[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerDayEUDuo[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerDaySoutheastAsiaDuo[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerDayNADuo[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph2.update();
+                                                    break;
+                                                case 'week':
+                                                    var data = graph2.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerWeekNADuo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerWeekBrazilDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerWeekAustraliaDuo[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerWeekEUDuo[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerWeekSoutheastAsiaDuo[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerWeekNADuo[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph2.update();
+                                                    break;
+                                                case 'month':   
+                                                    var data = graph2.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerMonthNADuo[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerMonthBrazilDuo[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerMonthAustraliaDuo[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerMonthEUDuo[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerMonthSoutheastAsiaDuo[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerMonthNADuo[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph2.update();
+                                                    break;
+                                            }
+                                        }
+                                    </script>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="duoChangeDurationTimeline('month')">
+                                        Month
+                                        </a>    
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                    
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                            onclick="duoChangeDurationTimeline('week')">
+                                            Week
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            duoChangeDurationTimeline('day')">
+                                            Day
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="duoChangeDurationTimeline('hour')"> 
+                                            Hour
+                                        </a>
+                                    </span>
+                                </div>
+                                <br>
+                                <div class="chart-container" style="width: 98%;height:300px">
+
+                                    <canvas id="myChart2"></canvas>
+                                    <script>
+                                        const ctx2 = document.getElementById('myChart2').getContext('2d');
+                                        let config2 = {
+                                            type: 'line',
+                                            data: {
+                                                labels: [<%-averagePlayersPerDayNADuo[2].map(user => user.to_timestamp*1000)%>],
+                                                datasets: [
+                                                    {
+                                                        label: "NA",
+                                                        data: [<%-averagePlayersPerDayNADuo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 255, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Brazil",
+                                                        data: [<%-averagePlayersPerDayBrazilDuo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(3, 202, 252)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Australia",
+                                                        data: [<%-averagePlayersPerDayAustraliaDuo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(220, 5, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label:"EU",
+                                                        data: [<%-averagePlayersPerDayEUDuo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 230, 0)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Southeast Asia",
+                                                        data: [<%-averagePlayersPerDaySoutheastAsiaDuo[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(29, 182, 85)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    }
+                                                
+                                                ]
+                                            },
+                                            options: {
+                                                interaction: {
+                                                    mode: 'nearest'
+                                                },
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                scales: {
+                                                    x: {
+                                                        type: "time"  
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        var graph2 = new Chart(ctx2,config2);
+                                    </script>
+                            
+
+                                </div>
+                            </div>
+                            <div style="width: 48%;margin: 0;display: inline-block;margin:0;padding:0;vertical-align:top">
+                                <div class="" style="align-items: center;text-align: center;width: 100%;">
+                                    <h3 style="font-size:2rem">Trio</h3>
+                                </div>
+                                <div class="demo" style="display: table; width: 100%;table-layout: fixed;">
+                                    <script>
+                                        function trioChangeDurationTimeline(interval) {
+                                            switch(interval) {
+                                                case 'hour':
+                                                    var data = graph3.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerHourNATrio[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerHourBrazilTrio[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerHourAustraliaTrio[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerHourEUTrio[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerHourSoutheastAsiaTrio[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerHourNATrio[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph3.update();
+                                                    break;
+                                                case 'day':
+                                                    var data = graph3.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerDayNATrio[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerDayBrazilTrio[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerDayAustraliaTrio[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerDayEUTrio[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerDaySoutheastAsiaTrio[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerDayNASolo[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph3.update();
+                                                    break;
+                                                case 'week':
+                                                var data = graph3.config.data;
+
+
+                                                data.datasets[0].data = [<%-averagePlayersPerWeekNATrio[2].map(user => user.count)%>]
+                                                data.datasets[1].data = [<%-averagePlayersPerWeekBrazilTrio[2].map(user => user.count)%>]
+                                                data.datasets[2].data = [<%-averagePlayersPerWeekAustraliaTrio[2].map(user => user.count)%>]
+                                                data.datasets[3].data = [<%-averagePlayersPerWeekEUTrio[2].map(user => user.count)%>]
+                                                data.datasets[4].data = [<%-averagePlayersPerWeekSoutheastAsiaTrio[2].map(user => user.count)%>]
+
+
+                                                data.labels = [<%-averagePlayersPerWeekNATrio[2].map(user => user.to_timestamp*1000)%>]
+                                                graph3.update();
+                                                break;
+                                                case 'month':   
+                                                    var data = graph3.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerMonthNATrio[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerMonthBrazilTrio[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerMonthAustraliaTrio[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerMonthEUTrio[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerMonthSoutheastAsiaTrio[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerMonthNATrio[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph3.update();
+                                                    break;
+                                            }
+                                        }
+                                    </script>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="trioChangeDurationTimeline('month')">
+                                        Month
+                                        </a>    
+                                        </span>
+                                        <span style="display: table-cell;text-align: center;">
+                                    
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                            onclick="trioChangeDurationTimeline('week')">
+                                            Week
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            trioChangeDurationTimeline('day')">
+                                            Day
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="trioChangeDurationTimeline('hour')"> 
+                                            Hour
+                                        </a>
+                                    </span>
+                                </div>
+                                <br>
+                                <div class="chart-container" style="width: 98%;height:300px">
+
+                                    <canvas id="myChart3"></canvas>
+                                    <script>
+                                        const ctx3 = document.getElementById('myChart3').getContext('2d');
+                                        let config3 = {
+                                            type: 'line',
+                                            data: {
+                                                labels: [<%-averagePlayersPerDayNATrio[2].map(user => user.to_timestamp*1000)%>],
+                                                datasets: [
+                                                    {
+                                                        label: "NA",
+                                                        data: [<%-averagePlayersPerDayNATrio[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 255, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Brazil",
+                                                        data: [<%-averagePlayersPerDayBrazilTrio[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(3, 202, 252)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Australia",
+                                                        data: [<%-averagePlayersPerDayAustraliaTrio[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(220, 5, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label:"EU",
+                                                        data: [<%-averagePlayersPerDayEUTrio[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 230, 0)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Southeast Asia",
+                                                        data: [<%-averagePlayersPerDaySoutheastAsiaTrio[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(29, 182, 85)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    }
+                                                
+                                                ]
+                                            },
+                                            options: {
+                                                interaction: {
+                                                    mode: 'nearest'
+                                                },
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                scales: {
+                                                    x: {
+                                                        type: "time"  
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        var graph3 = new Chart(ctx3,config3);
+                                    </script>
+                            
+
+                                </div>  
+                            </div>
+                            <div style="width: 48%;margin: 0;display: inline-block;margin:0;padding:0;vertical-align:top">
+                                <div class="" style="align-items: center;text-align: center;width: 100%;">
+                                    <h3 style="font-size:2rem">Squad</h3>
+                                </div>
+                                <div class="demo" style="display: table; width: 100%;table-layout: fixed;">
+                                    <script>
+                                        function squadChangeDurationTimeline(interval) {
+                                            switch(interval) {
+                                                case 'hour':
+                                                var data = graph4.config.data;
+
+
+                                                data.datasets[0].data = [<%-averagePlayersPerHourNASquad[2].map(user => user.count)%>]
+                                                data.datasets[1].data = [<%-averagePlayersPerHourBrazilSquad[2].map(user => user.count)%>]
+                                                data.datasets[2].data = [<%-averagePlayersPerHourAustraliaSquad[2].map(user => user.count)%>]
+                                                data.datasets[3].data = [<%-averagePlayersPerHourEUSquad[2].map(user => user.count)%>]
+                                                data.datasets[4].data = [<%-averagePlayersPerHourSoutheastAsiaSquad[2].map(user => user.count)%>]
+
+
+                                                data.labels = [<%-averagePlayersPerHourNASquad[2].map(user => user.to_timestamp*1000)%>]
+                                                graph4.update();
+                                                break;
+                                                case 'day':
+                                                    var data = graph4.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerDayNASquad[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerDayBrazilSquad[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerDayAustraliaSquad[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerDayEUSquad[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerDaySoutheastAsiaSquad[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerDayNASquad[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph4.update();
+                                                    break;
+                                                case 'week':
+                                                    var data = graph4.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerWeekNASquad[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerWeekBrazilSquad[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerWeekAustraliaSquad[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerWeekEUSquad[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerWeekSoutheastAsiaSquad[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerWeekNASquad[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph4.update();
+                                                    break;
+                                                case 'month':   
+                                                    var data = graph4.config.data;
+
+
+                                                    data.datasets[0].data = [<%-averagePlayersPerMonthNASquad[2].map(user => user.count)%>]
+                                                    data.datasets[1].data = [<%-averagePlayersPerMonthBrazilSquad[2].map(user => user.count)%>]
+                                                    data.datasets[2].data = [<%-averagePlayersPerMonthAustraliaSquad[2].map(user => user.count)%>]
+                                                    data.datasets[3].data = [<%-averagePlayersPerMonthEUSquad[2].map(user => user.count)%>]
+                                                    data.datasets[4].data = [<%-averagePlayersPerMonthSoutheastAsiaSquad[2].map(user => user.count)%>]
+
+
+                                                    data.labels = [<%-averagePlayersPerMonthNASquad[2].map(user => user.to_timestamp*1000)%>]
+                                                    graph4.update();
+                                                    break;
+                                            }
+                                        }
+                                    </script>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="squadChangeDurationTimeline('month')">
+                                        Month
+                                        </a>    
+                                        </span>
+                                        <span style="display: table-cell;text-align: center;">
+                                    
+                                        <a
+                                            href="#/"
+                                            class="btn btn-default btn-xs"
+                                            style="font-size: 1rem;"
+                                            onclick="squadChangeDurationTimeline('week')">
+                                            Week
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="
+                                            squadChangeDurationTimeline('day')">
+                                            Day
+                                        </a>
+                                    </span>
+                                    <span style="display: table-cell;text-align: center;">
+                                        <a
+                                        href="#/"
+                                        class="btn btn-default btn-xs"
+                                        style="font-size: 1rem;"
+                                        onclick="squadChangeDurationTimeline('hour')"> 
+                                            Hour
+                                        </a>
+                                    </span>
+                                </div>
+                                <br>
+                                <div class="chart-container" style="width: 98%;height:300px">
+
+                                    <canvas id="myChart4"></canvas>
+                                    <script>
+                                        const ctx4 = document.getElementById('myChart4').getContext('2d');
+                                        let config4 = {
+                                            type: 'line',
+                                            data: {
+                                                labels: [<%-averagePlayersPerDayNASquad[2].map(user => user.to_timestamp*1000)%>],
+                                                datasets: [
+                                                    {
+                                                        label: "NA",
+                                                        data: [<%-averagePlayersPerDayNASquad[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 255, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Brazil",
+                                                        data: [<%-averagePlayersPerDayBrazilSquad[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(3, 202, 252)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Australia",
+                                                        data: [<%-averagePlayersPerDayAustraliaSquad[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(220, 5, 255)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label:"EU",
+                                                        data: [<%-averagePlayersPerDayEUSquad[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(255, 230, 0)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    },
+                                                    {
+                                                        label: "Southeast Asia",
+                                                        data: [<%-averagePlayersPerDaySoutheastAsiaSquad[2].map(user => user.count)%>],
+                                                        fill: false,
+                                                        borderColor: 'rgb(29, 182, 85)',
+                                                        lineTension: 0.2,
+                                                        pointBackgroundColor: "transparent"
+
+                                                    }
+                                                
+                                                ]
+                                            },
+                                            options: {
+                                                interaction: {
+                                                    mode: 'nearest'
+                                                },
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                scales: {
+                                                    x: {
+                                                        type: "time"  
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        var graph4 = new Chart(ctx4,config4);
+                                    </script>
+                            
+
+                                </div>
+                            </div>
+            
+                    </div>
+                
+            
+                    </div>
+                
+                </div>
+
+
+        </div>
+        <!-- Last Matches Stats / End -->
+
+
+    </div>
+</div>
+
+<!-- Content / End -->
+
+
+<!-- Footer
+================================================== -->
+<footer id="footer" class="footer">
+</footer>
+<!-- Footer / End -->
+
+</div>
+
+<!-- Javascript Files
+================================================== -->
+<!-- Core JS -->
+<script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/jquery/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/core.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+
+<!-- Vendor JS -->
+<script src="/assets/vendor/marquee/jquery.marquee.min.js"></script>
+
+
+<!-- Template JS -->
+<script src="/assets/js/init.js"></script>
+<script src="/assets/js/custom.js"></script>
+
+</body>
+</html>
