@@ -410,6 +410,7 @@ class DatabaseHandler_v2 {
                             let normalBaseUrl = `${baseApi}/${endPoint}json/${devId}/${methodSignature}/${sessionId}/${dayjs.utc().format('YYYYMMDDHHmmss')}${endOfUrl}`
                             try {
 
+                                
                                 let finalResult = await (await
                                         fetch(normalBaseUrl, opts)
                                 ).json()
@@ -417,7 +418,7 @@ class DatabaseHandler_v2 {
                                 logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
                                 resolve(finalResult)
 
-                            } catch (error) {
+                            } catch (error) {   
 
                                 logger.error(`Something went wrong with query:::${sessionId}::${endPoint}:${params}|ERROR:${error}`)
                                 let endTime = performance.now()
@@ -599,7 +600,7 @@ class DatabaseHandler_v2 {
     async mmrGetTopPlayersTemp_v2() {
         return new Promise(async (resolve, reject) => {
             // sad inner select query's engage
-            const queueIDsToGrab = ['474', '475', '476', '482', '10188', '10189', '10205', '10190']
+            const queueIDsToGrab = ['474', '482', '475', '476', '10188', '10189', '10205', '10190']
             let resultString = []
             for(const queue in queueIDsToGrab) {
 
@@ -1333,7 +1334,7 @@ class DatabaseHandler_v2 {
             let damage_done_in_hand     = gameMatch['damage_done_in_hand']
             let healing_player_self     = gameMatch['healing_player_self']
 
-            let query = `insert into matchDataOverview_players VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23) ON CONFLICT DO NOTHING`
+            let query = `insert into matchDataOverview_players VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24) ON CONFLICT DO NOTHING`
             await db.query(query,
                 [
                     player_match_id,
@@ -1708,41 +1709,40 @@ class DatabaseHandler_v2 {
             );
         })
     }
-    async graphTestingV1(lengthOfTimeSeconds,secondTimeIntervalSize) {
+//                   time unit eg. 'months' | length eg 3 | interval split eg. 'week'| interval length' 2 | half of interval | 
+    async graphTestingV1(unitLengthOfTimeString,unitIntervalTimeString) {
         return new Promise(async (resolve, reject) => {
-            let roundingString = {
-                600: "minute",
-                3600: "hour",
-                86400: "day",
-                604800: "week",
-                2630000: "month"
-            }
 
-            let query =
+            let intervalTotal =  `2 ${unitLengthOfTimeString}`
+            let oneInterval = `1 ${unitIntervalTimeString}` 
+
+
+            let query = 
                 `
-                    select
-                        count(mdo_p.player_id) as totalplayersinmatches,
-                        count(distinct(mdo_p.player_id)) as uniqueplayers,
-                        min(mdo.match_datetime+mdo.duration_secs) as date
-                    from 
-                        matchDataOverview_players mdo_p
-                    inner join matchDataOverview mdo
-                    on(
+                SELECT
+                    count(mdo_p.player_id) AS totalplayersinmatches,
+                    count(distinct(mdo_p.player_id)) AS uniqueplayers,
+                    min(mdo.match_datetime + mdo.duration_secs) AS date
+                FROM
+                    matchDataOverview mdo
+                INNER JOIN matchDataOverview_players mdo_p 
+                    USING(match_id)
+                WHERE
+                    to_timestamp(mdo.duration_secs + mdo.match_datetime) + interval $1 > date_trunc($2, now()) + interval $3 - interval '1 second'
+                GROUP BY
+                    date_trunc($2, to_timestamp(mdo.match_datetime + mdo.duration_secs));
+                `
 
-                        mdo.match_id = mdo_p.match_id
-                    )
-                    where
-                        mdo.duration_secs+mdo.match_datetime >
-                        (extract(epoch from (date_trunc($3, now() - interval '$1 second' - interval '$4 second'))))
-                    group by
-                        (mdo.match_datetime+mdo.duration_secs) / $2
-                    `
+                // halfIntervalTotal
+                //  unitIntervalTimeString
+   
+                                
+
             await db.query(query,
                 [
-                    lengthOfTimeSeconds,
-                    secondTimeIntervalSize,
-                    roundingString[secondTimeIntervalSize],
-                    parseInt(secondTimeIntervalSize/2)
+                    intervalTotal,
+                    unitIntervalTimeString,
+                    oneInterval
                 ]
                 )
                 .then(async (results) => {
@@ -1957,22 +1957,43 @@ class DatabaseHandler_v2 {
             resolve([resTotalInputCount,resSameInputCount,averages])
         });
     }
+    async sameInputPlayersOverTime_v2(queue_type_id,interval_type) {
+        return new Promise(async (resolve, reject) => {
+            
+            let query = 
+                    `
+                        select extract as time, input_average/100.0 as count from average_non_crossplay_games_${interval_type}_${queue_type_id}
+                    `
+
+
+            await db.query(query,[])
+                .then(async (results) => {
+                        return resolve([[],[],results])
+                    }
+                );
+        })
+    }
     async getHighestIndivKills() {
         return new Promise(async (resolve, reject) => {
 
         let query = `
-            select 
-                row_number() OVER (order by kills_player desc) as rank,
-                name,
-                kills_player as total_kills,
-                player_id,
-                match_id
-            from
-                matchdataoverview_players
-            order by 
-                kills_player desc
-            limit 100;
-        `
+        select 
+        row_number() OVER (order by kills_player desc) as rank,
+        name,
+        kills_player as total_kills,
+        player_id,
+        mdop.match_id
+    from
+        matchdataoverview_players mdop
+    INNER JOIN matchDataOverview mdo ON (
+          mdop.match_id = mdo.match_id 
+    )
+    where 
+      to_timestamp(mdo.match_datetime) + interval '1 month' > now() 
+    order by 
+        kills_player desc
+    limit 100;
+                `
         await db.query(query,[]
             )
             .then(async (results) => {
@@ -1985,27 +2006,30 @@ class DatabaseHandler_v2 {
         return new Promise(async (resolve, reject) => {
 
         let query = `
-                SELECT 
-                    row_number() OVER (ORDER BY total_kills DESC) AS rank,
-                    array_agg(m.name) AS player_names,
-                    array_agg(m.player_id) AS player_ids,
-                    tk.total_kills,
-                    tk.match_id
-                FROM (
-                    SELECT 
-                        match_id, 
-                        SUM(kills_player) AS total_kills
-                    FROM matchdataoverview_players
-                    WHERE placement = 1
-                    GROUP BY match_id
-                    ORDER BY total_kills DESC
-                    LIMIT 100
-                ) tk
-                JOIN matchdataoverview_players m ON m.match_id = tk.match_id
-                    AND m.placement = 1
-                GROUP BY tk.match_id, tk.total_kills
-                ORDER BY tk.total_kills DESC;
-        `
+                        SELECT 
+                            row_number() OVER (ORDER BY total_kills DESC) AS rank,
+                            array_agg(m.name) AS player_names,
+                            array_agg(m.player_id) AS player_ids,
+                            tk.total_kills,
+                            tk.match_id
+                        FROM (
+                            SELECT 
+                                match_id, 
+                                SUM(kills_player) AS total_kills
+                            FROM matchdataoverview_players
+                            join matchdataoverview mdo using (match_id)
+                            WHERE placement = 1 and 	  to_timestamp(mdo.match_datetime) + interval '1 month' > now()
+                        
+                            GROUP BY match_id
+                            ORDER BY total_kills DESC
+                            LIMIT 1000
+                        ) tk
+                        JOIN matchdataoverview_players m ON m.match_id = tk.match_id
+                            AND m.placement = 1
+                        GROUP BY tk.match_id, tk.total_kills
+                        ORDER BY tk.total_kills DESC
+                        limit 100;
+                    `
         await db.query(query,[]
             )
             .then(async (results) => {
@@ -2014,6 +2038,174 @@ class DatabaseHandler_v2 {
             );
         })
     }
+    async getHighestKD() {
+        return new Promise(async (resolve, reject) => {
+
+        let query = `
+                    SELECT
+                        SUM(deaths) as deaths,
+                        SUM(kills_player) as kills,
+                        ROUND((SUM(kills_player) / CASE WHEN SUM(deaths) = 0 THEN 1 ELSE SUM(deaths) END)::numeric, 4) AS kd,
+                        player_id,
+                        (
+                            SELECT
+                                name
+                            from
+                                matchDataOverview_players
+                            where
+                                matchDataOverview_players.match_id = max(mdop.match_id) and 
+                                matchDataOverview_players.player_id = mdop.player_id 
+                            ) as name
+                    FROM
+                        matchDataOverview mdo
+                    INNER JOIN matchDataOverview_players mdop ON (
+                        mdop.match_id = mdo.match_id 
+                    )
+                    WHERE
+                        to_timestamp(mdo.match_datetime) + interval '1 month' > now()
+                    GROUP BY 
+                        player_id
+                    HAVING 
+                        COUNT(player_id) > 25
+                    ORDER BY
+                        kd DESC
+                    limit 100;
+                `
+        await db.query(query,[]
+            )
+            .then(async (results) => {
+                    return resolve(results)
+                }
+            );
+        })
+    }
+    async getHighestDK() {
+        return new Promise(async (resolve, reject) => {
+
+        let query = `
+                    SELECT
+                        sum(deaths) as total_deaths,
+                        sum(kills_player) as total_kills,
+                        (
+                        sum(deaths) /
+                        (CASE 
+                            WHEN SUM(kills_player) = 0 THEN 1 ELSE SUM(kills_player)
+                        END)
+                        ) AS dk,
+                    player_id,
+                    (
+                        SELECT
+                            name
+                        from
+                            matchDataOverview_players
+                        where
+                            matchDataOverview_players.match_id = max(mdop.match_id) and 
+                            matchDataOverview_players.player_id = mdop.player_id 
+                        ) as name
+                    FROM
+                        matchDataOverview mdo
+                    INNER JOIN matchDataOverview_players mdop ON (
+                        mdop.match_id = mdo.match_id 
+                    )
+                    WHERE
+                        to_timestamp(mdo.match_datetime) + interval '1 month' > now()
+                    GROUP BY
+                        player_id
+                    HAVING
+                        COUNT(player_id) > 25
+                    ORDER BY
+                        dk DESC
+                    limit 100;
+                `
+        await db.query(query,[]
+            )
+            .then(async (results) => {
+                    return resolve(results)
+                }
+            );
+        })
+    }
+    async getHighestAvgTeammateHealing() {
+        return new Promise(async (resolve, reject) => {
+
+        let query = `
+                    SELECT
+                        sum(healing_player) total_healing,
+                        count(mdo.match_id) total_matches,
+                        sum(healing_player) / count(mdo.match_id) AS healing_teammates,
+                        player_id,
+                        (
+                        SELECT
+                            name
+                        from
+                            matchDataOverview_players
+                        where
+                            matchDataOverview_players.match_id = max(mdop.match_id) and 
+                            matchDataOverview_players.player_id = mdop.player_id 
+                        ) as name
+                    FROM
+                    matchDataOverview mdo
+                    INNER JOIN matchDataOverview_players mdop ON (
+                        mdop.match_id = mdo.match_id 
+                    )
+                    WHERE
+                    to_timestamp(mdo.match_datetime) + interval '1 month' > now()
+                    and mdo.match_queue_id != 474
+                    GROUP BY player_id
+                    HAVING COUNT(player_id) > 25
+                    ORDER BY sum(healing_player) / count(mdo.match_id) desc
+                    limit 100;
+                `
+        await db.query(query,[]
+            )
+            .then(async (results) => {
+                    return resolve(results)
+                }
+            );
+        })
+    }
+
+
+    async getHighestWins() {
+        return new Promise(async (resolve, reject) => {
+
+        let query = `
+                    SELECT
+                        sum(placement) AS games_won,
+                        player_id,
+                            (
+                        SELECT
+                            name
+                        from
+                            matchDataOverview_players
+                        where
+                            matchDataOverview_players.match_id = max(mdop.match_id) and 
+                            matchDataOverview_players.player_id = mdop.player_id 
+                        ) as name
+                    FROM
+                    matchDataOverview mdo
+                    INNER JOIN matchDataOverview_players mdop ON (
+                        mdop.match_id = mdo.match_id 
+                    )
+                    WHERE
+                    to_timestamp(mdo.match_datetime) + interval '1 month' > now()
+                    and placement = 1
+                    GROUP BY player_id
+                    HAVING COUNT(player_id) > 25
+                    ORDER BY sum(placement) desc
+                    limit 100;
+                `
+        await db.query(query,[]
+            )
+            .then(async (results) => {
+                    return resolve(results)
+                }
+            );
+        })
+    }
+
+
+
     async getMonthlyRealmLeaderboardStats() {
         return new Promise(async (resolve, reject) => {
 
@@ -2024,7 +2216,7 @@ class DatabaseHandler_v2 {
                         format_number(sum(kills_player)) as totalKills,
                         format_number(sum(mdop.duration_secs)) as totalTime,
                         format_number(count(mdo.match_id)) as totalMatches,
-                        format_number(count(mdop.deaths)) as totalDeaths
+                        format_number(sum(mdop.deaths)) as totalDeaths
                     from
                         matchDataOverview mdo
                     inner join
@@ -2041,7 +2233,7 @@ class DatabaseHandler_v2 {
                             format_number(sum(kills_player)) as totalKills,
                             format_number(sum(mdop.duration_secs)) as totalTime,
                             format_number(count(mdo.match_id)) as totalMatches,
-                            format_number(count(mdop.deaths)) as totalDeaths
+                            format_number(sum(mdop.deaths)) as totalDeaths
                         from
                             matchDataOverview mdo
                         inner join
@@ -2068,6 +2260,11 @@ class DatabaseHandler_v2 {
     }
     async getMatchInformation(matchID) {
         return new Promise(async (resolve, reject) => {
+            var hasNumber = /\d/;   
+
+            if (parseInt(matchID).toString().length !== matchID.length || !hasNumber.test(matchID)) {
+                resolve("Invalid Input")
+            } else {
 
         let totalMonthlyPlayerStats = 
             `
@@ -2113,9 +2310,12 @@ class DatabaseHandler_v2 {
                     [matchID]
                 )
             ]);
+
             resolve([totalMonthlyPlayerStatsRes,matchOverviewInfoRes])
 
+        }
         })
+        
     }
     async graphTestingV2() {
         return new Promise(async (resolve, reject) => {

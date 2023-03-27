@@ -4,11 +4,17 @@
 
     <!-- Basic Page Needs
     ================================================== -->
-    <title>Realm Royale Hub</title>
+    <%if(!displayStats || !error === null) {%>
+        <title>Realm Royale Stats</title>
+    <%} else {
+        %>
+
+        <title>Realm Royale <%=playerInfo['name']%> Stats</title>
+    <% }%>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A place for everything realm royale!">
-        <meta name="author" content="Mike Hunt">
+    <meta name="author" content="Mike Hunt">
     <meta name="keywords" content="Mike Hunt Content">
 
     <!-- Favicons
@@ -46,15 +52,6 @@
     <link href="/assets/css/custom.css" rel="stylesheet">
 
 
-    <script>
-        var form = document.getElementById("search");
-
-        function handleForm(event) {
-            // event.preventDefault();
-        }
-
-        form.addEventListener('submit', handleForm);
-    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDYKQEDNX3"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -230,11 +227,18 @@ let classValues = {
 
     </header>
     <!-- Header / End -->
+    <div class="container" style="align-items: center;text-align: center;padding-top: 50px">
+        <% if (error !== null) { %>
+            <h2>
+                <%=error%>
+            </h2>
+        <%}%>
+    </div>
 
 
     <!-- Header Posts
     ================================================== -->
-    <div class="container" style="align-items: center;text-align: center;padding-top: 50px">
+    <div class="container" style="align-items: center;text-align: center">
         <div class="header-search-form" style="width: 30rem">
             <form action="/stats" id="search" class="search-form" method='post'>
                 <input type="text" id="search" name="search" class="form-control" value=""
@@ -290,7 +294,7 @@ let classValues = {
                 </div>
 
                 <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
-                     style="margin-left: 7rem;">
+                     style="margin-left:auto; margin-right:auto">
                     <div class="widget__title card__header card__header--has-btn">
                         <h3 style="font-size:2rem">Overall Stats</h3>
                     </div>
@@ -360,126 +364,127 @@ let classValues = {
 
                 </div>
 
-            <div class="row" style="margin-left:auto; margin-right:auto;">
-
-            </div>
-
-            <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
-                     style="margin-left:auto; margin-right:auto">
-                <div class="widget__title card__header card__header--has-btn">
-                    <h3 style="font-size:2rem">Match History</h3>
+                <div class="row" style="margin-left:auto; margin-right:auto;">
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-hover" id="lastFifty"
-                           style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center">
-                        <thead>
-                        <tr>
-                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Match Number
-                            </th>
-                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Date
-                            </th>
-                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Name
-                            </th>
-                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Region
-                            </th>
-                            <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Game Mode
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Class
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Placement
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Time Alive
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Kills
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Deaths
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Damage
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Damage Taken
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Dropped Out
-                            </th>
-																												<th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                Match
-                            </th>	
 
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <%
-                        let index = 0
-                        for(const game in playerLastFifty){
-                            index+=1%>
+                <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
+                        style="margin-left:auto; margin-right:auto">
+                    <div class="widget__title card__header card__header--has-btn">
+                        <h3 style="font-size:2rem">Match History</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="lastFifty"
+                            style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center;"> 
+                            <thead>
                             <tr>
-                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-																																	<%= playerLastFifty[game]['game_number'] %>
-                                </td>
-																																<%
-																																let date = new Date(playerLastFifty[game]['match_datetime']*1000)
-																																var formattedDate = (date.getUTCMonth() + 1)+ '/' + date.getUTCDate() + '/' + date.getUTCFullYear()% 100
-																																%>
-                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= formattedDate %>
-                                </td>
-                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['name'] %>
-                                </td>
-                                <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['region'] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= queueValues[playerLastFifty[game]['match_queue_id']] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= classValues[playerLastFifty[game]['class_id']] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['placement'] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['duration_secs'] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['kills_player'] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['deaths'] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['damage_player'] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= playerLastFifty[game]['damage_taken'] %>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-                                    <%= Number(playerLastFifty[game]['dropped_out_flag']) === 0 ? "false": "true"%>
-                                </td>
-																																<td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
-																																	<a href="/match/<%=playerLastFifty[game]['match_id']%>" class="btn btn-xs btn-default-alt btn-single-icon btn-circle" data-toggle="tooltip" data-placement="top" title="View Match"><i class="fas fa-play"></i></a>
-                                </td>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Match Number
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Date
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Name
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Region
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Game Mode
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Class
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Placement
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Time Alive
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Kills
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Deaths
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Damage
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Damage Taken
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Dropped Out
+                                </th>
+                                                                                                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Match
+                                </th>	
 
                             </tr>
-                        <% } %>
+                            </thead>
+                            <tbody>
+                            <%
+                            let index = 0
+                            for(const game in playerLastFifty){
+                                index+=1%>
+                                <tr>
+                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                                                                                                                        <%= playerLastFifty[game]['game_number'] %>
+                                    </td>
+                                                                                                                                    <%
+                                                                                                                                    let date = new Date(playerLastFifty[game]['match_datetime']*1000)
+                                                                                                                                    var formattedDate = (date.getUTCMonth() + 1)+ '/' + date.getUTCDate() + '/' + date.getUTCFullYear()% 100
+                                                                                                                                    %>
+                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= formattedDate %>
+                                    </td>
+                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['name'] %>
+                                    </td>
+                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['region'] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= queueValues[playerLastFifty[game]['match_queue_id']] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= classValues[playerLastFifty[game]['class_id']] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['placement'] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['duration_secs'] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['kills_player'] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['deaths'] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['damage_player'] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= playerLastFifty[game]['damage_taken'] %>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                        <%= Number(playerLastFifty[game]['dropped_out_flag']) === 0 ? "false": "true"%>
+                                    </td>
+                                                                                                                                    <td class="team-result__kills team-color--2" style="max-width: 90px;font-size: 16px">
+                                                                                                                                        <a href="/match/<%=playerLastFifty[game]['match_id']%>" class="btn btn-xs btn-default-alt btn-single-icon btn-circle" data-toggle="tooltip" data-placement="top" title="View Match"><i class="fas fa-play"></i></a>
+                                    </td>
 
-                        </tbody>
-                    </table>
+                                </tr>
+                            <% } %>
+
+                            </tbody>
+                        </table>
+                        
+                    </div>
+
                 </div>
 
-            </div>
             </div>
             <%}%>
 
@@ -615,6 +620,8 @@ let classValues = {
 <!-- Template JS -->
 <script src="/assets/js/init.js"></script>
 <script src="/assets/js/custom.js"></script>
+
+
 
 </body>
 </html>

@@ -4,7 +4,7 @@
 
     <!-- Basic Page Needs
     ================================================== -->
-    <title>Realm Royale Hub</title>
+    <title>Realm Royale Leaderboard</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A place for everything realm royale!">
@@ -252,17 +252,29 @@ let classValues = {
                 <div class="posts__item posts__item--tile posts__item--category-1 posts__item--category-4  card"
                      style="margin-top:3rem">
                     <div class="widget__title card__header card__header--has-btn">
-                        <h3 style="font-size:2rem">Leaderboard</h3>
+                        <h3 style="font-size:2rem">Monthly Leaderboard</h3>
                     </div>  
 
                     <div class=" card__header--has-btn" style="display: inline-block;margin-bottom: 0;padding-bottom: 0;">
                         <script>
+
+                            // kdRatioTable
+                            //mostGamesWon
+
                             let monthlyClassStats = document.getElementById('monthlyClassStats');
                             let divSoloKills = document.getElementById('soloKills');
                             let divTeamKills = document.getElementById('teamKills');
+                            let divkdRatio = document.getElementById('kdRatio');
+                            let divdkRatio = document.getElementById('dkRatio');
+                            let avgTeammateHealing = document.getElementById('avgTeammateHealing');
+                            let mostGamesWon = document.getElementById('mostGamesWon');
 
                             divTeamKills.style.display = 'none';
                             divSoloKills.style.display = 'none';
+                            divkdRatio.style.display = 'none';
+                            divdkRatio.style.display = 'none';
+                            avgTeammateHealing.style.display = 'none';
+                            mostGamesWon.style.display = 'none';
 
                             function rankingType(sortMethod) {
                                 switch (sortMethod) {
@@ -270,19 +282,73 @@ let classValues = {
                                         divSoloKills.style.display = 'block';
                                         divTeamKills.style.display = 'none';
                                         monthlyClassStats.style.display = 'none';
+                                        divkdRatio.style.display = 'none';
+                                        divdkRatio.style.display = 'none';
+                                        avgTeammateHealing.style.display = 'none';
+                                        mostGamesWon.style.display = 'none';
+
                                         break;
 
                                     case "highestTeamKills":
                                         divSoloKills.style.display = 'none';
                                         divTeamKills.style.display = 'block';
                                         monthlyClassStats.style.display = 'none';
+                                        divkdRatio.style.display = 'none';
+                                        divdkRatio.style.display = 'none';
+                                        avgTeammateHealing.style.display = 'none';
+                                        mostGamesWon.style.display = 'none';
 
                                         break;
-                                    case "monthlyClassStats":
+                                        case "monthlyClassStats":
                                         monthlyClassStats.style.display = 'block';
                                         divSoloKills.style.display = 'none';
                                         divTeamKills.style.display = 'none';
+                                        divkdRatio.style.display = 'none';
+                                        divdkRatio.style.display = 'none';
+                                        avgTeammateHealing.style.display = 'none';
+                                        mostGamesWon.style.display = 'none';
+
+                                        break;  
+                                    case "kdRatio":
+                                        monthlyClassStats.style.display = 'none';
+                                        divSoloKills.style.display = 'none';
+                                        divTeamKills.style.display = 'none';
+                                        divkdRatio.style.display = 'block';
+                                        divdkRatio.style.display = 'none';
+                                        avgTeammateHealing.style.display = 'none';
+                                        mostGamesWon.style.display = 'none';
+
+                                        break; 
+                                    case "dkRatio":
+                                        monthlyClassStats.style.display = 'none';
+                                        divSoloKills.style.display = 'none';
+                                        divTeamKills.style.display = 'none';
+                                        divkdRatio.style.display = 'none';
+                                        divdkRatio.style.display = 'block';
+                                        avgTeammateHealing.style.display = 'none';
+                                        mostGamesWon.style.display = 'none';
+
                                         break;    
+                                    case "avgTeammateHealing":
+                                        monthlyClassStats.style.display = 'none';
+                                        divSoloKills.style.display = 'none';
+                                        divTeamKills.style.display = 'none';
+                                        divkdRatio.style.display = 'none';
+                                        divdkRatio.style.display = 'none';
+                                        avgTeammateHealing.style.display = 'block';
+                                        mostGamesWon.style.display = 'none';
+
+                                        break;    
+                                    case "mostGamesWon":
+                                        monthlyClassStats.style.display = 'none';
+                                        divSoloKills.style.display = 'none';
+                                        divTeamKills.style.display = 'none';
+                                        divkdRatio.style.display = 'none';
+                                        divdkRatio.style.display = 'none';
+                                        avgTeammateHealing.style.display = 'none';
+                                        mostGamesWon.style.display = 'block';
+
+                                        break;   
                                     default:
                                         break
                                 }
@@ -302,7 +368,10 @@ let classValues = {
                                     <button class="dropbtn" style="pointer-events: none;">Ranking Type</button>
                                     <div class="dropdown-content" style="min-height: 50px;">
                                         <a href="#/" onclick="rankingType('monthlyClassStats')" >
-                                                Monthly Class Stats  
+                                                Class Stats  
+                                        </a>
+                                        <a href="#/" onclick="rankingType('mostGamesWon')">
+                                                Most Games Won
                                         </a>
                                         <a href="#/" onclick="rankingType('highestSoloKills')" >
                                                 Top Kills 
@@ -310,17 +379,14 @@ let classValues = {
                                         <a href="#/" onclick="rankingType('highestTeamKills')">
                                                 Top Team Kills 
                                         </a>
-                                        <a href="/match/%>">
-                                            testasdfasdfasdfasdf
+                                        <a href="#/" onclick="rankingType('kdRatio')">
+                                                Highest K/D
                                         </a>
-                                        <a href="/match/%>">
-                                            testasdfasdfasdfasdf
+                                        <a href="#/" onclick="rankingType('dkRatio')">
+                                                Highest D/K
                                         </a>
-                                        <a href="/match/%>">
-                                            testasdfasdfasdfasdf
-                                        </a>
-                                        <a href="/match/%>">
-                                             testasdfasdfasdfasdf
+                                        <a href="#/" onclick="rankingType('avgTeammateHealing')">
+                                            Highest Avg. Teammate Healing
                                         </a>
                                     </div>
                                     
@@ -329,14 +395,6 @@ let classValues = {
                             </li>
                         </ul>
                     </div>
-
-                    <!-- <script>
-                    $(document).ready(function() {
-                        $('table.display').DataTable();
-                    } );
-                    </script> -->
-
-
 
 
                     <div class="table-responsive" id="monthlyClassStats">
@@ -364,7 +422,7 @@ let classValues = {
                                         Deaths
                                     </th>
                                     <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
-                                        Time
+                                        Time (sec.)
                                     </th>
                                 </tr>
                             </thead>
@@ -372,31 +430,58 @@ let classValues = {
                                 
                             <tr>
                                 <td style="font-size:1rem">Combined</td>
+                                <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['totalmatches']%></td>
                                 <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['totaldamage']%></td>
                                 <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['damagetaken']%></td>
                                 <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['totalkills']%></td>
-                                <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['totaltime']%></td>
-                                <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['totalmatches']%></td>
                                 <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['totaldeaths']%></td>
+                                <td style="font-size:1rem"><%=monthlyLeaderboard[0][0]['totaltime']%></td>
                             </tr>
                             <%
                             for(realm_class in monthlyLeaderboard[1]) {%>
                                 <tr>
                                     <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['classname']%></td>
+                                    <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['totalmatches']%></td>
                                     <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['totaldamage']%></td>
                                     <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['damagetaken']%></td>
                                     <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['totalkills']%></td>
-                                    <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['totaltime']%></td>
-                                    <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['totalmatches']%></td>
                                     <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['totaldeaths']%></td>
+                                    <td style="font-size:1rem"><%=monthlyLeaderboard[1][realm_class]['totaltime']%></td>
                                 </tr>
                                 <% }
                             %>
 
                             </tbody>
                         </table>
-                        </div>
+                    </div>
 
+                    <div class="table-responsive" id="mostGamesWon">
+
+                    <table class="display table table-hover" id="mostGamesWonTable"
+                        style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center" data-searching="true">
+                        <thead>
+                            <tr>
+                                <th class="team-result__placement" style="text-align: center;max-width: 60px;font-size: 18px">
+                                    Name
+                                </th>
+                                <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                    Games Won
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%
+                                for(playerReturned in getHighestWins) {%>
+                                    <tr>
+                                        
+                                        <td style="font-size:1rem"><a href="/stats/<%=getHighestWins[playerReturned]['player_id']%>"><%=highestKD[playerReturned]['name']%></a></td>
+                                        <td style="font-size:1rem"><%=getHighestWins[playerReturned]['games_won']%></td>
+                                    </tr>
+                                <% }
+                            %>
+                        </tbody>
+                    </table>
+                    </div>
 
 
                     <div class="table-responsive" id="soloKills">
@@ -485,6 +570,115 @@ let classValues = {
                         </table>
                     </div>
 
+
+                    <div class="table-responsive" id="kdRatio">
+
+                        <table class="display table table-hover" id="kdRatioTable"
+                            style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center" data-searching="true">
+                            <thead>
+                                <tr>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 60px;font-size: 18px">
+                                        Name
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        K/D
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        Kills
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        Deaths
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                    for(playerReturned in highestKD) {%>
+                                        <tr>
+                                            
+                                            <td style="font-size:1rem"><a href="/stats/<%=highestKD[playerReturned]['player_id']%>"><%=highestKD[playerReturned]['name']%></a></td>
+                                            <td style="font-size:1rem"><%=highestKD[playerReturned]['kd']%></td>
+                                            <td style="font-size:1rem"><%=highestKD[playerReturned]['kills']%></td>
+                                            <td style="font-size:1rem"><%=highestKD[playerReturned]['deaths']%></td>
+                                        </tr>
+                                    <% }
+                                %>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div class="table-responsive" id="dkRatio">
+
+                        <table class="display table table-hover" id="dkRatioTable"
+                            style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center" data-searching="true">
+                            <thead>
+                                <tr>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 60px;font-size: 18px">
+                                        Name
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        D/K
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        Kills
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        Deaths
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                    for(playerReturned in highestDK) {%>
+                                        <tr>
+                                            
+                                            <td style="font-size:1rem"><a href="/stats/<%=highestDK[playerReturned]['player_id']%>"><%=highestDK[playerReturned]['name']%></a></td>
+                                            <td style="font-size:1rem"><%=highestDK[playerReturned]['dk']%></td>
+                                            <td style="font-size:1rem"><%=highestDK[playerReturned]['total_kills']%></td>
+                                            <td style="font-size:1rem"><%=highestDK[playerReturned]['total_deaths']%></td>
+                                        </tr>
+                                    <% }
+                                %>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-responsive" id="avgTeammateHealing">
+
+                        <table class="display table table-hover" id="avgTeammateHealingTable"
+                            style="padding-top: 10px;padding-bottom: 10px;text-align: center;align-items: center" data-searching="true">
+                            <thead>
+                                <tr>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 60px;font-size: 18px">
+                                        Name
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        Avg. Teammate Healing
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        Total Healing
+                                    </th>
+                                    <th class="team-result__placement" style="text-align: center;max-width: 90px;font-size: 18px">
+                                        Total Matches
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                    for(playerReturned in highestAvgTeammateHealing) {%>
+                                        <tr>
+                                            
+                                            <td style="font-size:1rem"><a href="/stats/<%=highestAvgTeammateHealing[playerReturned]['player_id']%>"><%=highestAvgTeammateHealing[playerReturned]['name']%></a></td>
+                                            <td style="font-size:1rem"><%=highestAvgTeammateHealing[playerReturned]['healing_teammates']%></td>
+                                            <td style="font-size:1rem"><%=highestAvgTeammateHealing[playerReturned]['total_healing']%></td>
+                                            <td style="font-size:1rem"><%=highestAvgTeammateHealing[playerReturned]['total_matches']%></td>
+                                        </tr>
+                                    <% }
+                                %>
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
             </div>

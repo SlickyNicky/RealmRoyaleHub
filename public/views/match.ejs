@@ -4,7 +4,11 @@
 
     <!-- Basic Page Needs
     ================================================== -->
-    <title>Realm Royale Hub</title>
+    <%if(renderDetails){%>
+        <title>Realm Royale Match - <%=matchOverview[0]['match_id']%></title>
+    <%} else {%>
+        <title>Realm Royale Match Information</title>
+    <%}%>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A place for everything realm royale!">
@@ -179,7 +183,16 @@ let queueValues = {
     <!-- Header / End -->
 
 
-    <div class="container" style="align-items: center;text-align: center;padding-top: 50px">
+        <div class="container" style="align-items: center;text-align: center;padding-top: 50px">
+            <% if(error !== null) { %>
+                <h2>Match Error: <%=error%>  </h2>
+            <%}%>
+        </div>
+
+
+
+
+    <div class="container" style="align-items: center;text-align: center">
         <div class="header-search-form" style="width: 30rem">
             <form action="/match" id="search" class="search-form" method='post'>
                 <input type="text" id="search" name="search" class="form-control" value=""
@@ -248,7 +261,8 @@ let queueValues = {
                                     Placement
                                 </th>
                                 <th class="team-result__timealive" style="text-align: center;font-size: 18px" >Seconds Alive</th>
-                                <th class="team-result__vs" style="width: 400px;word-break: break-all;font-size: 18px">Players</th>
+                                <th class="team-result__vs" style="width: 400px;word-break: break-all;font-size: 18px">Player(s)</th>
+                                <th class="team-result__vs" style="width: 400px;word-break: break-all;font-size: 18px">Class(s)</th>
                                 <th class="team-result__kills" style="text-align: center;font-size: 18px">Kills</th>
                                 <th class="team-result__deaths" style="text-align: center;font-size: 18px">Deaths</th>
                                 <th class="team-result__assists" style="text-align: center;font-size: 18px">Damage</th>
@@ -272,9 +286,25 @@ let queueValues = {
                                             <!-- Team #1 -->
                                             <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px;flex-direction: column;align-items: flex-start">
                                                         <% for(const player in matchDetails[team]['name']){ %>
-                                                    <a href="/stats/<%=matchDetails[team]['id'][player]%>" style="display: inherit">
+                                                            <h5><a href="/stats/<%=matchDetails[team]['id'][player]%>" style="display: inherit">
                                                         <%= matchDetails[team]['name'][player] %>
-                                                    </a>
+                                                    </a></h5>
+                                                <br>
+                                                        <% } %>
+                                            </div>
+                                            <!-- Team #1 / End -->
+
+
+                                        </div>
+                                    </td>
+                                    <td class="team-result__outcome" style="word-break: break-all;" >
+                                        <div class="team-result__teams-wrapper">
+                                            <!-- Team #1 -->
+                                            <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px;flex-direction: column;align-items: flex-start">
+                                                        <% for(const player in matchDetails[team]['class_names']){ %>
+                                                    <h5 style="display: inherit;border-spacing: 0px;">
+                                                        <%= matchDetails[team]['class_names'][player] %>
+                                                    </h5>
                                                 <br>
                                                         <% } %>
                                             </div>
@@ -295,7 +325,7 @@ let queueValues = {
                                     %>
                                     <td data-order="<%=totalKills%>" class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
                                          <% for(const kills in matchDetails[team]['kills_player']){ %>
-                                                        <%= matchDetails[team]['kills_player'][kills] %>
+                                            <h5><%= matchDetails[team]['kills_player'][kills] %></h5>
                                             <br>
 
                                         <% } %>
@@ -312,7 +342,7 @@ let queueValues = {
                                     %>
                                     <td data-order="<%=totalDeaths%>" class="team-result__deaths team-meta__name team-color--2" style="font-size: 16px">
                                             <% for(const deaths in matchDetails[team]['deaths']){ %>
-                                                    <%= matchDetails[team]['deaths'][deaths] %>
+                                                <h5> <%= matchDetails[team]['deaths'][deaths] %></h5>
                                             <br>
 
                                         <% } %>
@@ -333,7 +363,7 @@ let queueValues = {
                                             <%
                                         for(const damage_player in matchDetails[team]['damage_player']) {
                                                      %>
-                                                    <%= matchDetails[team]['damage_player'][damage_player] %>
+                                                     <h5><%= matchDetails[team]['damage_player'][damage_player] %></h5>
                                             <br>
 
                                         <% } %>
@@ -351,7 +381,7 @@ let queueValues = {
                                     %>
                                     <td data-order="<%=totalDamageTaken%>" class="team-result__absorbed team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
                                             <% for(const damage_taken in matchDetails[team]['damage_taken']) { %>
-                                                    <%= matchDetails[team]['damage_taken'][damage_taken] %>
+                                                <h5><%= matchDetails[team]['damage_taken'][damage_taken] %></h5>
                                             <br>
 
                                         <% } %>
@@ -370,7 +400,7 @@ let queueValues = {
                                     %>
                                     <td data-order="<%=totalSelfHealing%>" class="team-result__self_healing team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
                                         <%  for(const healing_player_self in matchDetails[team]['healing_player_self']) { %>
-                                            <%= matchDetails[team]['healing_player_self'][healing_player_self] %>
+                                            <h5><%= matchDetails[team]['healing_player_self'][healing_player_self] %></h5>
                                             <br>
 
                                         <% } %>
@@ -388,7 +418,7 @@ let queueValues = {
                                     %>
                                     <td data-order="<%=totalHealingOthers%>" class="team-result__team_healing team-meta__name team-color--2" style="max-width: 100px;font-size: 16px">
                                         <% for(const healing_player in matchDetails[team]['healing_player']) { %>
-                                            <%= matchDetails[team]['healing_player'][healing_player] %>
+                                            <h5><%= matchDetails[team]['healing_player'][healing_player] %></h5>
                                             <br>
 
                                         <% } %>
@@ -409,7 +439,7 @@ let queueValues = {
 
         </div>
     </div>
-    <%}%>>
+    <%}%>
 
     <!-- Content / End -->
 

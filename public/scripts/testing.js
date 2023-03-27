@@ -77,7 +77,6 @@ function fixRealmGameOutput(totalGameDetails, anArrayOfGameDetail = false) {
 
 async function insertFormattedGameMatches(gameMatch) {
     gameMatch = fixRealmGameOutput(gameMatch,false)
-
     database.insertNewMatchInformationOverview(gameMatch);
     console.log(`Match ID Processing... ${gameMatch['match_id']}`)
 
@@ -95,7 +94,29 @@ async function insertFormattedGameMatches(gameMatch) {
                     if(playerInfo['id'] !== gameMatch['teams'][team][players][player]['id']) {
                         console.log(`Expected ID: ${gameMatch['teams'][team][players][player]['id']} actual : ${playerInfo['id']}`)
                         console.log(`Player Info Entire ${JSON.stringify(playerInfo)}`)
-                        process.exit('-1')
+                        console.log('----------')
+                        console.log('----------')
+                        console.log('----------')
+                        console.log('Trying Again...')
+                        playerInfo = await database.callApi(
+                            'GetPlayer',
+                            true,
+                            `GetPlayer::${gameMatch['teams'][team][players][player]['id']}`,
+                            gameMatch['teams'][team][players][player]['id'],
+                            'hirez'
+                        )
+                        if(playerInfo['id'] !== gameMatch['teams'][team][players][player]['id']) {
+                            console.log(`Expected ID2: ${gameMatch['teams'][team][players][player]['id']} actual : ${playerInfo['id']}`)
+                            console.log(`Player Info Entire2 ${JSON.stringify(playerInfo)}`)
+                            process.exit('-1')
+
+                        }
+                        console.log('----------')
+                        console.log('----------')
+                        console.log('----------')
+                        console.log('----------')
+
+
                     }
                     database.insertNewPlayerInformation(playerInfo)
                     console.log(gameMatch['teams'][team][players][player]['id'])
@@ -390,33 +411,71 @@ function checkForDuplicates(jsonArray) {
   }
 
 setTimeout(async () =>{
-    for(const queueID in queueIDsToGrab) {
-        database.callApi(
-                'GetMatchIDsByQueue',
-                true,
-                `GetMatchIDsByQueue:::SpecificQ::${queueIDsToGrab[queueID]}`,
-                queueIDsToGrab[queueID],
-                dayjs.utc().subtract(12, 'hour').format('YYYYMMDD'),
-                dayjs.utc().subtract(12, 'hour').format('HH')
-            ).then( (matches) => {
-            for (const match in matches) {
-                if (matches[match]['active_flag'] == 'n') {
-                    if(matches[match]['ret_msg'] === null) {
-                        database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
-                    } else {
-                        database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
-                    }                    }
-            }
-        })
-    }
-    // console.log(await database.getMatchInformation(62642922))
+        // let startTime = performance.now()
+        // console.log(await database.sameInputPlayersOverTime_v2('1 month','week', '3 days 12 hours',474))
+        // let endTime = performance.now()
+        // console.log(`Call to doSomething1 took ${endTime - startTime} milliseconds`)
+//     var startTime = performance.now()
+    console.log(await database.callApi('GetPlayer',true,'GetPlayer',7572939,'HIREZ'))
 
+
+        // let string = '123123123123'
+
+        // console.log(((await database.getMatchInformation('1'))[0]).length === 0)
+// let startTime = performance.now()
+//     let [
+//     temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9,temp10,temp11,temp12,temp13,temp14,temp15,temp16,temp17,temp18,temp19,temp20
+// ] = await Promise.all([
+
+//     database.graphTestingV1('year','month'),
+//     database.graphTestingV1('months','weeks'),
+//     database.graphTestingV1('weeks','days'),
+//     database.graphTestingV1('days','hours'),
+
+
+// ])
+// var endTime = performance.now()
+// console.log(`Call to doSomething1 took ${endTime - startTime} milliseconds`)
+    // console.log(await database.callApi("getplayer",true,"getplayer",23855569,'hirez'))
+    // console.log(await database.callApi('getdataused',true,'getdataused'))
+    // for(const queueID in queueIDsToGrab) {
+    //     database.callApi(
+    //             'GetMatchIDsByQueue',
+    //             true,
+    //             `GetMatchIDsByQueue:::SpecificQ::${queueIDsToGrab[queueID]}`,
+    //             queueIDsToGrab[queueID],
+    //             dayjs.utc().subtract(8, 'day').format('YYYYMMDD'),
+    //             -1
+    //         ).then(async (matches) => {
+    //         for (const match in matches) {
+    //             if (matches[match]['active_flag'] == 'n') {
+    //                 if(matches[match]['ret_msg'] === null) {
+    //                     if(Object.keys(await database.realmGetProcessedMatch(matches[match]['match'])).length === 0) {
+    //                         database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
+    //                     }
+    //                 } else {
+    //                     if(Object.keys(await database.realmGetProcessedMatch(matches[match]['match'])).length === 0) {
+    //                         database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+    //                     }
+    //                 }
+    //              }
+    //         }
+    //     })
+    //     console.log('done....for now')
+    // }
+    // console.log('done')
+    // console.log(await database.callApi('getdataused',true,'getdataused'))
+
+    // console.log(await database.callApi('GetPlayer',true,'GetPlayer','asdf',-1))
+    // console.log(await database.callApi('SearchPlayers',true,'SearchPlayers','Goon SlickyNicky'))
+    // console.log(await database.getMatchInformation(62642922))
+ 
     // console.log((await database.getMatchInformation(62642922))[0])
 
     // let resultArr = []
 
 
-    // var readStream = fs.createReadStream('/tmp/tmpfiles_1400k.json')
+    // var readStream = fs.createReadStream('/tmp/tmpfiles_1600k.json')
 
     // readStream
     // .pipe(split2())

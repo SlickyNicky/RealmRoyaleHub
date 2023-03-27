@@ -32,6 +32,7 @@ __dirname = path.resolve();
 
 let queueIDs = {
     'Solo\'s': 474,
+    'Duo\'s': 482,
     'Trio\'s': 475,
     'Squad\'s': 476,
     customSolo: 10188,
@@ -41,6 +42,7 @@ let queueIDs = {
 }
 let queueValues = {
     474: 'Solo\'s',
+    482: 'Duo\'s',
     475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
     476: 'Squad\'s',
     10188: 'Solo Custom\'s',
@@ -1088,12 +1090,13 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
 
             let playerId = await getPlayerID(playerUrl.trimEnd())
 
-
-
             req.session.getPlayerProfileStats = await database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez')
             let playerStats = await database.callApi("GetPlayerStats", true, 'GetPlayerStats', playerId)
             if(playerStats['ret_msg'] === 'No Player Stats:0') {
-                res.redirect('/404');
+                res.render('stats', {
+                    displayStats: false,
+                    error: `Player/ID '${playerId}' doesn't exist`
+                });
             } else {
 
                 let output = {}
@@ -1157,14 +1160,18 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
                     playerInfo: req.session.getPlayerProfileStats,
                     playerOverallStats: req.session.findPlayerStatsOverall,
                     playerAggStats: output,
-                    playerLastFifty: req.session.getLastFifty
+                    playerLastFifty: req.session.getLastFifty,
+                    error: null
+
                 });
             }
         } else {
 
             res.render('stats', {
                 displayStats: false,
-                playerStats: ''
+                playerStats: '',
+                error: null
+
             });
         }
 
@@ -1173,7 +1180,9 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
     } else {
         res.render('stats', {
             displayStats: false,
-            playerStats: ''
+            playerStats: '',
+            error: null
+
         });
     }
 
@@ -1188,30 +1197,36 @@ routerNonProd.get('/match*', cache(5000), async (req, res) => {
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
         if (tourneyAndHash.length === 1) {
-            // let match = await database.callApi(
-            //     "GetMatchDetails",
-            //     true,
-            //     'GetMatchDetails',
-            //     tourneyAndHash[0]
-            // )
-            // if (match['ret_msg'] === `No Match Details:${tourneyAndHash[0]}`) {
-            //     res.render('match', {
-            //         renderDetails: false
-            //     });
-            // } else {
-                let match = (await database.getMatchInformation(tourneyAndHash[0]))[0]
-                let matchOverview = (await database.getMatchInformation(tourneyAndHash[0]))[1]
+
+
+            let match_whole = (await database.getMatchInformation(tourneyAndHash[0]))
+            if(match_whole === 'Invalid Input') {
+                res.render('match', {
+                    renderDetails: false,
+                    error: match_whole
+                });
+
+            } else if (match_whole[0].length === 0) {
+                res.render('match', {
+                    renderDetails: false,
+                    error: ` '${tourneyAndHash[0]}' hasn't been recorded`
+                });
+            } else {
+                let match = match_whole[0]
+                let matchOverview = match_whole[1]
 
                 res.render('match', {
                     renderDetails: true,
                     matchDetails: match,
-                    matchOverview:matchOverview
+                    matchOverview:matchOverview,
+                    error: null
                 });
-            // }
+            }
         }
     } else {
         res.render('match', {
-            renderDetails: false
+            renderDetails: false,
+            error: null
         });
     }
 });
@@ -1539,10 +1554,15 @@ routerNonProd.get('/v2_admin*', cache(3600000), async (req, res) => {
 	
         
     ] = await Promise.all([
-        database.graphTestingV1(2630000*12,2630000),
-        database.graphTestingV1(604800*5,604800),
-        database.graphTestingV1(86400*21,86400),
-        database.graphTestingV1(129600,3600),
+        database.graphTestingV1('year','month'),
+        database.graphTestingV1('months','weeks'),
+        database.graphTestingV1('weeks','days'),
+        database.graphTestingV1('days','hours'),
+
+        // database.graphTestingV1(2630000*12,2630000),
+        // database.graphTestingV1(604800*5,604800),
+        // database.graphTestingV1(86400*21,86400),
+        // database.graphTestingV1(129600,3600),
         
         database.averagePlayersOverTime(2630000*12,2630000,474,'NA'),
         database.averagePlayersOverTime(2630000*12,2630000,483,'NA'),
@@ -1628,28 +1648,31 @@ routerNonProd.get('/v2_admin*', cache(3600000), async (req, res) => {
         database.averagePlayersOverTime(3600*24,3600 ,475,'Southeast Asia'),
         database.averagePlayersOverTime(3600*24,3600 ,476,'Southeast Asia'),
 
-        database.sameInputPlayersOverTime(2630000*12,2630000,474),
-        database.sameInputPlayersOverTime(2630000*12,2630000,483),
-        database.sameInputPlayersOverTime(2630000*12,2630000,475),
-        database.sameInputPlayersOverTime(2630000*12,2630000,476),
-        
 
-        database.sameInputPlayersOverTime(604800*14,604800,474),
-        database.sameInputPlayersOverTime(604800*14,604800,483),
-        database.sameInputPlayersOverTime(604800*14,604800,475),
-        database.sameInputPlayersOverTime(604800*14,604800,476),
-        
-		
-		database.sameInputPlayersOverTime(86400*14,86400,474),
-        database.sameInputPlayersOverTime(86400*14,86400,483),
-        database.sameInputPlayersOverTime(86400*14,86400,475),
-        database.sameInputPlayersOverTime(86400*14,86400,476),
-        
 
-        database.sameInputPlayersOverTime(3600*24,3600 ,474),
-        database.sameInputPlayersOverTime(3600*24,3600 ,483),
-        database.sameInputPlayersOverTime(3600*24,3600 ,475),
-        database.sameInputPlayersOverTime(3600*24,3600 ,476)
+//     database.sameInputPlayersOverTime_v2('solo',"day")
+
+
+
+        database.sameInputPlayersOverTime_v2('solo'	,'month'),
+        database.sameInputPlayersOverTime_v2('duo'	,'month'),
+        database.sameInputPlayersOverTime_v2('trio'	,'month'),
+        database.sameInputPlayersOverTime_v2('squad','month'),
+
+        database.sameInputPlayersOverTime_v2('solo'	,'week'	),
+        database.sameInputPlayersOverTime_v2('duo'	,'week'	),
+        database.sameInputPlayersOverTime_v2('trio'	,'week'	),
+        database.sameInputPlayersOverTime_v2('squad','week'	),
+
+        database.sameInputPlayersOverTime_v2('solo'	,'day'	),
+        database.sameInputPlayersOverTime_v2('duo'	,'day'	),
+        database.sameInputPlayersOverTime_v2('trio'	,'day'	),
+        database.sameInputPlayersOverTime_v2('squad','day'	),
+
+        database.sameInputPlayersOverTime_v2('solo'	,'hour'	),
+        database.sameInputPlayersOverTime_v2('duo'	,'hour'	),
+        database.sameInputPlayersOverTime_v2('trio'	,'hour'	),
+        database.sameInputPlayersOverTime_v2('squad','hour'	)
     
         ]);
        var endTime = performance.now()
@@ -1775,17 +1798,30 @@ routerNonProd.post('/match', async function (req, res) {
 routerNonProd.get('/leaderboard*', cache(30000), async (req, res) => {
 
 
-    let [highestSoloKills, HighestTeamKills,monthlyLeaderboard] = await Promise.all([
+    let [highestSoloKills, HighestTeamKills,monthlyLeaderboard,highestKD,highestDK,highestAvgTeammateHealing,getHighestWins] = await Promise.all([
         database.getHighestIndivKills(),
         database.getHighestTeamKills(),
-        database.getMonthlyRealmLeaderboardStats()
+        database.getMonthlyRealmLeaderboardStats(),
+        database.getHighestKD(),
+        database.getHighestDK(),
+        database.getHighestAvgTeammateHealing(),
+        database.getHighestWins()
     ]);
 
     res.render('leaderboard', {
         highestSoloKills:highestSoloKills,
         HighestTeamKills:HighestTeamKills,
-        monthlyLeaderboard:monthlyLeaderboard
+        monthlyLeaderboard:monthlyLeaderboard,
+        highestKD:highestKD,
+        highestDK:highestDK,
+        highestAvgTeammateHealing:highestAvgTeammateHealing,
+        getHighestWins:getHighestWins
     });
+});
+routerNonProd.get('/testme*', async (req, res) => {
+
+
+    res.render('testme');
 });
 
 routerNonProd.get('*', cache(5000), (req, res) => {

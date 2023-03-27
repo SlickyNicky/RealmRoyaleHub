@@ -23,13 +23,17 @@ setInterval(async function () {
                 queueIDsToGrab[queueID],
                 dayjs.utc().format('YYYYMMDD'),
                 dayjs.utc().format('HH')
-            ).then( (matches) => {
+            ).then(async (matches) => {
                 for (const match in matches) {
                     if (matches[match]['active_flag'] == 'n') {
                         if(matches[match]['ret_msg'] === null) {
-                            database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
+                            if(Object.keys(await database.realmGetProcessedMatch(matches[match]['match'])).length === 0) {
+                                database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
+                            }
                         } else {
-                            database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+                            if(Object.keys(await database.realmGetProcessedMatch(matches[match]['match'])).length === 0) {
+                                database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+                            }
                         }
                     }
                 }
@@ -41,14 +45,19 @@ setInterval(async function () {
                 queueIDsToGrab[queueID],
                 dayjs.utc().subtract(1, 'hour').format('YYYYMMDD'),
                 dayjs.utc().subtract(1, 'hour').format('HH')
-            ).then( (matches) => {
+            ).then(async  (matches) => {
                 for (const match in matches) {
                     if (matches[match]['active_flag'] == 'n') {
                         if(matches[match]['ret_msg'] === null) {
-                            database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
+                            if(Object.keys(await database.realmGetProcessedMatch(matches[match]['match'])).length === 0) {
+                                database.realmAddMatchToProcess(matches[match]['active_flag'], '', matches[match]['match'])
+                            }
                         } else {
-                            database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
-                        }                    }
+                            if(Object.keys(await database.realmGetProcessedMatch(matches[match]['match'])).length === 0) {
+                                database.realmAddMatchToProcess(matches[match]['active_flag'], matches[match]['ret_msg'], matches[match]['match'])
+                            }
+                        }
+                    }
                 }
             })
         }
