@@ -4,10 +4,6 @@ node_modules/
 package-lock.json
 combined.json
 public/scripts/combined.json
-<<<<<<< HEAD
-public/scripts/*.env
-=======
 public/scripts/*.env
 public/scripts/logging/*.json
 public/scripts/logging/database_logging_info.json
->>>>>>> 4829363 (Improved use of DRY principles, updated logging output folders, next up should improve mmr logic and org tourney logic further)
