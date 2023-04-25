@@ -284,9 +284,11 @@ let queueValues = {
                                     <td class="team-result__outcome" style="max-width: 400px;word-break: break-all;" >
                                         <div class="team-result__teams-wrapper">
                                             <!-- Team #1 -->
-                                            <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px;flex-direction: column;align-items: flex-start">
-                                                        <% for(const player in matchDetails[team]['name']){ %>
-                                                            <h5><a href="/stats/<%=matchDetails[team]['id'][player]%>" style="display: inherit">
+                                            <div class="team-meta team-meta--first team-meta__info team-meta__name" style="font-size: 16px;flex-direction: column;align-items: flex-start;text-transform: none;">
+                                                        <% for(const player in matchDetails[team]['name']){
+
+                                                            %>
+                                                            <h5 style="text-transform: none;"><a href="/stats/<%=matchDetails[team]['id'][player]%>" style="display: inherit;text-transform: none;">
                                                         <%= matchDetails[team]['name'][player] %>
                                                     </a></h5>
                                                 <br>

@@ -273,13 +273,13 @@ let classValues = {
 
                                 <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4">
                                     <h3 class="widget-game-result__title" style="font-size: 0.9rem">Platform: <%=playerInfo['platform']%></h3>
-                                    <time class="widget-game-result__date" style="font-size: 0.9rem">Player ID: <%=playerInfo['id']%>
+                                    <time class="widget-game-result__date" style="font-size: 0.9rem">Player ID: <%=playerInfo['player_id']%>
                                     </time>
                                 </header>
 
                                 <header class="widget-game-result__header">
                                     <h3 class="widget-game-result__title" style="font-size: 1.5rem;letter-spacing: 1px;text-transform: none"><%=playerInfo['name']%></h3>
-                                    <div class="widget-game-result__subtitle" style="font-size: 0.8rem">Account Created<br><%=playerInfo['created_datetime']%></div>
+                                    <div class="widget-game-result__subtitle" style="font-size: 0.8rem">Account Created<br><%=new Date(playerInfo['created_datetime']*1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric', year: 'numeric' });%></div>
                                 </header>
 
                             </div>

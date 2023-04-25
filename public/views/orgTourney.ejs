@@ -77,7 +77,6 @@
         var form = document.getElementById("search");
 
         function handleForm(event) {
-            console.log('wowzers')
             // event.preventDefault();
         }
 
@@ -305,7 +304,7 @@
             <% if(viewer){ %>
                 <div class="card">
                     <div class="card__header">
-                        <h4 style="font-size: 1.75rem;text-transform: none;">Tournament - <%=decodeURI(tourneyOverviewInfo['tourneyname'])%> </h4>
+                        <h4 style="font-size: 1.75rem;text-transform: none;"><%=decodeURI(tourneyOverviewInfo['tourneyname'])%> </h4>
                         <header class="widget-game-result__header widget-game-result__header--alt widget-game-result__header--alt-compact mb-4" style="flex-direction: column;">
                             <h3 class="widget-game-result__title" style="font-size: 0.9rem;padding-top: 0.5rem;">
                                 Game Mode - <%=tourneyOverviewInfo['queuetype']%>
@@ -567,8 +566,10 @@
 
                                                             <% if (totalGamesOutputInfo.get(i) !== undefined) { %>
                                                             <label for="queueId">Add/Modify
-                                                                QueueID: <%= decodeURIComponent(totalGamesOutputInfo.get(i)['queueId']) %></label>
-                                                            <% } else { %>
+                                                                QueueID:</label>
+                                                            <% } else {
+                                                                %>
+                                                                
                                                                 <label for="queueId">Add/Modify QueueID: </label>
 
                                                             <% } %>
@@ -597,9 +598,8 @@
 
                                                         <% if (totalGamesOutputInfo.get(i) !== undefined) { %>
                                                         <label for="queueId">
-                                                            Match Id: <%= decodeURIComponent(totalGamesOutputInfo.get(i)['queueId']) %></label>
+                                                            </label>
                                                         <% } else { %>
-                                                            <label for="queueId">QueueID: </label>
 
                                                         <% } %>
                                                         </form>

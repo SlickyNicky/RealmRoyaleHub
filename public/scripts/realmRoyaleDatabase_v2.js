@@ -41,6 +41,7 @@ const {performance} = require('perf_hooks');
 
 require('events').EventEmitter.defaultMaxListeners = Infinity;
 const https = require('https');
+const { isNumber } = require('lodash');
 const opts = {
     agent: new https.Agent({
         keepAlive: true
@@ -129,9 +130,7 @@ class DatabaseHandler_v2 {
 
     async createTourney(hashedName, tourneyName, amountOfGames, bestOfGames, queueType, pointsPerKill, pointsPerPlacement, tourneyNumber, negativePoints) {
         let negPointsTemp;
-        console.log(amountOfGames)
-        console.log(bestOfGames)
-        console.log(tourneyNumber)
+
 
         return new Promise(async (resolve, reject) => {
             let query = `INSERT INTO realmTourneys VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`;
@@ -234,48 +233,23 @@ class DatabaseHandler_v2 {
 
     async addGameToTourney(hashedName, tourneyName, sameTourneyNumber, gameNumber, queueId) {
         return new Promise(async (resolve, reject) => {
+
             let query = `
-                        select COUNT(*) AS namesCount from realmTourneyGames where
-                         hashedTourneyName = '${hashedName}' and 
-                         tourneyName = '${tourneyName}' and 
-                         sameTourneyNumber = '${sameTourneyNumber}' and 
-                         gameNumber = '${gameNumber}' 
-
-            `
-
+                    DELETE From realmTourneyGames
+                        Where
+                        hashedTourneyName = '${hashedName}' and
+                        tourneyName = '${tourneyName}' and
+                        sameTourneyNumber = '${sameTourneyNumber}' and
+                        gameNumber = '${gameNumber}'
+                    `;
             await db.query(query)
                 .then(async (results) => {
+                    let query = `INSERT INTO realmTourneyGames VALUES ($1,$2,$3,$4,$5)`;
+                    await db.query(query,[
+                        hashedName, tourneyName, sameTourneyNumber, gameNumber, queueId
+                    ])
+                });
 
-
-                        if (results === undefined) {
-                            return resolve(0)
-                        } else {
-                            if (parseInt(results[0].namesCount) > 0) {
-                                let query = `
-                                        DELETE From realmTourneyGames
-                                         Where
-                                         hashedTourneyName = '${hashedName}' and
-                                         tourneyName = '${tourneyName}' and
-                                         sameTourneyNumber = '${sameTourneyNumber}' and
-                                         gameNumber = '${gameNumber}'
-                                        `;
-                                await db.query(query)
-                                    .then(async (results) => {
-                                            let query = `INSERT INTO realmTourneyGames VALUES ($1,$2,$3,$4,$5)`;
-                                            await db.query(query,[
-                                                hashedName, tourneyName, sameTourneyNumber, gameNumber, queueId
-                                            ])
-                                        }
-                                    )
-                            } else {
-                                let query = `INSERT INTO realmTourneyGames VALUES ($1,$2,$3,$4,$5)`;
-                                await db.query(query,[
-                                    hashedName, tourneyName, sameTourneyNumber, gameNumber, queueId
-                                ])
-                            }
-                        }
-                    }
-                );
 
 
             return resolve("");
@@ -371,8 +345,131 @@ class DatabaseHandler_v2 {
         })
     }
 
+    async getUsableApiKey_v2() {
+        return new Promise(async (resolve, reject) => {
+            logger.error(`Waiting on lock for getUsableApiKey function`)
+            let newQuery =
+                `
+                WITH initial_query AS (
+                    SELECT
+                        session_id
+                    FROM
+                        apigrabbingstats
+                    WHERE
+                        session_message_count < 498 AND
+                        to_timestamp(timesinceepoch+899) > now()::timestamp
+                    ORDER BY timesinceepoch DESC
+                ),
+                row_count AS (
+                    SELECT COUNT(*) as total_rows FROM initial_query
+                ),
+                second_query AS (
+                    SELECT
+                        content::json->>'session_id' as session_id,
+                        content::json->>'ret_msg' as ret_msg
+                    FROM
+                        http_get('https://api.realmroyale.com/realmapi.svc/createsessionJSON/4350/'||md5('4350' || 'createsession' || '66B1CC5ED2AF40B2B87772F3489E42A7' || TO_CHAR(NOW(),'YYYYMMDDHHMISS'))||'/'||TO_CHAR(NOW(),'YYYYMMDDHHMISS'))
+                    WHERE EXISTS (SELECT 1 FROM row_count WHERE total_rows = 0)
+                ),
+                insert_result AS (
+                    INSERT INTO apigrabbingstats (session_id, session_message_count, session_time_started, timesinceepoch)
+                    SELECT
+                        second_query.session_id,
+                        0,
+                        now(),
+                        EXTRACT(EPOCH FROM now())
+                    FROM second_query
+                    RETURNING session_id
+                )
+                SELECT
+                    COALESCE(initial_query.session_id, second_query.session_id, insert_result.session_id) as session_id,
+                    CASE
+                        WHEN row_count.total_rows = 0 THEN second_query.ret_msg
+                        ELSE '-1'
+                    END as ret_msg
+                FROM row_count
+                LEFT JOIN initial_query ON row_count.total_rows > 0
+                LEFT JOIN second_query ON row_count.total_rows = 0
+                LEFT JOIN insert_result ON row_count.total_rows = 0
+                LIMIT 1;
+                `
+            
+            await db.query(newQuery).then(async (results) => {
+                return resolve(results)
+            })
+        })
+    }
 
-    async callApi(endPoint, normalParams = true, apiBeingUsed = '', ...params) {
+    async callApi_v2(endPoint,apiBeingUsed='',...params) {
+
+        return new Promise(async (resolve, reject) => {
+            endPoint = endPoint.toLowerCase();
+            let endOfUrl = String(params.join("/"))
+            if (endOfUrl.length > 0) {
+                endOfUrl = "/" + endOfUrl
+            }
+            let query = `
+                WITH initial_query AS (
+                    SELECT
+                        session_id
+                    FROM
+                        apigrabbingstats
+                    WHERE
+                        session_message_count < 498 AND
+                        to_timestamp(timesinceepoch+899) > now()::timestamp
+                    ORDER BY timesinceepoch DESC
+                    FOR UPDATE
+                ),
+                row_count AS (
+                    SELECT COUNT(*) as total_rows FROM initial_query
+                ),
+                second_query AS (
+                    SELECT
+                        content::json->>'session_id' as session_id,
+                        content::json->>'ret_msg' as ret_msg
+                    FROM
+                        http_get('${baseApi}/createsessionJSON/4350/'||md5('${devId}' || 'createsession' || '${authKey}' || TO_CHAR(NOW(),'YYYYMMDDHHMISS'))||'/'||TO_CHAR(NOW(),'YYYYMMDDHHMISS'))
+                    WHERE EXISTS (SELECT 1 FROM row_count WHERE total_rows = 0)
+                ),
+                insert_result AS (
+                    INSERT INTO apigrabbingstats(session_id, session_message_count, session_time_started, timesinceepoch)
+                    SELECT
+                        second_query.session_id,
+                        0,
+                        now(),
+                        EXTRACT(EPOCH FROM now())
+                    FROM second_query
+                    RETURNING session_id
+                ),
+                final_result AS (
+                    SELECT
+                        COALESCE(initial_query.session_id, second_query.session_id, insert_result.session_id) as session_id,
+                        CASE
+                            WHEN row_count.total_rows = 0 THEN second_query.ret_msg
+                            ELSE '-1'
+                        END as ret_msg
+                    FROM row_count
+                    LEFT JOIN initial_query ON row_count.total_rows > 0
+                    LEFT JOIN second_query ON row_count.total_rows = 0
+                    LEFT JOIN insert_result ON row_count.total_rows = 0
+                    LIMIT 1
+                )
+                SELECT
+                    content::json
+                from
+                    http_get('${baseApi}/${endPoint}json/'||'${devId}/'||md5('${devId}' || '${endPoint}' || '${authKey}' || TO_CHAR(NOW(),'YYYYMMDDHHMISS')) ||'/'|| (SELECT session_id FROM final_result)||'/'||TO_CHAR(NOW(),'YYYYMMDDHHMISS') || $1)
+                ;
+            `
+            await db.query(query,[endOfUrl]).then(async (results) => {
+                resolve(results[0]['content'])
+            });
+        })
+    }
+
+
+
+
+    async callApi(endPoint, apiBeingUsed = '', ...params) {
         return new Promise(async (resolve, reject) => {
             logger.error(`Entering function: callApi function: with -${apiBeingUsed}|`)
 
@@ -385,48 +482,28 @@ class DatabaseHandler_v2 {
                 .then(async (sessionId) => {
                         let startTime = performance.now()
 
-                        if(!normalParams) {
-                            let methodSignature = md5(`${devId}${endPoint}${authKey}${dayjs.utc().format('YYYYMMDDHHmmss')}`)
-                            let normalBaseUrl = `${baseApi}JSON/${endPoint}`
-                            try {
+                        let methodSignature = md5(`${devId}${endPoint}${authKey}${dayjs.utc().format('YYYYMMDDHHmmss')}`)
+                        let normalBaseUrl = `${baseApi}/${endPoint}json/${devId}/${methodSignature}/${sessionId}/${dayjs.utc().format('YYYYMMDDHHmmss')}${endOfUrl}`
+                        this.updateApiEndpointCount(endPoint,endOfUrl)
+                        try {
 
-                                let finalResult = await (await
-                                        fetch(normalBaseUrl, opts)
-                                ).json()
-                                let endTime = performance.now()
-                                logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
-                                resolve(finalResult)
+                            
+                            let finalResult = await (await
+                                    fetch(normalBaseUrl, opts)
+                            ).json()
+                            let endTime = performance.now()
+                            logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
+                            resolve(finalResult)
 
-                            } catch (error) {
+                        } catch (error) {   
 
-                                logger.error(`Something went wrong with query:::${sessionId}::${endPoint}:${params}|ERROR:${error}`)
-                                let endTime = performance.now()
-                                logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
-                                resolve(`${sessionId}:::${endPoint}::${params}`)
+                            logger.error(`Something went wrong with query:::${sessionId}::${endPoint}:${params}|ERROR:${error}`)
+                            let endTime = performance.now()
+                            logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
+                            resolve(`${sessionId}:::${endPoint}::${params}`)
 
-                            }
-                        } else {
-                            let methodSignature = md5(`${devId}${endPoint}${authKey}${dayjs.utc().format('YYYYMMDDHHmmss')}`)
-                            let normalBaseUrl = `${baseApi}/${endPoint}json/${devId}/${methodSignature}/${sessionId}/${dayjs.utc().format('YYYYMMDDHHmmss')}${endOfUrl}`
-                            try {
-
-                                
-                                let finalResult = await (await
-                                        fetch(normalBaseUrl, opts)
-                                ).json()
-                                let endTime = performance.now()
-                                logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
-                                resolve(finalResult)
-
-                            } catch (error) {   
-
-                                logger.error(`Something went wrong with query:::${sessionId}::${endPoint}:${params}|ERROR:${error}`)
-                                let endTime = performance.now()
-                                logger.error(`Time taken to execute function: callApi with params-${endTime - startTime}--|${sessionId}:::${endPoint}::${params}|`)
-                                resolve(`${sessionId}:::${endPoint}::${params}`)
-
-                            }
                         }
+                        
                     }
                 )
             // })
@@ -441,6 +518,24 @@ class DatabaseHandler_v2 {
             await db.query(query)
                 .then(async (results) => {
                     return resolve(`updated '${apiKey}' with '${amount}' new messages`)
+                })
+
+        })
+    }
+
+
+    async updateApiEndpointCount(endpoint_name, parameters, amount = 1) {
+        return new Promise(async (resolve, reject) => {
+            let query = `
+                        INSERT INTO
+                            apigrabbingstats_call_usage(endpoint_name, parameters, used_at, api_count_per_call)
+                        VALUES
+                            ($1,$2, EXTRACT(EPOCH FROM NOW()),$3)
+                        `
+
+            await db.query(query,[endpoint_name,parameters,amount])
+                .then(async (results) => {
+                    return resolve(`updated :)`)
                 })
 
         })
@@ -660,10 +755,40 @@ class DatabaseHandler_v2 {
 
         })
     }
+    async realmAddEarlyMatchToProcess(active_flag, ret_msg, match_id) {
+        return new Promise(async (resolve, reject) => {
+            let query = `insert into matchidtoprocess_early VALUES ($1,$2,$3) ON CONFLICT DO NOTHING RETURNING match_id`
+
+            await db.query(query,
+                [
+                    active_flag,
+                    ret_msg,
+                    match_id
+                ]
+            ).then(async (results) => {
+                return resolve(results)
+            })
+
+        })
+    }
 
     async realmGetMatchesToProcess() {
         return new Promise(async (resolve, reject) => {
             let query = `select match_id from matchIdToProcess where active_flag = 'n' order by match_id asc limit 200`;
+
+            await db.query(query)
+                .then(async (results) => {
+                        return resolve(results);
+                    }
+                );
+
+            // return resolve("");
+        })
+    }
+    
+    async realmGetEarlyMatchesToProcess() {
+        return new Promise(async (resolve, reject) => {
+            let query = `select distinct match_id from matchidtoprocess_early where active_flag = 'y' order by match_id asc limit 15`;
 
             await db.query(query)
                 .then(async (results) => {
@@ -687,6 +812,20 @@ class DatabaseHandler_v2 {
             // return resolve("");
         })
     }
+    async realmDeleteEarlyMatchToProcess(queueID) {
+        return new Promise(async (resolve, reject) => {
+            let query = `
+                                        DELETE From matchidtoprocess_early
+                                         Where
+                                         match_id = '${queueID}'
+                                         `;
+
+            await db.query(query);
+
+            return resolve("");
+        })
+    }
+
 
     async realmDeleteActiveMatchToProcess() {
         return new Promise(async (resolve, reject) => {
@@ -1370,6 +1509,102 @@ class DatabaseHandler_v2 {
         });
     }
 
+
+    async  insertEarlyNewMatchInformationPerPerson(gameMatch,gameMatchMatchID,playerID,teamInfo) {
+        return new Promise(async (resolve, reject) => {
+            let player_match_id              = gameMatchMatchID
+            let player_id                = playerID
+            let team_id              = teamInfo['id']
+            let placement                = teamInfo['placement']
+            let name                 = this.mysql_real_escape_string(gameMatch['name'])
+            let level                = gameMatch['level']
+            let deaths               = gameMatch['deaths']
+            let assists              = gameMatch['assists']
+            let class_id            = gameMatch['class_id']
+            let earned_xp           = gameMatch['earned_xp']
+            let kills_bot           = gameMatch['kills_bot']
+            let class_name          = gameMatch['class_name']
+            let damage_taken        = gameMatch['damage_taken']
+            let kills_player        = gameMatch['kills_player']
+            let damage_player       = gameMatch['damage_player']
+            let duration_secs       = gameMatch['duration_secs']
+            let earned_tokens       = gameMatch['earned_tokens']
+            let healing_player      = gameMatch['healing_player']
+            let damage_mitigated          = gameMatch['damage_mitigated']
+            let dropped_out_flag         = gameMatch['dropped_out_flag']
+            let killing_spree_max        = gameMatch['killing_spree_max']
+            let mines_wards_placed       = gameMatch['mines_wards_placed']
+            let damage_done_in_hand     = gameMatch['damage_done_in_hand']
+            let healing_player_self     = gameMatch['healing_player_self']
+
+            let query = `
+                insert into
+                    matchDataOverview_players_early
+                VALUES
+                    ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
+                on conflict
+                    (match_id,player_id)
+                do
+                    update
+                set 
+                    team_id = excluded.team_id,
+                    placement = excluded.placement,
+                    name = excluded.name,
+                    level = excluded.level,
+                    deaths = excluded.deaths,
+                    assists = excluded.assists,
+                    class_id = excluded.class_id,
+                    earned_xp = excluded.earned_xp,
+                    kills_bot = excluded.kills_bot,
+                    class_name = excluded.class_name,
+                    damage_taken = excluded.damage_taken,
+                    kills_player = excluded.kills_player,
+                    damage_player = excluded.damage_player,
+                    duration_secs = excluded.duration_secs,
+                    earned_tokens = excluded.earned_tokens,
+                    healing_player = excluded.healing_player,
+                    damage_mitigated = excluded.damage_mitigated,
+                    dropped_out_flag = excluded.dropped_out_flag,
+                    killing_spree_max = excluded.killing_spree_max,
+                    mines_wards_placed = excluded.mines_wards_placed,
+                    damage_done_in_hand = excluded.damage_done_in_hand,
+                    healing_player_self = excluded.healing_player_self
+                `
+            await db.query(query,
+                [
+                    player_match_id,
+                    player_id,
+                    team_id,
+                    placement,
+                    name,
+                    level, 
+                    deaths,
+                    assists,
+                    class_id,
+                    earned_xp,
+                    kills_bot,
+                    class_name,
+                    damage_taken,
+                    kills_player,
+                    damage_player,
+                    duration_secs,
+                    earned_tokens,
+                    healing_player,
+                    damage_mitigated,
+                    dropped_out_flag,
+                    killing_spree_max,
+                    mines_wards_placed,
+                    damage_done_in_hand,
+                    healing_player_self
+                ])
+                .then(async (results) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+
     async  insertNewMatchInformationOverview(gameMatch) {
         return new Promise(async (resolve, reject) => {
             let region = gameMatch['region']
@@ -1382,6 +1617,42 @@ class DatabaseHandler_v2 {
             let match_queue_name = gameMatch['match_queue_name']
 
             let query = `insert into matchDataOverview VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING`
+            await db.query(query,
+                [
+                    region,
+                    match_id,
+                    duration_secs,
+                    match_datetime+offSet,
+                    match_queue_id,
+                    match_queue_name
+                ])
+                .then(async (results) => {
+                        return resolve(results)
+                    }
+                );
+
+        });
+    }
+    async  insertEarlyNewMatchInformationOverview(gameMatch) {
+        return new Promise(async (resolve, reject) => {
+            let region = gameMatch['region']
+            let match_id = gameMatch['match_id']
+            let duration_secs = gameMatch['duration_secs']
+            let match_datetime =  Math.floor(new Date(gameMatch['match_datetime']).getTime()/1000)
+            let offSet = ((new Date(gameMatch['match_datetime']).getTimezoneOffset())*-60)
+
+            let match_queue_id = gameMatch['match_queue_id']
+            let match_queue_name = gameMatch['match_queue_name']
+
+            let query = `
+                insert into
+                    matchDataOverview_early
+                VALUES
+                    ($1,$2,$3,$4,$5,$6)
+                on conflict
+                    (match_id)
+                do update
+                    set region = excluded.region, match_id = excluded.match_id, duration_secs = excluded.duration_secs, match_datetime = excluded.match_datetime, match_queue_id = excluded.match_queue_id, match_queue_name = excluded.match_queue_name`
             await db.query(query,
                 [
                     region,
@@ -1614,6 +1885,79 @@ class DatabaseHandler_v2 {
         
         })
     }
+
+    async getCrossPlayPercentageByRegion(timeOffsetSeconds,queueID,region) {
+        return new Promise(async (resolve, reject) => {
+
+        let query_SameInputOnly = `
+            select 
+            count(*) as platformOnlyGames
+            from
+            (
+            SELECT
+                t2.platform as platformCount
+            FROM
+                matchDataOverview_players  t1
+            inner join player_information t2
+                on (t2.playerID = t1.player_id)
+            inner join matchDataOverview t3
+                on (t1.match_id = t3.match_id)
+            where
+                to_timestamp(t3.match_datetime ) > now() - interval '$1 seconds' and
+                t3.match_queue_id = $2   and
+                t3.region = $3
+            GROUP BY
+                t2.platform,t1.match_id
+            having
+                count(t2.platform) = 1
+            )c
+        `
+        
+        let query_anyInput = `
+            select 
+            count(*) as platformOnlyGames
+            from
+            (
+            SELECT
+                t2.platform as platformCount
+            FROM
+                matchDataOverview_players  t1
+            inner join player_information t2
+                on (t2.playerID = t1.player_id)
+            inner join matchDataOverview t3
+                on (t1.match_id = t3.match_id)
+            where
+                to_timestamp(t3.match_datetime ) > now() - interval '$1 seconds' and
+                t3.match_queue_id = $2 and
+                t3.region = $3
+            GROUP BY
+                t2.platform,t1.match_id
+            )c
+        `
+        let [
+            sameInputGames,
+            anyInputGames
+        ] = await Promise.all([
+            db.query(query_SameInputOnly,
+                [
+                    timeOffsetSeconds,
+                    queueID,
+                    region
+                ])
+            ,
+            db.query(query_anyInput,
+                [
+                    timeOffsetSeconds,
+                    queueID,
+                    region
+                ])
+            ]);
+        resolve([sameInputGames[0]['platformonlygames'],anyInputGames[0]['platformonlygames']])
+
+        
+        })
+    }
+
     async getAveragePlayersPerGamePerRegion(epochOffset,queueID) {
         return new Promise(async (resolve, reject) => {
 
@@ -1674,29 +2018,80 @@ class DatabaseHandler_v2 {
         return new Promise(async (resolve, reject) => {
 
         let query = `
-                select
-                    row_number() OVER () as game_number,
-                    match_datetime,
-                    name,
-                    region,
-                    match_queue_id,
-                    class_id,
-                    placement,
-                    mdo_p.duration_secs as duration_secs,
-                    kills_player,
-                    deaths,
-                    damage_player,
-                    damage_taken,
-                    dropped_out_flag,
-                    mdo_p.match_id as match_id
-                from
-                    matchdataoverview mdo
-                inner join matchdataoverview_players  mdo_p on
-                (
-                    mdo_p.match_id = mdo.match_id
-                )
-                where mdo_p.player_id = $1
-                order by mdo_p.match_id desc
+        SELECT
+        row_number() OVER (order by match_id desc) as game_number,
+        name,
+        class_id,
+        placement,
+        duration_secs,
+        kills_player,
+        deaths,
+        damage_player,
+        damage_taken,
+        dropped_out_flag,
+        match_datetime,
+        region,
+        match_queue_id,
+        match_id
+    FROM (
+        SELECT
+            name,
+            class_id,
+            placement,
+            matchdataoverview_players_early.duration_secs,
+            kills_player,
+            deaths,
+            damage_player,
+            damage_taken,
+            dropped_out_flag,
+            match_datetime,
+            region,
+            match_queue_id,
+            matchdataoverview_players_early.match_id
+    
+        FROM
+            matchdataoverview_players_early
+        inner join matchdataoverview_early mdo_e on
+        (
+            matchdataoverview_players_early.match_id = mdo_e.match_id
+        )
+        WHERE
+            player_id = $1
+            
+        AND NOT EXISTS (
+            SELECT 1
+            FROM matchdataoverview_players
+            WHERE player_id = $1
+            AND match_id = matchdataoverview_players_early.match_id
+        )
+    
+        UNION
+       
+        SELECT
+            name,
+            class_id,
+            placement,
+            matchdataoverview_players.duration_secs,
+            kills_player,
+            deaths,
+            damage_player,
+            damage_taken,
+            dropped_out_flag,
+            match_datetime,
+            region,
+            match_queue_id,
+            matchdataoverview_players.match_id
+        FROM
+            matchdataoverview_players
+        inner join matchdataoverview mdo on
+                    (
+                        matchdataoverview_players.match_id = mdo.match_id
+                    )
+        WHERE
+            player_id = $1
+    
+    ) AS combined
+    ORDER BY match_id desc
         `
         await db.query(query,
             [
@@ -2087,10 +2482,11 @@ class DatabaseHandler_v2 {
                         sum(deaths) as total_deaths,
                         sum(kills_player) as total_kills,
                         (
-                        sum(deaths) /
-                        (CASE 
-                            WHEN SUM(kills_player) = 0 THEN 1 ELSE SUM(kills_player)
-                        END)
+                            ROUND((sum(deaths) /
+                            (CASE 
+                                WHEN SUM(kills_player) = 0 THEN 1
+                                ELSE SUM(kills_player)
+                            END))::numeric, 4)
                         ) AS dk,
                     player_id,
                     (
@@ -2132,7 +2528,12 @@ class DatabaseHandler_v2 {
                     SELECT
                         sum(healing_player) total_healing,
                         count(mdo.match_id) total_matches,
-                        sum(healing_player) / count(mdo.match_id) AS healing_teammates,
+                        ROUND(
+                            (
+                                sum(healing_player) / 
+                                count(mdo.match_id
+                            )
+                        )::numeric,4) AS healing_teammates,
                         player_id,
                         (
                         SELECT
@@ -2268,36 +2669,116 @@ class DatabaseHandler_v2 {
 
         let totalMonthlyPlayerStats = 
             `
-                select
-                    min(placement         )  as placement,
-                    max(mdo_p.duration_secs     ) as duration_secs,
-                    array_agg(name              ) as name,
-                    array_agg(player_id         ) as id ,
-                    array_agg(kills_player      ) as kills_player ,
-                    array_agg(deaths      )  as deaths,
-                    array_agg(damage_player     ) as damage_player ,
-                    array_agg(damage_taken     )  as damage_taken,
-                    array_agg(COALESCE(healing_player_self, 0)     )  as healing_player_self,
-                    array_agg(healing_player     ) as healing_player,
-                    array_agg(class_name     ) as class_names 
-                from 
-                    matchdataoverview mdo
-                inner join
-                    matchdataoverview_players mdo_p on
-                        ( mdo_p.match_id = mdo.match_id)
-                where
-                    mdo.match_id = $1
-                group by
-                    mdo_p.team_id
-                order by
-                    max(placement),
-                    max(mdo_p.duration_secs),
-                    sum(kills_player)
+            SELECT
+            array_agg(name) as name,
+            array_agg(class_id) as class_id,
+            min(placement) as placement,
+            max(duration_secs) as duration_secs,
+            array_agg(kills_player) as kills_player,
+            array_agg(deaths) as deaths,
+            array_agg(damage_player) as damage_player,
+            array_agg(damage_taken) as damage_taken,
+            array_agg(dropped_out_flag) as dropped_out_flag,
+            array_agg(match_datetime) as match_datetime,
+			array_agg(player_id) as id,
+            array_agg(region) as region,
+            array_agg(match_queue_id) as match_queue_id,
+            team_id as team_id,
+            array_agg(match_id) as match_id,
+            array_agg(COALESCE(healing_player_self, 0)     )  as healing_player_self,
+            array_agg(healing_player     ) as healing_player,
+            array_agg(class_name) as class_names 
+        FROM (
+            SELECT
+                name,
+                class_id,
+                placement,
+                matchdataoverview_players_early.duration_secs,
+                kills_player,
+                deaths,
+                damage_player,
+                damage_taken,
+                dropped_out_flag,
+                match_datetime,
+                player_id as player_id,
+                region,
+                match_queue_id,
+                team_id,
+                matchdataoverview_players_early.match_id,
+                healing_player_self,
+                healing_player,
+                class_name
+        
+            FROM
+                matchdataoverview_players_early
+            inner join matchdataoverview_early mdo_e on
+            (
+                matchdataoverview_players_early.match_id = mdo_e.match_id
+            )
+            WHERE
+                matchdataoverview_players_early.match_id = $1
+                
+            AND NOT EXISTS (
+                SELECT 1
+                FROM matchdataoverview_players
+                WHERE match_id = $1
+                AND match_id = matchdataoverview_players_early.match_id
+            )
+        
+            UNION
+           
+            SELECT
+                name,
+                class_id,
+                placement,
+                matchdataoverview_players.duration_secs,
+                kills_player,
+                deaths,
+                damage_player,
+                damage_taken,
+                dropped_out_flag,
+                match_datetime,
+                player_id as player_id,
+                region,
+                match_queue_id,
+                team_id,
+                matchdataoverview_players.match_id,
+                healing_player_self,
+                healing_player,
+                class_name
+                
+            FROM
+                matchdataoverview_players
+            inner join matchdataoverview mdo on
+                        (
+                            matchdataoverview_players.match_id = mdo.match_id
+                        )
+            WHERE
+                matchdataoverview_players.match_id = $1
+        
+        ) AS combined
+        group by
+            team_id	
+        order by
+            max(placement),
+            max(duration_secs),
+            sum(kills_player)
+			
+			
+			
+        
             `
 
             let matchOverviewInfo = 
             `
-                select * from matchdataoverview where match_id = $1;
+            select * from matchdataoverview where match_id = $1
+            UNION
+            select * from matchdataoverview_early where match_id = $1
+                and NOT EXISTS (
+                    SELECT 1
+                    FROM matchdataoverview
+                    WHERE match_id = $1
+                )
             `
             let [
                 totalMonthlyPlayerStatsRes,
@@ -2367,6 +2848,147 @@ class DatabaseHandler_v2 {
             );
         })
     }
+
+    isNumeric(value) {
+        return /^-?\d+$/.test(value);
+    }
+    
+    async getPlayerOverviewStatsNonAPI(nameSearch) {
+        return new Promise(async (resolve, reject) => {
+
+        if(this.isNumeric(nameSearch)){
+
+            let idQuery =
+
+            `
+            select 
+                playerid as player_id,    
+                portal_id,      
+                platform,       
+                region,          
+                steam_id,        
+                created_datetime,
+                (
+                    SELECT
+                        name
+                    FROM
+                        matchdataoverview_players
+                    WHERE
+                        player_id = $1
+                    order by match_id desc
+                    limit 1
+                ) as name
+            from
+                player_information
+            where playerid = 
+                (
+                    SELECT
+                        player_id
+                    FROM
+                        matchdataoverview_players
+                    WHERE
+                        player_id = $1
+                    limit 1
+                )
+                
+                
+            `
+            let idResults = (await db.query(idQuery,[nameSearch]))
+            if(idResults.length === 1) {
+                resolve(idResults[0])
+            }
+
+        }
+
+        let query = `
+        select 
+            playerid as player_id,    
+            portal_id,      
+            platform,       
+            region,          
+            steam_id,        
+            created_datetime,
+            (
+                SELECT
+                    name
+                FROM
+                    matchdataoverview_players
+                WHERE
+                    name like $1
+                ORDER BY
+                    similarity(name, $1) DESC,match_id desc
+                limit 1
+            ) as name
+        from
+            player_information
+        where playerid = 
+            (
+                SELECT
+                    player_id
+                FROM
+                    matchdataoverview_players
+                WHERE
+                    name like $1
+                ORDER BY
+                    similarity(name, $1) DESC,match_id desc
+                limit 1
+            )
+        `
+        let nameResults = (await db.query(query,[nameSearch]))
+        if(nameResults.length === 1) {
+            resolve(nameResults[0])
+        }
+
+
+
+        })
+    }
+    async getMatchDetails(matchId) {
+        return new Promise(async (resolve, reject) => {
+        let idQuery =
+
+        `
+        select 
+            playerid as player_id,    
+            portal_id,      
+            platform,       
+            region,          
+            steam_id,        
+            created_datetime,
+            (
+                SELECT
+                    name
+                FROM
+                    matchdataoverview_players
+                WHERE
+                    player_id = $1
+                order by match_id desc
+                limit 1
+            ) as name
+        from
+            player_information
+        where playerid = 
+            (
+                SELECT
+                    player_id
+                FROM
+                    matchdataoverview_players
+                WHERE
+                    player_id = $1
+                limit 1
+            )
+            
+            
+        `
+        let idResults = (await db.query(idQuery,[nameSearch]))
+        if(idResults.length === 1) {
+            resolve(idResults[0])
+        }
+
+
+        })
+    }
+
 }
 
 module.exports = DatabaseHandler_v2;

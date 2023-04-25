@@ -269,12 +269,6 @@ let classValues = {
                             let avgTeammateHealing = document.getElementById('avgTeammateHealing');
                             let mostGamesWon = document.getElementById('mostGamesWon');
 
-                            divTeamKills.style.display = 'none';
-                            divSoloKills.style.display = 'none';
-                            divkdRatio.style.display = 'none';
-                            divdkRatio.style.display = 'none';
-                            avgTeammateHealing.style.display = 'none';
-                            mostGamesWon.style.display = 'none';
 
                             function rankingType(sortMethod) {
                                 switch (sortMethod) {
@@ -774,6 +768,23 @@ let classValues = {
 <!-- Template JS -->
 <script src="/assets/js/init.js"></script>
 <script src="/assets/js/custom.js"></script>
+
+<script>
+    monthlyClassStats = document.getElementById('monthlyClassStats');
+                             divSoloKills = document.getElementById('soloKills');
+                             divTeamKills = document.getElementById('teamKills');
+                             divkdRatio = document.getElementById('kdRatio');
+                             divdkRatio = document.getElementById('dkRatio');
+                             avgTeammateHealing = document.getElementById('avgTeammateHealing');
+                             mostGamesWon = document.getElementById('mostGamesWon');
+
+                            divTeamKills.style.display = 'none';
+                            divSoloKills.style.display = 'none';
+                            divkdRatio.style.display = 'none';
+                            divdkRatio.style.display = 'none';
+                            avgTeammateHealing.style.display = 'none';
+                            mostGamesWon.style.display = 'none';
+</script>
 
 </body>
 </html>

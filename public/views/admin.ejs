@@ -728,58 +728,162 @@ let regions = {
                             <div>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Solo -
                                     <% if (Number(lastWeekCrossplayStatsSolo[0]) !== 0){%>
-                                    <%=((lastWeekCrossplayStatsSolo[0]/lastWeekCrossplayStatsSolo[1])*100).toFixed(2)%>%</h5>
+                                        <%=((lastWeekCrossplayStatsSolo[0]/lastWeekCrossplayStatsSolo[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNASoloWeek[0]/getCrossPlayPercentageByRegionNASoloWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUSoloWeek[0]/getCrossPlayPercentageByRegionEUSoloWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUSoloWeek[0]/getCrossPlayPercentageByRegionAUSoloWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRSoloWeek[0]/getCrossPlayPercentageByRegionBRSoloWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEASoloWeek[0]/getCrossPlayPercentageByRegionSEASoloWeek[1])*100).toFixed(2)%>%
+                                    </h6>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Duo -
                                     <% if (Number(lastWeekCrossplayStatsDuo[0]) !== 0){%>
-                                        <%=((lastWeekCrossplayStatsDuo[0]/lastWeekCrossplayStatsDuo[1])*100).toFixed(2)%>%</h5>
+                                        <%=((lastWeekCrossplayStatsDuo[0]/lastWeekCrossplayStatsDuo[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
-                                <h5 style="text-align: center;margin-bottom: 0rem">Trio --
+                                </h5>
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNADuoWeek[0]/getCrossPlayPercentageByRegionNADuoWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUDuoWeek[0]/getCrossPlayPercentageByRegionEUDuoWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUDuoWeek[0]/getCrossPlayPercentageByRegionAUDuoWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRDuoWeek[0]/getCrossPlayPercentageByRegionBRDuoWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEADuoWeek[0]/getCrossPlayPercentageByRegionSEADuoWeek[1])*100).toFixed(2)%>%
+                                    </h6>
+                                <h5 style="text-align: center;margin-bottom: 0rem">Trio -
                                     <% if (Number(lastWeekCrossplayStatsTrio[0]) !== 0){%>
-                                    <%=((lastWeekCrossplayStatsTrio[0]/lastWeekCrossplayStatsTrio[1])*100).toFixed(2)%>%</h5>
+                                        <%=((lastWeekCrossplayStatsTrio[0]/lastWeekCrossplayStatsTrio[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
-                                    <% if (Number(lastWeekCrossplayStatsSquad[0]) !== 0){%>
+                                </h5>
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNATrioWeek[0]/getCrossPlayPercentageByRegionNATrioWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUTrioWeek[0]/getCrossPlayPercentageByRegionEUTrioWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUTrioWeek[0]/getCrossPlayPercentageByRegionAUTrioWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRTrioWeek[0]/getCrossPlayPercentageByRegionBRTrioWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEATrioWeek[0]/getCrossPlayPercentageByRegionSEATrioWeek[1])*100).toFixed(2)%>%
+                                    </h6>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Squad -
-                                    <%=((lastWeekCrossplayStatsSquad[0]/lastWeekCrossplayStatsSquad[1])*100).toFixed(2)%>%</h5>
+                                    <% if (Number(lastWeekCrossplayStatsSquad[0]) !== 0){%>
+                                        <%=((lastWeekCrossplayStatsSquad[0]/lastWeekCrossplayStatsSquad[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNASquadWeek[0]/getCrossPlayPercentageByRegionNASquadWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUSquadWeek[0]/getCrossPlayPercentageByRegionEUSquadWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUSquadWeek[0]/getCrossPlayPercentageByRegionAUSquadWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRSquadWeek[0]/getCrossPlayPercentageByRegionBRSquadWeek[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEASquadWeek[0]/getCrossPlayPercentageByRegionSEASquadWeek[1])*100).toFixed(2)%>%
+                                    </h6>                            
                             </div>
                         </div>
                         <div style="padding-right: 2rem;margin:0 auto;">
                             <h4 style="text-align: center">24 hours</h4>
                             <div>
-                                <h5 style="text-align: center;margin-bottom: 0rem">Solo --
+                                <h5 style="text-align: center;margin-bottom: 0rem">Solo -
                                     <% if (Number(lastDayCrossplayStatsSolo[0]) !== 0){%>
                                         <%=((lastDayCrossplayStatsSolo[0]/lastDayCrossplayStatsSolo[1])*100).toFixed(2)%>%</h5>
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNASoloDay[0]/getCrossPlayPercentageByRegionNASoloDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUSoloDay[0]/getCrossPlayPercentageByRegionEUSoloDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUSoloDay[0]/getCrossPlayPercentageByRegionAUSoloDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRSoloDay[0]/getCrossPlayPercentageByRegionBRSoloDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEASoloDay[0]/getCrossPlayPercentageByRegionSEASoloDay[1])*100).toFixed(2)%>%
+                                    </h6>
+
                                 <h5 style="text-align: center;margin-bottom: 0rem">Duo -
                                     <% if (Number(lastDayCrossplayStatsDuo[0]) !== 0){%>
-                                        <%=((lastDayCrossplayStatsDuo[0]/lastDayCrossplayStatsDuo[1])*100).toFixed(2)%>%</h5>
+                                        <%=((lastDayCrossplayStatsDuo[0]/lastDayCrossplayStatsDuo[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNADuoDay[0]/getCrossPlayPercentageByRegionNADuoDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUDuoDay[0]/getCrossPlayPercentageByRegionEUDuoDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUDuoDay[0]/getCrossPlayPercentageByRegionAUDuoDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRDuoDay[0]/getCrossPlayPercentageByRegionBRDuoDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEADuoDay[0]/getCrossPlayPercentageByRegionSEADuoDay[1])*100).toFixed(2)%>%
+                                    </h6>
+
                                 <h5 style="text-align: center;margin-bottom: 0rem">Trio -
                                     <% if (Number(lastDayCrossplayStatsTrio[0]) !== 0){%>
-                                    <%=((lastDayCrossplayStatsTrio[0]/lastDayCrossplayStatsTrio[1])*100).toFixed(2)%>%</h5>
+                                    <%=((lastDayCrossplayStatsTrio[0]/lastDayCrossplayStatsTrio[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNATrioDay[0]/getCrossPlayPercentageByRegionNATrioDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUTrioDay[0]/getCrossPlayPercentageByRegionEUTrioDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUTrioDay[0]/getCrossPlayPercentageByRegionAUTrioDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRTrioDay[0]/getCrossPlayPercentageByRegionBRTrioDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEATrioDay[0]/getCrossPlayPercentageByRegionSEATrioDay[1])*100).toFixed(2)%>%
+                                    </h6>
+
                                 <h5 style="text-align: center;margin-bottom: 0rem">Squad -
                                     <% if (Number(lastDayCrossplayStatsSquad[0]) !== 0){%>
 
-                                    <%=((lastDayCrossplayStatsSquad[0]/lastDayCrossplayStatsSquad[1])*100).toFixed(2)%>%</h5>
+                                    <%=((lastDayCrossplayStatsSquad[0]/lastDayCrossplayStatsSquad[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+                                
+                                    
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNASquadDay[0]/getCrossPlayPercentageByRegionNASquadDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUSquadDay[0]/getCrossPlayPercentageByRegionEUSquadDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUSquadDay[0]/getCrossPlayPercentageByRegionAUSquadDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRSquadDay[0]/getCrossPlayPercentageByRegionBRSquadDay[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEASquadDay[0]/getCrossPlayPercentageByRegionSEASquadDay[1])*100).toFixed(2)%>%
+                                    </h6>
+
                             </div>
                         </div>
                         <div style="padding-right: 2rem;margin:0 auto;">
@@ -787,29 +891,83 @@ let regions = {
                             <div>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Solo -
                                     <% if (Number(lastHourCrossplayStatsSolo[0]) !== 0){%>
-                                    <%=((lastHourCrossplayStatsSolo[0]/lastHourCrossplayStatsSolo[1])*100).toFixed(2)%>%</h5>
+                                    <%=((lastHourCrossplayStatsSolo[0]/lastHourCrossplayStatsSolo[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+                                
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNASoloHour[0]/getCrossPlayPercentageByRegionNASoloHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUSoloHour[0]/getCrossPlayPercentageByRegionEUSoloHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUSoloHour[0]/getCrossPlayPercentageByRegionAUSoloHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRSoloHour[0]/getCrossPlayPercentageByRegionBRSoloHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEASoloHour[0]/getCrossPlayPercentageByRegionSEASoloHour[1])*100).toFixed(2)%>%
+                                    </h6>
+
                                 <h5 style="text-align: center;margin-bottom: 0rem">Duo -
                                     <% if (Number(lastHourCrossplayStatsDuo[0]) !== 0){%>
-                                    <%=((lastHourCrossplayStatsDuo[0]/lastHourCrossplayStatsDuo[1])*100).toFixed(2)%>%</h5>
+                                    <%=((lastHourCrossplayStatsDuo[0]/lastHourCrossplayStatsDuo[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+                                
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNADuoHour[0]/getCrossPlayPercentageByRegionNADuoHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUDuoHour[0]/getCrossPlayPercentageByRegionEUDuoHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUDuoHour[0]/getCrossPlayPercentageByRegionAUDuoHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRDuoHour[0]/getCrossPlayPercentageByRegionBRDuoHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEADuoHour[0]/getCrossPlayPercentageByRegionSEADuoHour[1])*100).toFixed(2)%>%
+                                    </h6>
                                 <h5 style="text-align: center;margin-bottom: 0rem">Trio -
                                     <% if (Number(lastHourCrossplayStatsTrio[0]) !== 0){%>
-                                    <%=((lastHourCrossplayStatsTrio[0]/lastHourCrossplayStatsTrio[1])*100).toFixed(2)%>%</h5>
+                                    <%=((lastHourCrossplayStatsTrio[0]/lastHourCrossplayStatsTrio[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNATrioHour[0]/getCrossPlayPercentageByRegionNATrioHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUTrioHour[0]/getCrossPlayPercentageByRegionEUTrioHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUTrioHour[0]/getCrossPlayPercentageByRegionAUTrioHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRTrioHour[0]/getCrossPlayPercentageByRegionBRTrioHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEATrioHour[0]/getCrossPlayPercentageByRegionSEATrioHour[1])*100).toFixed(2)%>%
+                                    </h6>
+
                                 <h5 style="text-align: center;margin-bottom: 0rem">Squad -
                                     <% if (Number(lastHourCrossplayStatsSquad[0]) !== 0){%>
 
-                                    <%=((lastHourCrossplayStatsSquad[0]/lastHourCrossplayStatsSquad[1])*100).toFixed(2)%>%</h5>
+                                    <%=((lastHourCrossplayStatsSquad[0]/lastHourCrossplayStatsSquad[1])*100).toFixed(2)%>%
                                     <%} else {%>
                                         No Matches
                                     <%}%>
+                                </h5>
+                                
+                                    <h6 style="padding-left: 2rem;font-size:  1rem;flex-direction: column;">
+                                        NA - <%=((getCrossPlayPercentageByRegionNASquadHour[0]/getCrossPlayPercentageByRegionNASquadHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        EU - <%=((getCrossPlayPercentageByRegionEUSquadHour[0]/getCrossPlayPercentageByRegionEUSquadHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        AU - <%=((getCrossPlayPercentageByRegionAUSquadHour[0]/getCrossPlayPercentageByRegionAUSquadHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        BR - <%=((getCrossPlayPercentageByRegionBRSquadHour[0]/getCrossPlayPercentageByRegionBRSquadHour[1])*100).toFixed(2)%>%
+                                        <br>
+                                        SEA - <%=((getCrossPlayPercentageByRegionSEASquadHour[0]/getCrossPlayPercentageByRegionSEASquadHour[1])*100).toFixed(2)%>%
+                                    </h6>
                             </div>
                         </div>
                     <!-- Game #1 / End -->

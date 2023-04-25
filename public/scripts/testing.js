@@ -2,6 +2,9 @@ let dayjs = require('dayjs')
 let utc = require('dayjs/plugin/utc');
 dayjs.extend(utc);
 
+
+
+
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 async function testConnection() {
@@ -410,13 +413,138 @@ function checkForDuplicates(jsonArray) {
     return false; // no duplicates found
   }
 
+function placementPoints(place) {
+    if(place === 1) {
+        return 30
+    } else if(place === 2) {
+        return 25
+    } else if(place === 3) {
+        return 21
+    } else if(place === 4) {
+        return 18
+    } else if(place === 5) {
+        return 16
+    } else if(place >=6 & place <= 10) {
+        return 14
+    } else if(place >= 11 & place <= 15) {
+        return 10
+    } else if(place >= 16 & place <= 25) {
+        return 7
+    } else if(place >= 26 & place <= 40) {
+        return 5
+    } else if(place >= 41 & place <= 60) {
+        return 3
+    } else if(place >= 61 & place <= 80) {
+        return 2
+    } else if(place >= 81) {
+        return 1
+    }
+}
+
+
+const processMatch = async (matchID) => {
+    const matchDetails = await database.callApi('GetMatchDetails', `GetMatchDetails::${matchID}`, matchID);
+    console.log(`start_process:::${matchID}::${new Date().toLocaleString()}:RET_MSG:${matchDetails.ret_msg}`);
+
+    if (matchDetails.ret_msg !== null) return;
+
+    const fixedMatchDetails = fixRealmGameOutput(matchDetails);
+    await insertFormattedGameMatches(fixedMatchDetails);
+
+    const {  teams } = fixedMatchDetails;
+    const killsAndPlacementPoints = [], teamAndPlayers = [], mmrValues = [];
+
+    for (const team of teams) {
+        const teamIdx = teamAndPlayers.length;
+        teamAndPlayers[teamIdx] = [];
+        mmrValues[teamIdx] = [];
+        console.log(team.placement)
+        killsAndPlacementPoints[teamIdx] = 0;
+        killsAndPlacementPoints[teamIdx] += (placementPoints(team.placement));
+        const playerPromises = team.players.map(async (player) => {
+          const playerIdx = teamAndPlayers[teamIdx].length;
+          teamAndPlayers[teamIdx][playerIdx] = [player.id];
+          killsAndPlacementPoints[teamIdx] += (player.kills_bot*3);
+          let playerStats = await database.mmrPlayerLookup(player.id, fixedMatchDetails['match_queue_id']);
+          
+          if (playerStats.length === 0) {
+            await database.mmrUpdateMMRPlayer(player.id, match_queue_id, 300, 100, false);
+            playerStats = await database.mmrPlayerLookup(player.id, fixedMatchDetails['match_queue_id']);
+          }
+    
+          mmrValues[teamIdx][playerIdx] = rating({ mu: parseFloat(playerStats.mu), sigma: parseFloat(playerStats.sigma) });
+        });
+    
+        await Promise.all(playerPromises);
+      }
+
+    // console.log(mmrValues)
+
+    try {
+    console.log(mmrValues)
+    console.log('______________')  
+    console.log(killsAndPlacementPoints)
+    console.log('______________')  
+
+    const newRanksTemp = rate(mmrValues, { score: killsAndPlacementPoints,  tau: 0.2});
+
+    console.log((newRanksTemp))
+
+
+    teamAndPlayers.forEach((team, teamIdx) => {
+    team.forEach(async (player, playerIdx) => {
+        const playerID = player[0];
+        const newRank = newRanksTemp[teamIdx][playerIdx];
+        const oldRank = mmrValues[teamIdx][playerIdx];
+        const matchTime = new Date(matchDetails.match_datetime);
+        const offSet = matchTime.getTimezoneOffset() * -60;
+
+    //   const insertedRow = await database.mmrUpdateMMRPlayerChanges(
+    //     playerID, match_queue_id, matchID,
+    //     newRank.sigma - oldRank.sigma,
+    //     newRank.mu - oldRank.mu,
+    //     newRank.sigma, newRank.mu,
+    //     Math.floor(matchTime.getTime() / 1000) + offSet
+    //   );
+
+    //   if (insertedRow === 1) {
+    //     database.mmrUpdateMMRPlayer(playerID, match_queue_id, newRank.mu, newRank.sigma);
+    //     logger.error(`mmrUpdateMMRPlayer:::success::${matchID}::${playerID}`);
+    //   } else {
+    //     logger.error(`mmrUpdateMMRPlayer:::error::${matchID}::${playerID}`);
+    //   }
+    });
+    });
+
+    console.log(`realmAddMatchDetails:::${matchID}::RET_MSG:${matchDetails.ret_msg}`);
+//   database.realmAddMatchDetails(JSON.stringify(matchDetails));
+//   database.realmAddProcessedMatch(matchID, 'SUCCESS');
+//   database.realmDeleteMatchToProcess(matchID);
+    } catch (error) {
+        console.log(`MMR:::Error::${error}:${matchID}`);
+    }
+}
+
+//   matches.forEach(match => processMatch(match.match_id));
+  
+
+
+
 setTimeout(async () =>{
+
+    // console.log(await database.callApi('getmatchdetails','getmatchdetails',63968632))
+
+    let total = await database.getCrossPlayPercentageByRegion(3600,474,'NA')
+    console.log((total[0]/total[1])*100)
+
+
+    // processMatch(63700142)
         // let startTime = performance.now()
         // console.log(await database.sameInputPlayersOverTime_v2('1 month','week', '3 days 12 hours',474))
         // let endTime = performance.now()
         // console.log(`Call to doSomething1 took ${endTime - startTime} milliseconds`)
 //     var startTime = performance.now()
-    console.log(await database.callApi('GetPlayer',true,'GetPlayer',7572939,'HIREZ'))
+    // console.log(await database.callApi('GetPlayer',true,'GetPlayer',7572939,'HIREZ'))
 
 
         // let string = '123123123123'
@@ -438,15 +566,37 @@ setTimeout(async () =>{
 // console.log(`Call to doSomething1 took ${endTime - startTime} milliseconds`)
     // console.log(await database.callApi("getplayer",true,"getplayer",23855569,'hirez'))
     // console.log(await database.callApi('getdataused',true,'getdataused'))
-    // for(const queueID in queueIDsToGrab) {
-    //     database.callApi(
-    //             'GetMatchIDsByQueue',
-    //             true,
-    //             `GetMatchIDsByQueue:::SpecificQ::${queueIDsToGrab[queueID]}`,
-    //             queueIDsToGrab[queueID],
-    //             dayjs.utc().subtract(8, 'day').format('YYYYMMDD'),
-    //             -1
-    //         ).then(async (matches) => {
+    // for(queueID in queueIDsToGrab ){
+    // database.callApi(
+    //         'getdataused',
+    //         `getdataused`
+    //     ).then(async (matches) => {
+    //         console.log(matches)
+
+
+    //     })
+    // let players = await database.callApi_v2(
+    //     "SearchPlayers",
+    //     'SearchPlayers',
+    //     '1.'
+    // )
+    // let players1 = await database.callApi_v2(
+    //     "SearchPlayers",
+    //     'SearchPlayers',
+    //     'asdf'
+    // )
+    // console.log(players1)
+    // console.log(players)
+    // for(player in players) {
+    //     if(players[player]['name'] === '1.') {
+    //         console.log('asdfasdfafghgweafsz')
+    //     }
+    // }
+    // }
+
+    
+    // console.log('done')
+
     //         for (const match in matches) {
     //             if (matches[match]['active_flag'] == 'n') {
     //                 if(matches[match]['ret_msg'] === null) {

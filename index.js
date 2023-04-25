@@ -106,12 +106,14 @@ function convertMMRToRank(mmrValue) {
 
 async function getPlayerID(searchInput) {
     let playerId = 0
+
+    
     let players = await database.callApi(
         "SearchPlayers",
-        true,
         'SearchPlayers',
         searchInput
     )
+
 
     for (const player in players) {
         if (players[player]['name'] === searchInput) {
@@ -119,20 +121,28 @@ async function getPlayerID(searchInput) {
             break
         }
     }
+
+
     if (playerId === 0) {
         playerId = players[0]
+
         try {
             // this solves the case of id: 123412 name: 123412414151 and the name profile being pulled back....design decision
 
             if (playerId['name'] !== `${searchInput}` && playerId['name'].toLowerCase() !== `${searchInput.toLowerCase()}`) {
                 playerId = searchInput
+
+
             } else {
                 playerId = playerId['id']
+
             }
         } catch (e) {
             playerId = searchInput
+
         }
     }
+
     return playerId
 }
 
@@ -182,7 +192,6 @@ function fixRealmGameOutput(totalGameDetails,anArrayOfGameDetail=false) {
             }
         }
 
-        // console.log(totalGameDetails)
         return totalGameDetails
     } else {
         //todo: implement
@@ -278,6 +287,8 @@ router.get('/logout', function (req, res) {
     });
 });
 
+
+
 routerNonProd.get('/', cache(30000), (req, res) => {
     res.render('index', {user: req.user, database: database});
 });
@@ -286,9 +297,8 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
     let tourneyUrl = (req.originalUrl).split('/orgtourney/')[1];
     if (tourneyUrl !== undefined && tourneyUrl !== '') {
         let tourneyAndHash = tourneyUrl.split('/');
-        if (tourneyAndHash.length > 2) {
+        if (tourneyAndHash.length === 2 || tourneyAndHash.length === 3) {
 
-            if (await database.tourneyHashChecker(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]) !== '') {
                 // means the hash and the tourney name match up
 
                 let tourneyOverview = (await database.getTourneyInfo(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]))[0]
@@ -302,7 +312,6 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                         totalGamesOutput[val]['gamenumber'],
                         await database.callApi(
                             "GetMatchDetails",
-                            true,
                             'GetMatchDetails',
                             totalGamesOutput[val]['queueid']
                         )
@@ -433,168 +442,48 @@ routerNonProd.get('/orgTourney*', cache(5000), async (req, res) => {
                     teamNames.push(temp)
                 }
 
-                res.render('orgTourney', {
-                    tourneySetupOption: false,
-                    editor: true,
-                    viewer: true,
-                    tourneyOverviewInfo: tourneyOverview,
-                    totalGamesOutputInfo: totalGamesOutputMap,
-                    totalGamesQueueOutputInfo: totalGamesQueueOutputMap,
-                    placementTeamAndPoints: teamDict,
-                    highestGamesForTeam: highestGames,
-                    teamNames: teamNames,
-                    privateLinkEnabled: true,
-                    publicLinkEnabled: true,
-                    privateLink: req.url,
-                    publicLink: publicLinkTemp
-                });
-            } else {
+                if (tourneyAndHash.length === 2) {
+                    // tourney viewer
+                    res.render('orgTourney', {
+                        viewer: true,
+                        editor: false,
+                        tourneySetupOption: false,
+                        tourneyOverviewInfo: tourneyOverview,
+                        totalGamesOutputInfo: totalGamesOutputMap,
+                        placementTeamAndPoints: teamDict,
+                        highestGamesForTeam: highestGames,
+                        privateLinkEnabled: false,
+                        publicLinkEnabled: true,
+                        privateLink: '',
+                        publicLink: req.url
+        
+                    });
+                } else {
+                    if (await database.tourneyHashChecker(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]) !== '') {
 
-                // means hash and/or tourney name don't match with anything in db
-                res.redirect(`/orgtourney/${tourneyAndHash[0]}/${tourneyAndHash[1]}`)
-            }
-        } else if (tourneyAndHash.length === 2) {
+                    res.render('orgTourney', {
+                        tourneySetupOption: false,
+                        editor: true,
+                        viewer: true,
+                        tourneyOverviewInfo: tourneyOverview,
+                        totalGamesOutputInfo: totalGamesOutputMap,
+                        totalGamesQueueOutputInfo: totalGamesQueueOutputMap,
+                        placementTeamAndPoints: teamDict,
+                        highestGamesForTeam: highestGames,
+                        teamNames: teamNames,
+                        privateLinkEnabled: true,
+                        publicLinkEnabled: true,
+                        privateLink: req.url,
+                        publicLink: publicLinkTemp
+                    });
+                    
+                }else {
 
-            let tourneyOverview = (await database.getTourneyInfo(tourneyAndHash[0], tourneyAndHash[1]))[0]
-
-            let totalGamesOutput = (await database.getTourneyGameTotalInfo(tourneyAndHash[0], tourneyAndHash[1], tourneyAndHash[2]))
-            let totalGamesOutputMap = new Map();
-            let totalGamesQueueOutputMap = new Map();
-
-            for (const val in totalGamesOutput) {
-                totalGamesOutputMap.set(totalGamesOutput[val]['gameNumber'], totalGamesOutput[val]);
-                totalGamesQueueOutputMap.set(
-                    totalGamesOutput[val]['gameNumber'],
-                    await database.callApi(
-                        "GetMatchDetails",
-                        true,
-                        'GetMatchDetails',
-                        totalGamesOutput[val]['queueId']
-                    )
-                );
-            }
-            const totalPlacementPoints = new Map();
-
-            let split = tourneyOverview['pointsperplacement'].split(',')
-            for (const val in split) {
-                let index = parseInt(val) + 1
-                totalPlacementPoints.set(index, split[val]);
-            }
-            totalGamesQueueOutputMap = fixRealmGameOutput(totalGamesQueueOutputMap,true)
-
-
-            // structure of win
-            // -> team names : points
-            // |
-
-            //                  \-> placement + kill point amount from input
-            var teamDict = {};
-            var highestGames = {}
-            for (const [key, value] of totalGamesQueueOutputMap) {
-                for (const overallTeams in value['teams']) {
-                    let teamName = []
-                    teamName[0] = ['']
-                    teamName[0][1] = ''
-                    teamName[1] = ['']
-                    teamName[1][0] = ''
-
-                    let tempKillsTotalPoints = []
-
-                    for (const team in value['teams'][overallTeams]) {
-                        for (const player in value['teams'][overallTeams][team]) {
-                            teamName[0][0] += [value['teams'][overallTeams][team][player]['id']]
-                            teamName[0][1] += " |" + value['teams'][overallTeams][team][player]['name'] + "| "
-                            tempKillsTotalPoints.push(parseInt(value['teams'][overallTeams][team][player]['kills_player']) * tourneyOverview['pointsperkill'])
-                        }
-                    }
-                    let totalKillPoints = 0
-                    for (const killAmount in tempKillsTotalPoints) {
-                        totalKillPoints += tempKillsTotalPoints[killAmount]
-                    }
-                    let teamPlacementPoints = parseInt(totalPlacementPoints.get(value['teams'][overallTeams]['placement']))
-                    if (teamPlacementPoints === undefined || isNaN(teamPlacementPoints)) {
-                        teamPlacementPoints = 0
-                    }
-                    if (teamDict[teamName[0][0] + "|" + teamName[0][1]] === undefined) {
-                        teamDict[teamName[0][0] + "|" + teamName[0][1]] = 0
-                    }
-                    if (highestGames[teamName[0][0] + "|" + teamName[0][1]] === undefined) {
-                        highestGames[teamName[0][0] + "|" + teamName[0][1]] = []
-                    }
-
-                    let totalGamePoints = totalKillPoints + teamPlacementPoints
-                    if (highestGames[teamName[0][0] + "|" + teamName[0][1]].length < tourneyOverview['bestofgames']) {
-                        highestGames[teamName[0][0] + "|" + teamName[0][1]].push(
-                            {
-                                points: totalGamePoints,
-                                queueID: value['match_id']
-                            }
-                        )
-
-                        highestGames[teamName[0][0] + "|" + teamName[0][1]].sort(function (first, second) {
-                            return second.points - first.points;
-                        });
-                    } else {
-                        if (highestGames[teamName[0][0] + "|" + teamName[0][1]][highestGames[teamName[0][0] + "|" + teamName[0][1]].length - 1]['points'] < totalGamePoints) {
-
-                            highestGames[teamName[0][0] + "|" + teamName[0][1]][highestGames[teamName[0][0] + "|" + teamName[0][1]].length - 1] =
-                                {
-                                    points: totalGamePoints,
-                                    queueID: value['match_id']
-                                }
-
-                            highestGames[teamName[0][0] + "|" + teamName[0][1]].sort(function (first, second) {
-                                return second.points - first.points;
-                            });
-                        }
-                    }
-                    // todo: logic here for penalties
-
-                    //
-
-                    // final points value for team
-                    // potential future idea: seperate each game out for team to get per game points
-                    teamDict[teamName[0][0] + "|" + teamName[0][1]] =
-                        parseInt(highestGames[teamName[0][0] + "|" + teamName[0][1]].reduce((partialSum, a) => partialSum + a.points, 0))
-
-
+                    // means hash and/or tourney name don't match with anything in db
+                    res.redirect(`/orgtourney/${tourneyAndHash[0]}/${tourneyAndHash[1]}`)
                 }
-            }
-            if (tourneyOverview['sortbylowestpoints'] !== 1) {
-                teamDict = Object.fromEntries(
-                    Object.entries(teamDict)
-                        .sort((a, b) => -a[1] - -b[1]) // don't question it
-                );
-            } else {
-                teamDict = Object.fromEntries(
-                    Object.entries(teamDict)
-                        .sort((a, b) => a[1] - b[1]) // don't question it
-                );
-            }
-
-
-            tourneyOverview['sortbylowestpoints'] = (tourneyOverview['sortbylowestpoints'] === 1)
-
-
-            // tourney viewer / spectator
-
-            res.render('orgTourney', {
-                viewer: true,
-                editor: false,
-                tourneySetupOption: false,
-                tourneyOverviewInfo: tourneyOverview,
-                totalGamesOutputInfo: totalGamesOutputMap,
-                placementTeamAndPoints: teamDict,
-                highestGamesForTeam: highestGames,
-                privateLinkEnabled: false,
-                publicLinkEnabled: true,
-                privateLink: '',
-                publicLink: req.url
-
-            });
-
+            } 
         } else {
-
             res.redirect(`/orgtourney`)
         }
     } else {
@@ -673,7 +562,6 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
                         totalGamesOutput[val]['gameNumber'],
                         await database.callApi(
                             "GetMatchDetails",
-                            true,
                             'GetMatchDetails',
                             totalGamesOutput[val]['queueId']
                         )
@@ -831,7 +719,6 @@ routerNonProd.get('/orgLeague*', cache(5000), async (req, res) => {
                     totalGamesOutput[val]['gameNumber'],
                     await database.callApi(
                         "GetMatchDetails",
-                        true,
                         'GetMatchDetails',
                         totalGamesOutput[val]['queueId']
                     )
@@ -991,7 +878,7 @@ routerNonProd.post('/orgLeague', async function (req, res) {
         req.body.pointsPerKill,
         req.body.placementPoints,
         parseInt(tourneyNumber),
-        (req.body.lowerPoints === 'lowerPoints')
+        false
     )
     res.redirect(303, `/orgLeague/${tourneyName}/${tourneyNumber}/${hashedTourney}`)
 
@@ -1021,17 +908,19 @@ routerNonProd.get('/mmr*', cache(5000), async (req, res) => {
         if (playerUrl !== undefined && playerUrl !== '') {
             
             playerUrl = decodeURI(playerUrl)
-            let playerId = await getPlayerID(playerUrl.trimEnd())
+
+            // let playerId = await getPlayerID(playerUrl.trimEnd())
+            let player= (await database.getPlayerOverviewStatsNonAPI(playerUrl))
 
 
             let [temp1, temp2,temp3,temp4] = await Promise.all([
-                database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez'),
-                database.getMMRChanges(playerId),
-                database.mmrPlayerGetStats(playerId),
+                null,
+                database.getMMRChanges(player['player_id']),
+                database.mmrPlayerGetStats(player['player_id']),
                 database.mmrGetTopPlayersTemp_v2()
             ]);
 
-            req.session.getPlayerProfileStats = temp1
+            req.session.getPlayerProfileStats = player
 
             req.session.mmrChanges = temp2
 
@@ -1088,30 +977,40 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
             // handles cases with %20 spaces in them :) and other special characters
             playerUrl = decodeURI(playerUrl)
 
-            let playerId = await getPlayerID(playerUrl.trimEnd())
+            // let playerId = await getPlayerID(playerUrl.trimEnd())
+            let player= (await database.getPlayerOverviewStatsNonAPI(playerUrl))
 
-            req.session.getPlayerProfileStats = await database.callApi("GetPlayer", true, 'GetPlayer', playerId, 'hirez')
-            let playerStats = await database.callApi("GetPlayerStats", true, 'GetPlayerStats', playerId)
+            req.session.getPlayerProfileStats = player
+            let playerStats
+            if (player === undefined) {
+                playerStats = await database.callApi("GetPlayerStats", 'GetPlayerStats',0)
+
+            } else {
+                playerStats = await database.callApi("GetPlayerStats", 'GetPlayerStats', player['player_id'])
+        
+            }
             if(playerStats['ret_msg'] === 'No Player Stats:0') {
                 res.render('stats', {
                     displayStats: false,
-                    error: `Player/ID '${playerId}' doesn't exist`
+                    error: `Player name/id doesn't exist`
                 });
             } else {
 
                 let output = {}
                 let agStats = playerStats["aggregate_stats"]
-                delete agStats['placements']
-                delete agStats['placement_list']
-                delete agStats['wards_mines_placed']
-                delete agStats['kills_bot']
-                delete agStats['killing_spree_max']
-                delete agStats['damage_mitigated']
-                delete agStats['damage_done_in_hand']
-                delete agStats['earned_tokens']
-                delete agStats['earned_xp']
-                delete agStats['average_placement']
-                delete agStats['assists']
+                if(agStats !== undefined && agStats !== null) {
+                    delete agStats['placements']
+                    delete agStats['placement_list']
+                    delete agStats['wards_mines_placed']
+                    delete agStats['kills_bot']
+                    delete agStats['killing_spree_max']
+                    delete agStats['damage_mitigated']
+                    delete agStats['damage_done_in_hand']
+                    delete agStats['earned_tokens']
+                    delete agStats['earned_xp']
+                    delete agStats['average_placement']
+                    delete agStats['assists']
+                }
 
                 let queueStats = playerStats["queue_class_stats"]
 
@@ -1151,7 +1050,7 @@ routerNonProd.get('/stats*',cache(5000), async (req, res) => {
 
                 req.session.findPlayerStatsOverall = agStats
 
-                req.session.getLastFifty = await database.getPlayerMatchHistory(playerId)
+                req.session.getLastFifty = await database.getPlayerMatchHistory(player['player_id'])
 
 
 
@@ -1237,7 +1136,7 @@ async function writeFileWithDictData(dict,fileName) {
 
         let flatten = "Player IDs:\n"
         for (const temp in dict) {
-            flatten += 'https://realm.slickynicky.com/stats/' + (dict[temp]['players'] + "\n")
+            flatten += 'https://realm.slickynicky.com/stats/' + (dict[temp]['player_id'] + "\n")
         }
 
         fs.writeFileSync(`${fileName}.txt`, flatten, function (err) {
@@ -1307,7 +1206,89 @@ routerNonProd.get('/admin*', cache(15000), async (req, res) => {
         lastHourMatchStatsSolo,
         lastHourMatchStatsDuo,
         lastHourMatchStatsTrio,
-        lastHourMatchStatsSquad
+        lastHourMatchStatsSquad,
+
+
+
+
+        getCrossPlayPercentageByRegionNASoloWeek,
+        getCrossPlayPercentageByRegionEUSoloWeek,
+        getCrossPlayPercentageByRegionAUSoloWeek,
+        getCrossPlayPercentageByRegionBRSoloWeek,
+        getCrossPlayPercentageByRegionSEASoloWeek,
+
+        getCrossPlayPercentageByRegionNASoloDay,
+        getCrossPlayPercentageByRegionEUSoloDay,
+        getCrossPlayPercentageByRegionAUSoloDay,
+        getCrossPlayPercentageByRegionBRSoloDay,
+        getCrossPlayPercentageByRegionSEASoloDay,
+
+        getCrossPlayPercentageByRegionNASoloHour,
+        getCrossPlayPercentageByRegionEUSoloHour,
+        getCrossPlayPercentageByRegionAUSoloHour,
+        getCrossPlayPercentageByRegionBRSoloHour,
+        getCrossPlayPercentageByRegionSEASoloHour,
+
+        getCrossPlayPercentageByRegionNADuoWeek,
+        getCrossPlayPercentageByRegionEUDuoWeek,
+        getCrossPlayPercentageByRegionAUDuoWeek,
+        getCrossPlayPercentageByRegionBRDuoWeek,
+        getCrossPlayPercentageByRegionSEADuoWeek,
+
+        
+        getCrossPlayPercentageByRegionNADuoDay,
+        getCrossPlayPercentageByRegionEUDuoDay,
+        getCrossPlayPercentageByRegionAUDuoDay,
+        getCrossPlayPercentageByRegionBRDuoDay,
+        getCrossPlayPercentageByRegionSEADuoDay,
+
+        getCrossPlayPercentageByRegionNADuoHour,
+        getCrossPlayPercentageByRegionEUDuoHour,
+        getCrossPlayPercentageByRegionAUDuoHour,
+        getCrossPlayPercentageByRegionBRDuoHour,
+        getCrossPlayPercentageByRegionSEADuoHour,
+    
+        getCrossPlayPercentageByRegionNATrioWeek,
+        getCrossPlayPercentageByRegionEUTrioWeek,
+        getCrossPlayPercentageByRegionAUTrioWeek,
+        getCrossPlayPercentageByRegionBRTrioWeek,
+        getCrossPlayPercentageByRegionSEATrioWeek,
+
+        
+        getCrossPlayPercentageByRegionNATrioDay,
+        getCrossPlayPercentageByRegionEUTrioDay,
+        getCrossPlayPercentageByRegionAUTrioDay,
+        getCrossPlayPercentageByRegionBRTrioDay,
+        getCrossPlayPercentageByRegionSEATrioDay,
+
+
+        getCrossPlayPercentageByRegionNATrioHour,
+        getCrossPlayPercentageByRegionEUTrioHour,
+        getCrossPlayPercentageByRegionAUTrioHour,
+        getCrossPlayPercentageByRegionBRTrioHour,
+        getCrossPlayPercentageByRegionSEATrioHour,
+    
+        getCrossPlayPercentageByRegionNASquadWeek,
+        getCrossPlayPercentageByRegionEUSquadWeek,
+        getCrossPlayPercentageByRegionAUSquadWeek,
+        getCrossPlayPercentageByRegionBRSquadWeek,
+        getCrossPlayPercentageByRegionSEASquadWeek,
+
+        getCrossPlayPercentageByRegionNASquadDay,
+        getCrossPlayPercentageByRegionEUSquadDay,
+        getCrossPlayPercentageByRegionAUSquadDay,
+        getCrossPlayPercentageByRegionBRSquadDay,
+        getCrossPlayPercentageByRegionSEASquadDay,
+    
+
+        getCrossPlayPercentageByRegionNASquadHour,
+        getCrossPlayPercentageByRegionEUSquadHour,
+        getCrossPlayPercentageByRegionAUSquadHour,
+        getCrossPlayPercentageByRegionBRSquadHour,
+        getCrossPlayPercentageByRegionSEASquadHour
+    
+
+
     ] = await Promise.all([
         database.getClassWinRate_v2(604800,'474'),
         database.getClassWinRate_v2(604800,'482'),
@@ -1363,7 +1344,99 @@ routerNonProd.get('/admin*', cache(15000), async (req, res) => {
         database.getAveragePlayersPerGamePerRegion(3600,'474'),
         database.getAveragePlayersPerGamePerRegion(3600,'482'),
         database.getAveragePlayersPerGamePerRegion(3600,'475'),
-        database.getAveragePlayersPerGamePerRegion(3600,'476')
+        database.getAveragePlayersPerGamePerRegion(3600,'476'),
+
+
+
+
+        database.getCrossPlayPercentageByRegion(604800,474,'NA'),
+        database.getCrossPlayPercentageByRegion(604800,474,'EU'),
+        database.getCrossPlayPercentageByRegion(604800,474,'Australia'),
+        database.getCrossPlayPercentageByRegion(604800,474,'Brazil'),
+        database.getCrossPlayPercentageByRegion(604800,474,'Southeast Asia'),
+        
+        
+
+        database.getCrossPlayPercentageByRegion(86400,474,'NA'),
+        database.getCrossPlayPercentageByRegion(86400,474,'EU'),
+        database.getCrossPlayPercentageByRegion(86400,474,'Australia'),
+        database.getCrossPlayPercentageByRegion(86400,474,'Brazil'),
+        database.getCrossPlayPercentageByRegion(86400,474,'Southeast Asia'),
+
+
+        database.getCrossPlayPercentageByRegion(3600,474,'NA'),
+        database.getCrossPlayPercentageByRegion(3600,474,'EU'),
+        database.getCrossPlayPercentageByRegion(3600,474,'Australia'),
+        database.getCrossPlayPercentageByRegion(3600,474,'Brazil'),
+        database.getCrossPlayPercentageByRegion(3600,474,'Southeast Asia'),
+
+
+
+        database.getCrossPlayPercentageByRegion(604800,482,'NA'),
+        database.getCrossPlayPercentageByRegion(604800,482,'EU'),
+        database.getCrossPlayPercentageByRegion(604800,482,'Australia'),
+        database.getCrossPlayPercentageByRegion(604800,482,'Brazil'),
+        database.getCrossPlayPercentageByRegion(604800,482,'Southeast Asia'),
+        
+        
+
+        database.getCrossPlayPercentageByRegion(86400,482,'NA'),
+        database.getCrossPlayPercentageByRegion(86400,482,'EU'),
+        database.getCrossPlayPercentageByRegion(86400,482,'Australia'),
+        database.getCrossPlayPercentageByRegion(86400,482,'Brazil'),
+        database.getCrossPlayPercentageByRegion(86400,482,'Southeast Asia'),
+
+
+        database.getCrossPlayPercentageByRegion(3600,482,'NA'),
+        database.getCrossPlayPercentageByRegion(3600,482,'EU'),
+        database.getCrossPlayPercentageByRegion(3600,482,'Australia'),
+        database.getCrossPlayPercentageByRegion(3600,482,'Brazil'),
+        database.getCrossPlayPercentageByRegion(3600,482,'Southeast Asia'),
+
+
+        database.getCrossPlayPercentageByRegion(604800,475,'NA'),
+        database.getCrossPlayPercentageByRegion(604800,475,'EU'),
+        database.getCrossPlayPercentageByRegion(604800,475,'Australia'),
+        database.getCrossPlayPercentageByRegion(604800,475,'Brazil'),
+        database.getCrossPlayPercentageByRegion(604800,475,'Southeast Asia'),
+        
+        
+
+        database.getCrossPlayPercentageByRegion(86400,475,'NA'),
+        database.getCrossPlayPercentageByRegion(86400,475,'EU'),
+        database.getCrossPlayPercentageByRegion(86400,475,'Australia'),
+        database.getCrossPlayPercentageByRegion(86400,475,'Brazil'),
+        database.getCrossPlayPercentageByRegion(86400,475,'Southeast Asia'),
+
+
+        database.getCrossPlayPercentageByRegion(3600,475,'NA'),
+        database.getCrossPlayPercentageByRegion(3600,475,'EU'),
+        database.getCrossPlayPercentageByRegion(3600,475,'Australia'),
+        database.getCrossPlayPercentageByRegion(3600,475,'Brazil'),
+        database.getCrossPlayPercentageByRegion(3600,475,'Southeast Asia'),
+
+
+        database.getCrossPlayPercentageByRegion(604800,476,'NA'),
+        database.getCrossPlayPercentageByRegion(604800,476,'EU'),
+        database.getCrossPlayPercentageByRegion(604800,476,'Australia'),
+        database.getCrossPlayPercentageByRegion(604800,476,'Brazil'),
+        database.getCrossPlayPercentageByRegion(604800,476,'Southeast Asia'),
+        
+        
+
+        database.getCrossPlayPercentageByRegion(86400,476,'NA'),
+        database.getCrossPlayPercentageByRegion(86400,476,'EU'),
+        database.getCrossPlayPercentageByRegion(86400,476,'Australia'),
+        database.getCrossPlayPercentageByRegion(86400,476,'Brazil'),
+        database.getCrossPlayPercentageByRegion(86400,476,'Southeast Asia'),
+
+
+        database.getCrossPlayPercentageByRegion(3600,476,'NA'),
+        database.getCrossPlayPercentageByRegion(3600,476,'EU'),
+        database.getCrossPlayPercentageByRegion(3600,476,'Australia'),
+        database.getCrossPlayPercentageByRegion(3600,476,'Brazil'),
+        database.getCrossPlayPercentageByRegion(3600,476,'Southeast Asia'),
+
         ]);
 
 
@@ -1435,7 +1508,83 @@ console.log(`Call to doSomething_files took ${endTime - startTime} milliseconds`
         lastHourMatchStatsSolo  : lastHourMatchStatsSolo ,
         lastHourMatchStatsDuo   : lastHourMatchStatsDuo  ,
         lastHourMatchStatsTrio  : lastHourMatchStatsTrio ,
-        lastHourMatchStatsSquad : lastHourMatchStatsSquad
+        lastHourMatchStatsSquad : lastHourMatchStatsSquad,
+
+        getCrossPlayPercentageByRegionNASoloHour   : getCrossPlayPercentageByRegionNASoloHour  ,
+        getCrossPlayPercentageByRegionEUSoloHour   : getCrossPlayPercentageByRegionEUSoloHour  ,
+        getCrossPlayPercentageByRegionAUSoloHour   : getCrossPlayPercentageByRegionAUSoloHour  ,
+        getCrossPlayPercentageByRegionBRSoloHour   : getCrossPlayPercentageByRegionBRSoloHour  ,
+        getCrossPlayPercentageByRegionSEASoloHour  : getCrossPlayPercentageByRegionSEASoloHour ,
+
+        getCrossPlayPercentageByRegionNASoloDay    : getCrossPlayPercentageByRegionNASoloDay   ,
+        getCrossPlayPercentageByRegionEUSoloDay    : getCrossPlayPercentageByRegionEUSoloDay   ,
+        getCrossPlayPercentageByRegionAUSoloDay    : getCrossPlayPercentageByRegionAUSoloDay   ,
+        getCrossPlayPercentageByRegionBRSoloDay    : getCrossPlayPercentageByRegionBRSoloDay   ,
+        getCrossPlayPercentageByRegionSEASoloDay   : getCrossPlayPercentageByRegionSEASoloDay  ,
+
+        getCrossPlayPercentageByRegionNASoloWeek   : getCrossPlayPercentageByRegionNASoloWeek  ,
+        getCrossPlayPercentageByRegionEUSoloWeek   : getCrossPlayPercentageByRegionEUSoloWeek  ,
+        getCrossPlayPercentageByRegionAUSoloWeek   : getCrossPlayPercentageByRegionAUSoloWeek  ,
+        getCrossPlayPercentageByRegionBRSoloWeek   : getCrossPlayPercentageByRegionBRSoloWeek  ,
+        getCrossPlayPercentageByRegionSEASoloWeek  : getCrossPlayPercentageByRegionSEASoloWeek ,
+
+        getCrossPlayPercentageByRegionNADuoHour    : getCrossPlayPercentageByRegionNADuoHour   ,
+        getCrossPlayPercentageByRegionEUDuoHour    : getCrossPlayPercentageByRegionEUDuoHour   ,
+        getCrossPlayPercentageByRegionAUDuoHour    : getCrossPlayPercentageByRegionAUDuoHour   ,
+        getCrossPlayPercentageByRegionBRDuoHour    : getCrossPlayPercentageByRegionBRDuoHour   ,
+        getCrossPlayPercentageByRegionSEADuoHour   : getCrossPlayPercentageByRegionSEADuoHour  ,
+
+        getCrossPlayPercentageByRegionNADuoDay     : getCrossPlayPercentageByRegionNADuoDay    ,
+        getCrossPlayPercentageByRegionEUDuoDay     : getCrossPlayPercentageByRegionEUDuoDay    ,
+        getCrossPlayPercentageByRegionAUDuoDay     : getCrossPlayPercentageByRegionAUDuoDay    ,
+        getCrossPlayPercentageByRegionBRDuoDay     : getCrossPlayPercentageByRegionBRDuoDay    ,
+        getCrossPlayPercentageByRegionSEADuoDay    : getCrossPlayPercentageByRegionSEADuoDay   ,
+
+
+        getCrossPlayPercentageByRegionNADuoWeek    : getCrossPlayPercentageByRegionNADuoWeek   ,
+        getCrossPlayPercentageByRegionEUDuoWeek    : getCrossPlayPercentageByRegionEUDuoWeek   ,
+        getCrossPlayPercentageByRegionAUDuoWeek    : getCrossPlayPercentageByRegionAUDuoWeek   ,
+        getCrossPlayPercentageByRegionBRDuoWeek    : getCrossPlayPercentageByRegionBRDuoWeek   ,
+        getCrossPlayPercentageByRegionSEADuoWeek   : getCrossPlayPercentageByRegionSEADuoWeek  ,
+
+        getCrossPlayPercentageByRegionNATrioHour   : getCrossPlayPercentageByRegionNATrioHour  ,
+        getCrossPlayPercentageByRegionEUTrioHour   : getCrossPlayPercentageByRegionEUTrioHour  ,
+        getCrossPlayPercentageByRegionAUTrioHour   : getCrossPlayPercentageByRegionAUTrioHour  ,
+        getCrossPlayPercentageByRegionBRTrioHour   : getCrossPlayPercentageByRegionBRTrioHour  ,
+        getCrossPlayPercentageByRegionSEATrioHour  : getCrossPlayPercentageByRegionSEATrioHour ,
+
+        getCrossPlayPercentageByRegionNATrioDay    : getCrossPlayPercentageByRegionNATrioDay   ,
+        getCrossPlayPercentageByRegionEUTrioDay    : getCrossPlayPercentageByRegionEUTrioDay   ,
+        getCrossPlayPercentageByRegionAUTrioDay    : getCrossPlayPercentageByRegionAUTrioDay   ,
+        getCrossPlayPercentageByRegionBRTrioDay    : getCrossPlayPercentageByRegionBRTrioDay   ,
+        getCrossPlayPercentageByRegionSEATrioDay   : getCrossPlayPercentageByRegionSEATrioDay  ,
+
+        getCrossPlayPercentageByRegionNATrioWeek   : getCrossPlayPercentageByRegionNATrioWeek  ,
+        getCrossPlayPercentageByRegionEUTrioWeek   : getCrossPlayPercentageByRegionEUTrioWeek  ,
+        getCrossPlayPercentageByRegionAUTrioWeek   : getCrossPlayPercentageByRegionAUTrioWeek  ,
+        getCrossPlayPercentageByRegionBRTrioWeek   : getCrossPlayPercentageByRegionBRTrioWeek  ,
+        getCrossPlayPercentageByRegionSEATrioWeek  : getCrossPlayPercentageByRegionSEATrioWeek ,
+
+        getCrossPlayPercentageByRegionNASquadHour  : getCrossPlayPercentageByRegionNASquadHour ,
+        getCrossPlayPercentageByRegionEUSquadHour  : getCrossPlayPercentageByRegionEUSquadHour ,
+        getCrossPlayPercentageByRegionAUSquadHour  : getCrossPlayPercentageByRegionAUSquadHour ,
+        getCrossPlayPercentageByRegionBRSquadHour  : getCrossPlayPercentageByRegionBRSquadHour ,
+        getCrossPlayPercentageByRegionSEASquadHour : getCrossPlayPercentageByRegionSEASquadHour,
+
+        getCrossPlayPercentageByRegionNASquadDay   : getCrossPlayPercentageByRegionNASquadDay  ,
+        getCrossPlayPercentageByRegionEUSquadDay   : getCrossPlayPercentageByRegionEUSquadDay  ,
+        getCrossPlayPercentageByRegionAUSquadDay   : getCrossPlayPercentageByRegionAUSquadDay  ,
+        getCrossPlayPercentageByRegionBRSquadDay   : getCrossPlayPercentageByRegionBRSquadDay  ,
+        getCrossPlayPercentageByRegionSEASquadDay  : getCrossPlayPercentageByRegionSEASquadDay ,
+
+        getCrossPlayPercentageByRegionNASquadWeek  : getCrossPlayPercentageByRegionNASquadWeek ,
+        getCrossPlayPercentageByRegionEUSquadWeek  : getCrossPlayPercentageByRegionEUSquadWeek ,
+        getCrossPlayPercentageByRegionAUSquadWeek  : getCrossPlayPercentageByRegionAUSquadWeek ,
+        getCrossPlayPercentageByRegionBRSquadWeek  : getCrossPlayPercentageByRegionBRSquadWeek ,
+        getCrossPlayPercentageByRegionSEASquadWeek : getCrossPlayPercentageByRegionSEASquadWeek
+
+
+        
     });
 });
 
@@ -1550,7 +1699,10 @@ routerNonProd.get('/v2_admin*', cache(3600000), async (req, res) => {
 		sameInputOverTimeHourSolo  ,
 		sameInputOverTimeHourDuo   ,
 		sameInputOverTimeHourTrio  ,
-		sameInputOverTimeHourSquad 
+		sameInputOverTimeHourSquad ,
+
+
+        
 	
         
     ] = await Promise.all([
