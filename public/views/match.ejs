@@ -321,13 +321,13 @@ let queueValues = {
                                     let totalKills = 0;
 
                                     for(const kills in matchDetails[team]['kills_player']) {
-                                        totalKills+= matchDetails[team]['kills_player'][kills]
+                                        totalKills+= (matchDetails[team]['kills_player'][kills]-matchDetails[team]['kills_bot'][kills])
                                     }
 
                                     %>
                                     <td data-order="<%=totalKills%>" class="team-result__kills team-meta__name team-color--2" style="font-size: 16px">
                                          <% for(const kills in matchDetails[team]['kills_player']){ %>
-                                            <h5><%= matchDetails[team]['kills_player'][kills] %></h5>
+                                            <h5><%= (matchDetails[team]['kills_player'][kills]-matchDetails[team]['kills_bot'][kills]) %></h5>
                                             <br>
 
                                         <% } %>

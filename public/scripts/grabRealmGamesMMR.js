@@ -10,7 +10,7 @@ let databaseConfig = require('./realmRoyaleDatabase_v2.js');
 let database = new databaseConfig()
 
 // solo duo(trio in reality) squad custom solo, duo, trio, squad
-const queueIDsToGrab = ['474', '475', '476', '482', '10188', '10189', '10205', '10190']
+const queueIDsToGrab = ['474', '475', '476', '482','477', '10188', '10189', '10205', '10190']
 
 const winston = require('winston');
 const logger = winston.createLogger({

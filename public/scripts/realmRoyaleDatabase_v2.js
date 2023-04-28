@@ -2373,21 +2373,23 @@ class DatabaseHandler_v2 {
 
         let query = `
         select 
-        row_number() OVER (order by kills_player desc) as rank,
-        name,
-        kills_player as total_kills,
-        player_id,
-        mdop.match_id
-    from
-        matchdataoverview_players mdop
-    INNER JOIN matchDataOverview mdo ON (
-          mdop.match_id = mdo.match_id 
-    )
-    where 
-      to_timestamp(mdo.match_datetime) + interval '1 month' > now() 
-    order by 
-        kills_player desc
-    limit 100;
+            row_number() OVER (order by (kills_player-kills_bot) desc) as rank,
+            name,
+            (kills_player-kills_bot) as total_kills,
+            player_id,
+            mdop.match_id
+        from
+            matchdataoverview_players mdop
+        INNER JOIN
+        matchDataOverview mdo ON (
+        mdop.match_id = mdo.match_id 
+        )
+        where 
+        to_timestamp(mdo.match_datetime) + interval '1 month' > now() and
+        match_queue_id != 477
+        order by 
+            (kills_player-kills_bot) desc
+        limit 100;
                 `
         await db.query(query,[]
             )
@@ -2401,29 +2403,31 @@ class DatabaseHandler_v2 {
         return new Promise(async (resolve, reject) => {
 
         let query = `
-                        SELECT 
-                            row_number() OVER (ORDER BY total_kills DESC) AS rank,
-                            array_agg(m.name) AS player_names,
-                            array_agg(m.player_id) AS player_ids,
-                            tk.total_kills,
-                            tk.match_id
-                        FROM (
-                            SELECT 
-                                match_id, 
-                                SUM(kills_player) AS total_kills
-                            FROM matchdataoverview_players
-                            join matchdataoverview mdo using (match_id)
-                            WHERE placement = 1 and 	  to_timestamp(mdo.match_datetime) + interval '1 month' > now()
-                        
-                            GROUP BY match_id
-                            ORDER BY total_kills DESC
-                            LIMIT 1000
-                        ) tk
-                        JOIN matchdataoverview_players m ON m.match_id = tk.match_id
-                            AND m.placement = 1
-                        GROUP BY tk.match_id, tk.total_kills
-                        ORDER BY tk.total_kills DESC
-                        limit 100;
+        SELECT 
+        row_number() OVER (ORDER BY total_kills DESC) AS rank,
+        array_agg(m.name) AS player_names,
+        array_agg(m.player_id) AS player_ids,
+        tk.total_kills,
+        tk.match_id
+    FROM (
+        SELECT 
+            match_id, 
+            SUM(kills_player-kills_bot) AS total_kills
+        FROM matchdataoverview_players
+        join matchdataoverview mdo using (match_id)
+        WHERE 
+            placement = 1 and 	  
+            to_timestamp(mdo.match_datetime) + interval '1 month' > now() and
+            match_queue_id != 477
+        GROUP BY match_id
+        ORDER BY total_kills DESC
+        LIMIT 1000
+    ) tk
+    JOIN matchdataoverview_players m ON m.match_id = tk.match_id
+        AND m.placement = 1
+    GROUP BY tk.match_id, tk.total_kills
+    ORDER BY tk.total_kills DESC
+    limit 100;
                     `
         await db.query(query,[]
             )
@@ -2675,6 +2679,7 @@ class DatabaseHandler_v2 {
             min(placement) as placement,
             max(duration_secs) as duration_secs,
             array_agg(kills_player) as kills_player,
+            array_agg(kills_bot) as kills_bot,
             array_agg(deaths) as deaths,
             array_agg(damage_player) as damage_player,
             array_agg(damage_taken) as damage_taken,
@@ -2695,6 +2700,7 @@ class DatabaseHandler_v2 {
                 placement,
                 matchdataoverview_players_early.duration_secs,
                 kills_player,
+                kills_bot,
                 deaths,
                 damage_player,
                 damage_taken,
@@ -2733,6 +2739,7 @@ class DatabaseHandler_v2 {
                 placement,
                 matchdataoverview_players.duration_secs,
                 kills_player,
+                kills_bot,
                 deaths,
                 damage_player,
                 damage_taken,

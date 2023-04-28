@@ -35,6 +35,7 @@ let queueIDs = {
     'Duo\'s': 482,
     'Trio\'s': 475,
     'Squad\'s': 476,
+    'Realm War\'s': 477,
     customSolo: 10188,
     customDuo: 10189,
     customTrio: 10205,
@@ -45,6 +46,7 @@ let queueValues = {
     482: 'Duo\'s',
     475: 'Trio\'s', // who cares about consistency right realm? should be duo kekw thanks reforged
     476: 'Squad\'s',
+    477: 'Realm War\'s',
     10188: 'Solo Custom\'s',
     10189: 'Duo Custom\'s',
     10205: 'Trio Custom\'s',
